@@ -12,22 +12,28 @@ class AdminBusCompanyController extends Controller
     {
         $query = BusCompany::latest();
 
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('company_name', 'like', "%{$search}%")
-                  ->orWhere('company_code', 'like', "%{$search}%")
-                  ->orWhere('contact_person', 'like', "%{$search}%")
-                  ->orWhere('mobile_number', 'like', "%{$search}%");
+        if ($request->has('search') && !empty(trim($request->search))) {
+            $searchTerms = explode(' ', trim($request->search));
+            
+            $query->where(function($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $term = trim($term);
+                    if (!empty($term)) {
+                        $q->orWhere('company_name', 'like', "%{$term}%")
+                          ->orWhere('company_code', 'like', "%{$term}%")
+                          ->orWhere('contact_person', 'like', "%{$term}%")
+                          ->orWhere('mobile_number', 'like', "%{$term}%");
+                    }
+                }
             });
         }
 
-        if ($request->has('status') && $request->status !== '') {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         // Apply additional filters (like district) if they exist
-        if ($request->has('district') && $request->district !== '') {
+        if ($request->filled('district')) {
             $query->where('district', $request->district);
         }
 

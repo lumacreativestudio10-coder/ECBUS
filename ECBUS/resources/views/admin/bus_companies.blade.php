@@ -70,7 +70,7 @@
                         <div class="custom-dropdown">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Status</label>
                             <div class="relative w-full">
-                                <select name="status" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
+                                <select name="status" onchange="this.form.submit()" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
                                     <option value="">All Statuses</option>
                                     <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
                                     <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
@@ -82,7 +82,7 @@
                         <div class="custom-dropdown">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">District</label>
                             <div class="relative w-full">
-                                <select name="district" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
+                                <select name="district" onchange="this.form.submit()" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
                                     <option value="">All Districts</option>
                                     @foreach($districts as $district)
                                         <option value="{{ $district }}" {{ request('district') == $district ? 'selected' : '' }}>{{ $district }}</option>
