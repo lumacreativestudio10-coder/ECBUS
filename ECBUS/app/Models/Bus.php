@@ -11,7 +11,7 @@ class Bus extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'operator_id', 'bus_type_id', 'name', 'bus_number', 'registration_number',
+        'operator_id', 'bus_company_id', 'bus_type_id', 'name', 'bus_number', 'registration_number',
         'total_seats', 'seat_layout', 'image', 'facilities', 'description', 'status'
     ];
 
@@ -23,6 +23,11 @@ class Bus extends Model
     public function operator()
     {
         return $this->belongsTo(Operator::class);
+    }
+
+    public function busCompany()
+    {
+        return $this->belongsTo(BusCompany::class);
     }
 
     public function busType()

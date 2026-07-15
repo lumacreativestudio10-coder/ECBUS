@@ -41,6 +41,17 @@
 
 
                     <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
+                        <select name="bus_company_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                            <option value="">Select Company</option>
+                            @foreach($busCompanies as $company)
+                                <option value="{{ $company->id }}" {{ old('bus_company_id') == $company->id ? 'selected' : '' }}>{{ $company->company_name }}</option>
+                            @endforeach
+                        </select>
+                        @error('bus_company_id') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Bus Type</label>
                         <input type="text" name="bus_type_name" value="{{ old('bus_type_name') }}" placeholder="e.g. Normal, AC, Sleeper" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required autocomplete="off">
                         @error('bus_type_name') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
@@ -134,6 +145,7 @@
                     <thead>
                         <tr class="bg-gray-50 text-gray-500 text-xs uppercase font-bold border-b border-gray-100">
                             <th class="px-6 py-4">ID</th>
+                            <th class="px-6 py-4">Company</th>
                             <th class="px-6 py-4">Type</th>
                             <th class="px-6 py-4">Name / Reg</th>
                             <th class="px-6 py-4">Total Seats</th>
@@ -144,6 +156,7 @@
                         @forelse($buses as $bus)
                         <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">
                             <td class="px-6 py-4 font-bold text-gray-500">{{ $bus->id }}</td>
+                            <td class="px-6 py-4 font-bold text-primary-maroon">{{ $bus->busCompany->company_name ?? 'N/A' }}</td>
                             <td class="px-6 py-4 font-bold text-gray-700">{{ $bus->busType->name ?? 'N/A' }}</td>
                             <td class="px-6 py-4">
                                 <div class="font-bold text-dark-text">{{ $bus->name }}</div>
@@ -152,10 +165,10 @@
                             <td class="px-6 py-4 font-extrabold text-primary-maroon">{{ $bus->total_seats }}</td>
                             <td class="px-6 py-4 text-right">
                                 <form action="{{ route('admin.buses.destroy', $bus) }}" method="POST" class="inline-flex gap-2" onsubmit="return confirm('Are you sure you want to delete this bus?');">
-                                    <button type="button" @click='viewBus({{ $bus->id }}, @json($bus->name), @json($bus->busType->name ?? "N/A"), @json($bus->registration_number), {{ $bus->total_seats }}, @json($bus->seat_layout))' class="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition" title="View Bus">
+                                    <button type="button" @click='viewBus({{ $bus->id }}, @json($bus->name), @json($bus->busType->name ?? "N/A"), @json($bus->registration_number), {{ $bus->total_seats }}, @json($bus->seat_layout), @json($bus->busCompany->company_name ?? "N/A"))' class="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition" title="View Bus">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                     </button>
-                                    <button type="button" @click='editBus({{ $bus->id }}, @json($bus->name), @json($bus->busType->name ?? "N/A"), @json($bus->registration_number), @json($bus->bus_number), {{ $bus->total_seats }}, @json($bus->seat_layout))' class="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition" title="Edit Bus">
+                                    <button type="button" @click='editBus({{ $bus->id }}, @json($bus->name), @json($bus->busType->name ?? "N/A"), @json($bus->registration_number), @json($bus->bus_number), {{ $bus->total_seats }}, @json($bus->seat_layout), @json($bus->bus_company_id))' class="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition" title="Edit Bus">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                     </button>
                                     @csrf
@@ -168,7 +181,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">No buses found. Add one on the left!</td>
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">No buses found. Add one on the left!</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -193,7 +206,11 @@
             <div class="p-6">
                 <!-- VIEW MODE -->
                 <div x-show="!isEditMode">
-                    <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <p class="text-xs text-gray-500 font-bold uppercase mb-1">Company</p>
+                            <p class="font-bold text-dark-text" x-text="viewingBus.company"></p>
+                        </div>
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                             <p class="text-xs text-gray-500 font-bold uppercase mb-1">Type</p>
                             <p class="font-bold text-dark-text" x-text="viewingBus.type"></p>
@@ -246,6 +263,15 @@
                         <input type="hidden" name="seat_layout" id="edit_seat_layout_input">
                         <input type="hidden" name="total_seats" :value="countSeats()">
 
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
+                            <select name="bus_company_id" x-model="editForm.bus_company_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                <option value="">Select Company</option>
+                                @foreach($busCompanies as $company)
+                                    <option value="{{ $company->id }}">{{ $company->company_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus Type</label>
                             <input type="text" name="bus_type_name" x-model="editForm.bus_type_name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required autocomplete="off">
@@ -335,20 +361,21 @@ document.addEventListener('alpine:init', () => {
         isViewing: false,
         isEditMode: false,
         viewingBus: {
-            id: null, name: '', type: '', reg: '', seats: 0, layout: { map: [] }
+            id: null, name: '', type: '', reg: '', seats: 0, layout: { map: [] }, company: ''
         },
         editForm: {
-            bus_type_name: '', name: '', bus_number: '', registration_number: ''
+            bus_company_id: '', bus_type_name: '', name: '', bus_number: '', registration_number: ''
         },
-        viewBus(id, name, type, reg, seats, layout) {
+        viewBus(id, name, type, reg, seats, layout, company) {
             this.isEditMode = false;
-            this.viewingBus = { id, name, type, reg, seats, layout: typeof layout === 'string' ? JSON.parse(layout) : layout };
+            this.viewingBus = { id, name, type, reg, seats, layout: typeof layout === 'string' ? JSON.parse(layout) : layout, company };
             this.isViewing = true;
         },
-        editBus(id, name, type, reg, bus_number, seats, layout) {
+        editBus(id, name, type, reg, bus_number, seats, layout, bus_company_id) {
             this.isEditMode = true;
             this.viewingBus = { id, name, type, reg, seats, layout: typeof layout === 'string' ? JSON.parse(layout) : layout };
             this.editForm = {
+                bus_company_id: bus_company_id,
                 bus_type_name: type,
                 name: name,
                 bus_number: bus_number,

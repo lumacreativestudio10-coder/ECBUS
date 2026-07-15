@@ -187,15 +187,17 @@ class AdminController extends Controller
     // Buses Management
     public function buses()
     {
-        $buses = Bus::with('operator', 'busType')->latest()->get();
+        $buses = Bus::with('operator', 'busCompany', 'busType')->latest()->get();
         $operators = \App\Models\Operator::orderBy('name')->get();
+        $busCompanies = \App\Models\BusCompany::orderBy('company_name')->get();
         $busTypes = \App\Models\BusType::orderBy('name')->get();
-        return view('admin.buses', compact('buses', 'operators', 'busTypes'));
+        return view('admin.buses', compact('buses', 'operators', 'busCompanies', 'busTypes'));
     }
 
     public function storeBus(Request $request)
     {
         $request->validate([
+            'bus_company_id' => 'required|exists:bus_companies,id',
             'bus_type_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'bus_number' => 'required|string|max:255',
@@ -210,6 +212,7 @@ class AdminController extends Controller
         );
 
         Bus::create([
+            'bus_company_id' => $request->bus_company_id,
             'bus_type_id' => $busType->id,
             'name' => $request->name,
             'bus_number' => $request->bus_number,
@@ -224,6 +227,7 @@ class AdminController extends Controller
     public function updateBus(Request $request, Bus $bus)
     {
         $request->validate([
+            'bus_company_id' => 'required|exists:bus_companies,id',
             'bus_type_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'bus_number' => 'required|string|max:255',
@@ -237,6 +241,7 @@ class AdminController extends Controller
         );
 
         $bus->update([
+            'bus_company_id' => $request->bus_company_id,
             'bus_type_id' => $busType->id,
             'name' => $request->name,
             'bus_number' => $request->bus_number,
