@@ -410,42 +410,41 @@
     <div class="max-w-7xl mx-auto px-6">
         <div class="flex flex-col md:flex-row justify-between items-end mb-16">
             <div>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-dark-text mb-4">WHAT OUR PASSENGERS SAY</h2>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-dark-text mb-4">CUSTOMER REVIEWS & FEEDBACK</h2>
                 <div class="w-24 h-1 bg-gradient-to-r from-primary-maroon to-primary-gold mt-6 rounded-full"></div>
             </div>
-            <button @click="document.getElementById('reviewModal').style.display='flex'" class="mt-6 md:mt-0 bg-primary-gold text-dark-maroon font-bold px-6 py-3 rounded-xl hover:bg-white transition shadow-md flex items-center">
-                <i data-lucide="pen-tool" class="w-5 h-5 mr-2"></i> Write a Review
-            </button>
+            <!-- Write a Review button removed as admin manages it -->
         </div>
 
         <div class="swiper review-swiper pb-12">
             <div class="swiper-wrapper">
                 @forelse($reviews as $review)
                 <div class="swiper-slide h-auto">
-                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 h-full flex flex-col relative">
-                        <i data-lucide="quote" class="absolute top-6 right-6 w-12 h-12 text-gray-100"></i>
-                        <div class="flex text-yellow-400 mb-4">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i data-lucide="star" class="w-5 h-5 {{ $i <= $review->rating ? 'fill-current' : 'text-gray-200' }}"></i>
-                            @endfor
+                    <div class="bg-white p-4 rounded-2xl shadow-lg border border-gray-100 h-full flex flex-col relative group overflow-hidden">
+                        
+                        <div class="relative w-full h-48 md:h-64 rounded-xl overflow-hidden mb-4 bg-gray-100">
+                            @if($review->image)
+                                <img src="{{ Storage::url($review->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i data-lucide="image" class="w-12 h-12 text-gray-300"></i>
+                                </div>
+                            @endif
                         </div>
-                        <p class="text-gray-600 italic mb-8 flex-grow relative z-10">
-                            "{{ $review->comment }}"
-                        </p>
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 rounded-full mr-4 border-2 border-primary-gold flex items-center justify-center bg-gray-100 font-bold text-gray-500">
-                                {{ strtoupper(substr($review->customer_name, 0, 1)) }}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-dark-text">{{ $review->customer_name }}</h4>
-                                <p class="text-xs text-gray-500 font-semibold">{{ $review->created_at->diffForHumans() }}</p>
-                            </div>
+                        
+                        @if($review->description)
+                        <div class="flex-grow flex items-start px-2">
+                            <i data-lucide="quote" class="w-5 h-5 text-primary-gold mr-3 flex-shrink-0 mt-1"></i>
+                            <p class="text-gray-600 text-sm md:text-base italic leading-relaxed">
+                                "{{ $review->description }}"
+                            </p>
                         </div>
+                        @endif
                     </div>
                 </div>
                 @empty
                 <div class="text-center py-12 w-full text-gray-500 font-medium">
-                    No reviews published yet. Be the first to leave one!
+                    No customer feedbacks available yet.
                 </div>
                 @endforelse
             </div>
@@ -455,49 +454,7 @@
     </div>
 </section>
 
-<!-- Review Modal -->
-<div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" style="display: none;">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in-up">
-        <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50/50">
-            <h3 class="font-extrabold text-xl text-dark-text">Write a Review</h3>
-            <button onclick="document.getElementById('reviewModal').style.display='none'" class="text-gray-400 hover:text-red-500 transition p-2 rounded-full">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-        </div>
-        <div class="p-6">
-            <form action="{{ route('reviews.store') }}" method="POST" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-sm font-bold text-dark-text mb-2">Your Name</label>
-                    <input type="text" name="customer_name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon outline-none" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-dark-text mb-2">Rating</label>
-                    <select name="rating" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon outline-none" required>
-                        <option value="5">5 Stars - Excellent</option>
-                        <option value="4">4 Stars - Good</option>
-                        <option value="3">3 Stars - Average</option>
-                        <option value="2">2 Stars - Poor</option>
-                        <option value="1">1 Star - Terrible</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-dark-text mb-2">Comment</label>
-                    <textarea name="comment" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon outline-none" required></textarea>
-                </div>
-                <button type="submit" class="w-full bg-primary-maroon text-white font-bold py-4 rounded-xl hover:bg-dark-maroon transition shadow-lg flex justify-center items-center">
-                    Submit Review <i data-lucide="send" class="w-4 h-4 ml-2"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
 
-@if(session('review_success'))
-<script>
-    alert('{{ session("review_success") }}');
-</script>
-@endif
 
 <!-- ================================================== -->
 <!-- 11. CALL TO ACTION SECTION -->

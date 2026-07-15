@@ -86,6 +86,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/routes/{route}', [AdminRouteController::class, 'destroy'])->name('routes.destroy');
 
     Route::get('/reviews', [App\Http\Controllers\AdminReviewController::class, 'index'])->name('reviews');
+    Route::post('/reviews', [App\Http\Controllers\AdminReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}', [App\Http\Controllers\AdminReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [App\Http\Controllers\AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 

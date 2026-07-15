@@ -11,6 +11,6 @@ class Review extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'customer_name', 'rating', 'comment', 'status'
+        'image', 'description', 'status'
     ];
 }
