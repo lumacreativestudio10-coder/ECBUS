@@ -39,16 +39,6 @@
 
                     <input type="hidden" name="total_seats" :value="countSeats()">
 
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Bus Operator</label>
-                        <select name="operator_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
-                            <option value="">Select Operator...</option>
-                            @foreach($operators as $operator)
-                                <option value="{{ $operator->id }}" {{ old('operator_id') == $operator->id ? 'selected' : '' }}>{{ $operator->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('operator_id') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
-                    </div>
 
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Bus Type</label>
@@ -257,17 +247,8 @@
                         <input type="hidden" name="total_seats" :value="countSeats()">
 
                         <div class="mb-4">
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Bus Operator</label>
-                            <select name="operator_id" x-model="editForm.operator_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
-                                <option value="">Select Operator...</option>
-                                @foreach($operators as $operator)
-                                    <option value="{{ $operator->id }}">{{ $operator->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus Type</label>
-                            <input type="text" name="bus_type_name" x-model="editForm.bus_type_name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                            <input type="text" name="bus_type_name" x-model="editForm.bus_type_name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required autocomplete="off">
                         </div>
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus Name</label>

@@ -8,7 +8,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Route extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['name', 'from_location_id', 'to_location_id', 'distance', 'estimated_duration', 'description', 'image', 'starting_price', 'is_popular', 'status'];
+    protected $fillable = ['name', 'from_location_id', 'to_location_id', 'distance', 'estimated_duration_minutes', 'description', 'image', 'starting_price', 'is_popular', 'status'];
+
+    public function getDurationStringAttribute()
+    {
+        if (!$this->estimated_duration_minutes) return 'N/A';
+        $hours = floor($this->estimated_duration_minutes / 60);
+        $minutes = $this->estimated_duration_minutes % 60;
+        if ($hours > 0 && $minutes > 0) {
+            return "{$hours} Hours {$minutes} Minutes";
+        } elseif ($hours > 0) {
+            return "{$hours} Hours";
+        }
+        return "{$minutes} Minutes";
+    }
 
     public function fromLocation()
     {

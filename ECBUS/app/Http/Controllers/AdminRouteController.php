@@ -22,7 +22,7 @@ class AdminRouteController extends Controller
             'from_location_id' => 'required|exists:locations,id|different:to_location_id',
             'to_location_id' => 'required|exists:locations,id',
             'distance' => 'nullable|numeric|min:0',
-            'estimated_duration' => 'nullable|string|max:255',
+            'estimated_duration_minutes' => 'nullable|integer|min:0',
             'starting_price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive'
         ]);
@@ -41,7 +41,7 @@ class AdminRouteController extends Controller
             'from_location_id' => 'required|exists:locations,id|different:to_location_id',
             'to_location_id' => 'required|exists:locations,id',
             'distance' => 'nullable|numeric|min:0',
-            'estimated_duration' => 'nullable|string|max:255',
+            'estimated_duration_minutes' => 'nullable|integer|min:0',
             'starting_price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive'
         ]);

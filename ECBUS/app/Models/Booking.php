@@ -11,15 +11,30 @@ class Booking extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'booking_reference',
         'schedule_id',
-        'passenger_name',
+        'customer_name',
+        'email',
         'phone',
         'passenger_count',
         'seat_numbers',
         'total_amount',
         'payment_receipt_path',
-        'status',
+        'booking_status'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->booking_reference)) {
+                $latest = static::orderBy('id', 'desc')->first();
+                $nextId = $latest ? $latest->id + 1 : 1;
+                $model->booking_reference = 'ECB' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
+            }
+        });
+    }
 
     protected $casts = [
         'seat_numbers' => 'array',

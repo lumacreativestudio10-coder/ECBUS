@@ -18,8 +18,6 @@ class AdminPartnerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'operating_routes' => 'nullable|string',
-            'total_buses' => 'nullable|integer',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive'
         ]);
@@ -38,8 +36,6 @@ class AdminPartnerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'operating_routes' => 'nullable|string',
-            'total_buses' => 'nullable|integer',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive'
         ]);

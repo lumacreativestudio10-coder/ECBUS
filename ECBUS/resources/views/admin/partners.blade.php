@@ -36,11 +36,6 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Operating Routes</label>
-                        <textarea name="operating_routes" placeholder="e.g. Kalmune → Colombo&#10;Colombo → Jaffna" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">{{ old('operating_routes') }}</textarea>
-                    </div>
-
-                    <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Status</label>
                         <select name="status" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
@@ -167,10 +162,7 @@
 
                                         <input type="file" name="logo" accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-gray-700 mb-1">Operating Routes</label>
-                                        <textarea name="operating_routes" x-model="editData.operating_routes" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition"></textarea>
-                                    </div>
+
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Status</label>
                                         <select name="status" x-model="editData.status" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>

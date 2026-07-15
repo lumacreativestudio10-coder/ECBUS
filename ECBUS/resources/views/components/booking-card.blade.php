@@ -9,14 +9,14 @@
     <div class="p-8 md:p-10 w-full md:w-3/4 flex flex-col justify-between relative border-b md:border-b-0 border-dashed border-gray-200">
         <div class="flex justify-between items-start mb-8">
             <div>
-                <span class="{{ $booking->status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }} px-3 py-1 rounded-full text-xs font-bold flex items-center mb-4 inline-flex">
-                    <i data-lucide="{{ $booking->status === 'Confirmed' ? 'check-circle' : 'x-circle' }}" class="w-3 h-3 mr-1"></i> {{ strtoupper($booking->status) }}
+                <span class="{{ $booking->booking_status === 'confirmed' ? 'bg-green-100 text-green-700' : ($booking->booking_status === 'pending' ? 'bg-yellow-100 text-yellow-700' : ($booking->booking_status === 'completed' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700')) }} px-3 py-1 rounded-full text-xs font-bold flex items-center mb-4 inline-flex">
+                    <i data-lucide="{{ $booking->booking_status === 'confirmed' ? 'check-circle' : 'x-circle' }}" class="w-3 h-3 mr-1"></i> {{ strtoupper($booking->booking_status) }}
                 </span>
                 <h3 class="text-2xl font-extrabold text-dark-text">
                     {{ $booking->schedule->route->fromLocation->name ?? 'Unknown' }} to {{ $booking->schedule->route->toLocation->name ?? 'Unknown' }}
                 </h3>
                 <p class="text-gray-500 mt-1 font-medium">Booking ID: <span class="text-dark-text font-bold">ECB-{{ str_pad($booking->id, 6, '0', STR_PAD_LEFT) }}</span></p>
-                <p class="text-gray-500 mt-1 text-sm font-medium">Passenger: <span class="text-dark-text">{{ $booking->passenger_name }} ({{ $booking->passenger_count }} Seats)</span></p>
+                <p class="text-gray-500 mt-1 text-sm font-medium">Passenger: <span class="text-dark-text">{{ $booking->customer_name }} ({{ $booking->passenger_count }} Seats)</span></p>
             </div>
             <div class="text-right">
                 <img src="{{ asset('image/logo.png') }}" alt="ECBUS" class="h-8 mb-2 ml-auto opacity-50">

@@ -60,9 +60,9 @@
                             @error('distance') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Duration</label>
-                            <input type="text" name="estimated_duration" value="{{ old('estimated_duration') }}" placeholder="e.g. 3h 30m" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
-                            @error('estimated_duration') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Duration (Minutes) <span class="text-gray-400 font-normal">(Optional)</span></label>
+                            <input type="number" name="estimated_duration_minutes" value="{{ old('estimated_duration_minutes') }}" placeholder="e.g. 210" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                            @error('estimated_duration_minutes') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
@@ -122,7 +122,7 @@
                                 <div class="text-xs text-gray-400">to {{ $route->toLocation->name ?? 'Unknown' }}</div>
                             </td>
                             <td class="px-6 py-4 text-gray-500 text-xs">
-                                <div><i data-lucide="clock" class="w-3 h-3 inline"></i> {{ $route->estimated_duration ?? 'N/A' }}</div>
+                                <div><i data-lucide="clock" class="w-3 h-3 inline"></i> {{ $route->duration_string }}</div>
                                 <div><i data-lucide="map-pin" class="w-3 h-3 inline"></i> {{ $route->distance ? $route->distance . ' km' : 'N/A' }}</div>
                             </td>
                             <td class="px-6 py-4 font-extrabold text-primary-maroon">
@@ -130,7 +130,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button @click="openEdit({{ json_encode($route) }})" type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
+                                    <button @click='openEdit({{ json_encode($route) }})' type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                     </button>
                                     <form action="{{ route('admin.routes.destroy', $route) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this route?');">
@@ -202,8 +202,8 @@
                                             <input type="number" name="distance" x-model="editData.distance" step="0.1" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-bold text-gray-700 mb-1">Duration</label>
-                                            <input type="text" name="estimated_duration" x-model="editData.estimated_duration" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Duration (Minutes)</label>
+                                            <input type="number" name="estimated_duration_minutes" x-model="editData.estimated_duration_minutes" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                         </div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">

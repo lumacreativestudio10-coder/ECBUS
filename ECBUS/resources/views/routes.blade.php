@@ -398,7 +398,7 @@
                         },
                         body: JSON.stringify({
                             schedule_id: this.selectedBus.schedule_id,
-                            passenger_name: this.booking.name,
+                            customer_name: this.booking.name,
                             phone: this.booking.phone,
                             passenger_count: this.booking.count
                         })

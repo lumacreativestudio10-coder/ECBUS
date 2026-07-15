@@ -11,8 +11,7 @@ class Schedule extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'bus_id', 'route_id', 
-        'date', 'departure_time', 'arrival_time', 'price'
+        'bus_id', 'route_id', 'date', 'departure_time', 'arrival_time', 'price', 'status', 'available_seats'
     ];
 
     protected $casts = [

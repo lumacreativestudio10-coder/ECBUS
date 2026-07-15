@@ -35,22 +35,22 @@
             <tbody class="text-sm">
                 @forelse($bookings as $booking)
                 <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">
-                    <td class="px-6 py-4 font-bold text-dark-text">#{{ $booking->id }}</td>
+                    <td class="px-6 py-4 font-bold text-dark-text">{{ $booking->booking_reference ?? '#'.$booking->id }}</td>
                     <td class="px-6 py-4">
-                        <p class="font-bold text-dark-text">{{ $booking->passenger_name }}</p>
-                        <p class="text-xs text-gray-500">{{ $booking->phone_number }}</p>
+                        <p class="font-bold text-dark-text">{{ $booking->customer_name }}</p>
+                        <p class="text-xs text-gray-500">{{ $booking->phone }}</p>
+                        @if($booking->email)<p class="text-xs text-gray-500">{{ $booking->email }}</p>@endif
                         <p class="text-xs text-gray-400 mt-1"><i data-lucide="users" class="w-3 h-3 inline"></i> {{ $booking->passenger_count }} Passengers</p>
                     </td>
                     <td class="px-6 py-4">
-                        <div class="font-bold text-dark-text">Booking #{{ $booking->id }}</div>
                         <p class="font-bold text-dark-text">{{ $booking->schedule?->route?->fromLocation?->name }} &rarr; {{ $booking->schedule?->route?->toLocation?->name }}</p>
-                        <p class="text-xs text-gray-500">{{ $booking->schedule?->date }} | {{ $booking->schedule ? \Carbon\Carbon::parse($booking->schedule->departure_time)->format('H:i') : '' }}</p>
+                        <p class="text-xs text-gray-500">{{ $booking->schedule?->date }} | {{ $booking->schedule ? \Carbon\Carbon::parse($booking->schedule->departure_time)->format('h:i A') : '' }}</p>
                         <span class="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold mt-1 uppercase">{{ $booking->schedule?->bus?->operator?->name ?? 'N/A' }}</span>
                     </td>
                     <td class="px-6 py-4">
                         <p class="font-extrabold text-dark-maroon">LKR {{ number_format($booking->total_amount, 2) }}</p>
-                        @if($booking->payment_receipt)
-                            <a href="{{ Storage::url($booking->payment_receipt) }}" target="_blank" class="text-xs text-primary-maroon font-bold hover:underline flex items-center mt-1">
+                        @if($booking->payment_receipt_path)
+                            <a href="{{ Storage::url($booking->payment_receipt_path) }}" target="_blank" class="text-xs text-primary-maroon font-bold hover:underline flex items-center mt-1">
                                 <i data-lucide="file-image" class="w-3 h-3 mr-1"></i> View Receipt
                             </a>
                         @else
@@ -61,10 +61,11 @@
                         <form action="{{ route('admin.bookings.update', $booking) }}" method="POST">
                             @csrf
                             @method('PATCH')
-                            <select name="status" onchange="this.form.submit()" class="text-xs font-bold rounded-full px-3 py-1 outline-none border border-gray-200 cursor-pointer hover:bg-gray-50 {{ $booking->status == 'Confirmed' ? 'text-green-700 bg-green-50' : ($booking->status == 'Pending' ? 'text-yellow-700 bg-yellow-50' : 'text-red-700 bg-red-50') }}">
-                                <option value="Pending" {{ $booking->status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="Confirmed" {{ $booking->status == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                <option value="Cancelled" {{ $booking->status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            <select name="booking_status" onchange="this.form.submit()" class="text-xs font-bold rounded-full px-3 py-1 outline-none border border-gray-200 cursor-pointer hover:bg-gray-50 {{ $booking->booking_status == 'confirmed' ? 'text-green-700 bg-green-50' : ($booking->booking_status == 'pending' ? 'text-yellow-700 bg-yellow-50' : 'text-red-700 bg-red-50') }}">
+                                <option value="pending" {{ $booking->booking_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="confirmed" {{ $booking->booking_status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                <option value="completed" {{ $booking->booking_status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="cancelled" {{ $booking->booking_status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
                         </form>
                     </td>

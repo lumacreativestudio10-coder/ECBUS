@@ -59,20 +59,22 @@
             <tbody class="text-sm">
                 @forelse($recentBookings as $booking)
                 <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">
-                    <td class="px-6 py-4 font-bold text-dark-text">#{{ $booking->id }}</td>
+                    <td class="px-6 py-4 font-bold text-dark-text">{{ $booking->booking_reference ?? '#'.$booking->id }}</td>
                     <td class="px-6 py-4">
-                        <p class="font-bold text-dark-text">{{ $booking->passenger_name }}</p>
-                        <p class="text-xs text-gray-500">{{ $booking->phone_number }}</p>
+                        <p class="font-bold text-dark-text">{{ $booking->customer_name }}</p>
+                        <p class="text-xs text-gray-500">{{ $booking->phone }}</p>
                     </td>
                     <td class="px-6 py-4">
                         <span class="font-semibold text-gray-700">{{ $booking->schedule?->bus?->operator?->name ?? 'N/A' }}</span>
                     </td>
                     <td class="px-6 py-4 font-extrabold text-dark-maroon">LKR {{ number_format($booking->total_amount, 2) }}</td>
                     <td class="px-6 py-4">
-                        @if($booking->status == 'Confirmed')
+                        @if($booking->booking_status == 'confirmed')
                             <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Confirmed</span>
-                        @elseif($booking->status == 'Pending')
+                        @elseif($booking->booking_status == 'pending')
                             <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Pending</span>
+                        @elseif($booking->booking_status == 'completed')
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Completed</span>
                         @else
                             <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">Cancelled</span>
                         @endif

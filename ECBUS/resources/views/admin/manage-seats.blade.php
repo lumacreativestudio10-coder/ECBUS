@@ -82,7 +82,7 @@
                                                     <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
                                                         {{ $seatId }}
                                                         <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
-                                                            {{ $seatDetails[$seatId]->passenger_name ?? 'Unknown' }}<br>
+                                                            {{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}<br>
                                                             {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
                                                         </div>
                                                     </div>
@@ -116,7 +116,7 @@
                                                     <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
                                                         {{ $seatId }}
                                                         <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
-                                                            {{ $seatDetails[$seatId]->passenger_name ?? 'Unknown' }}<br>
+                                                            {{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}<br>
                                                             {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
                                                         </div>
                                                     </div>
@@ -140,7 +140,7 @@
                                                         <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
                                                             {{ $seatId }}
                                                             <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
-                                                                {{ $seatDetails[$seatId]->passenger_name ?? 'Unknown' }}<br>
+                                                                {{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}<br>
                                                                 {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
                                                             </div>
                                                         </div>
@@ -177,7 +177,7 @@
                     
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Passenger Name</label>
-                        <input type="text" name="passenger_name" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                        <input type="text" name="customer_name" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                     </div>
                     
                     <div class="mb-6">

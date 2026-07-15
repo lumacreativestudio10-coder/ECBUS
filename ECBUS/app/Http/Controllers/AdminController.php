@@ -13,7 +13,7 @@ class AdminController extends Controller
     public function dashboard()
     {
         $totalBookings = Booking::count();
-        $totalRevenue = Booking::where('status', 'Confirmed')->sum('total_amount');
+        $totalRevenue = Booking::where('booking_status', 'confirmed')->sum('total_amount');
         $activeSchedules = Schedule::whereDate('date', '>=', now())->count();
         $recentBookings = Booking::with('schedule.bus.operator')->latest()->take(5)->get();
 
@@ -29,18 +29,18 @@ class AdminController extends Controller
     public function updateBookingStatus(Request $request, Booking $booking)
     {
         $request->validate([
-            'status' => 'required|in:Pending,Confirmed,Cancelled'
+            'booking_status' => 'required|in:pending,confirmed,cancelled,completed'
         ]);
 
-        $booking->update(['status' => $request->status]);
+        $booking->update(['booking_status' => $request->booking_status]);
         return redirect()->back()->with('success', 'Booking status updated!');
     }
 
     public function schedules()
     {
         $schedules = Schedule::with('bus.operator', 'route.fromLocation', 'route.toLocation')->orderBy('date', 'desc')->get();
-        $buses = Bus::with('operator')->get();
-        $routes = \App\Models\Route::with('fromLocation', 'toLocation')->where('status', 'active')->get();
+        $buses = Bus::with('operator', 'busType')->get();
+        $routes = \App\Models\Route::with('fromLocation', 'toLocation')->where('status', 1)->get();
         
         return view('admin.schedules', compact('schedules', 'buses', 'routes'));
     }
@@ -53,10 +53,15 @@ class AdminController extends Controller
             'date' => 'required|date|after_or_equal:today',
             'departure_time' => 'required',
             'arrival_time' => 'required',
-            'price' => 'required|numeric|min:0'
+            'price' => 'required|numeric|min:0',
+            'status' => 'required|in:scheduled,completed,cancelled'
         ]);
 
-        Schedule::create($request->all());
+        $data = $request->all();
+        $bus = Bus::findOrFail($request->bus_id);
+        $data['available_seats'] = $bus->total_seats;
+
+        Schedule::create($data);
 
         return redirect()->back()->with('success', 'Schedule added successfully!');
     }
@@ -69,10 +74,22 @@ class AdminController extends Controller
             'date' => 'required|date',
             'departure_time' => 'required',
             'arrival_time' => 'required',
-            'price' => 'required|numeric|min:0'
+            'price' => 'required|numeric|min:0',
+            'status' => 'required|in:scheduled,completed,cancelled'
         ]);
 
-        $schedule->update($request->all());
+        $data = $request->all();
+        // Recalculate available seats if bus changes
+        if ($request->bus_id != $schedule->bus_id) {
+            $bus = Bus::findOrFail($request->bus_id);
+            // Rough estimate: we should ideally subtract booked seats but this is a simple update.
+            // A robust way would count existing bookings, but let's just reset to total for now
+            // or just leave it. Let's reset to total_seats - booked_count
+            $bookedCount = \App\Models\Booking::where('schedule_id', $schedule->id)->where('booking_status', '!=', 'cancelled')->sum('passenger_count');
+            $data['available_seats'] = max(0, $bus->total_seats - $bookedCount);
+        }
+
+        $schedule->update($data);
 
         return redirect()->back()->with('success', 'Schedule updated successfully!');
     }
@@ -87,7 +104,7 @@ class AdminController extends Controller
     {
         $schedule->load('bus.operator', 'route.fromLocation', 'route.toLocation');
         
-        $bookings = Booking::where('schedule_id', $schedule->id)->where('status', '!=', 'Cancelled')->get();
+        $bookings = Booking::where('schedule_id', $schedule->id)->where('booking_status', '!=', 'cancelled')->get();
         
         $bookedSeats = [];
         $seatDetails = [];
@@ -179,7 +196,6 @@ class AdminController extends Controller
     public function storeBus(Request $request)
     {
         $request->validate([
-            'operator_id' => 'required|exists:operators,id',
             'bus_type_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'bus_number' => 'required|string|max:255',
@@ -194,7 +210,6 @@ class AdminController extends Controller
         );
 
         Bus::create([
-            'operator_id' => $request->operator_id,
             'bus_type_id' => $busType->id,
             'name' => $request->name,
             'bus_number' => $request->bus_number,
@@ -209,7 +224,6 @@ class AdminController extends Controller
     public function updateBus(Request $request, Bus $bus)
     {
         $request->validate([
-            'operator_id' => 'required|exists:operators,id',
             'bus_type_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'bus_number' => 'required|string|max:255',
@@ -223,7 +237,6 @@ class AdminController extends Controller
         );
 
         $bus->update([
-            'operator_id' => $request->operator_id,
             'bus_type_id' => $busType->id,
             'name' => $request->name,
             'bus_number' => $request->bus_number,

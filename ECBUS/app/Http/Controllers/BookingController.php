@@ -13,26 +13,33 @@ class BookingController extends Controller
     {
         $request->validate([
             'schedule_id' => 'required|exists:schedules,id',
-            'passenger_name' => 'required|string|max:255',
+            'customer_name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:20',
             'passenger_count' => 'required|integer|min:1'
         ]);
 
         $schedule = Schedule::findOrFail($request->schedule_id);
 
-        // For now, since we don't have a frontend seat selector, 
-        // we'll just book the number of seats requested without assigning specific seat numbers yet,
-        // or we could assign empty array [] for seat_numbers.
-        
+        if ($schedule->available_seats < $request->passenger_count) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Not enough seats available.'
+            ], 400);
+        }
+
         $booking = Booking::create([
             'schedule_id' => $schedule->id,
-            'passenger_name' => $request->passenger_name,
+            'customer_name' => $request->customer_name,
+            'email' => $request->email,
             'phone' => $request->phone,
             'passenger_count' => $request->passenger_count,
             'seat_numbers' => [], // To be assigned later by Admin or via future seat map
             'total_amount' => $schedule->price * $request->passenger_count,
-            'status' => 'Confirmed' // Assuming auto-confirm for now
+            'booking_status' => 'confirmed' // Assuming auto-confirm for now
         ]);
+
+        $schedule->decrement('available_seats', $request->passenger_count);
 
         return response()->json([
             'success' => true,

@@ -46,6 +46,7 @@ Route::get('/my-booking', [BookingController::class, 'myBookings'])->name('booki
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminPartnerController;
+use App\Http\Controllers\AdminBusCompanyController;
 use App\Http\Controllers\AdminRouteController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -74,6 +75,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/partners', [AdminPartnerController::class, 'store'])->name('partners.store');
     Route::put('/partners/{partner}', [AdminPartnerController::class, 'update'])->name('partners.update');
     Route::delete('/partners/{partner}', [AdminPartnerController::class, 'destroy'])->name('partners.destroy');
+
+    Route::get('/bus-companies', [AdminBusCompanyController::class, 'index'])->name('bus_companies');
+    Route::post('/bus-companies', [AdminBusCompanyController::class, 'store'])->name('bus_companies.store');
+    Route::put('/bus-companies/{busCompany}', [AdminBusCompanyController::class, 'update'])->name('bus_companies.update');
+    Route::delete('/bus-companies/{busCompany}', [AdminBusCompanyController::class, 'destroy'])->name('bus_companies.destroy');
 
     Route::get('/routes', [AdminRouteController::class, 'index'])->name('routes');
     Route::post('/routes', [AdminRouteController::class, 'store'])->name('routes.store');

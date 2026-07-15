@@ -25,12 +25,12 @@
                     @csrf
                     
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Bus Operator</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Bus</label>
                         <select name="bus_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                             <option value="">Select Bus...</option>
                             @foreach($buses as $bus)
                                 <option value="{{ $bus->id }}" {{ old('bus_id') == $bus->id ? 'selected' : '' }}>
-                                    {{ $bus->operator->name ?? 'Unknown' }} ({{ $bus->type }})
+                                    {{ $bus->name }} ({{ $bus->busType->name ?? 'Unknown Type' }})
                                 </option>
                             @endforeach
                         </select>
@@ -69,10 +69,21 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Ticket Price (LKR)</label>
-                        <input type="number" name="price" value="{{ old('price') }}" step="0.01" min="0" placeholder="e.g. 2500" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
-                        @error('price') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Ticket Price (LKR)</label>
+                            <input type="number" name="price" value="{{ old('price') }}" step="0.01" min="0" placeholder="e.g. 2500" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                            @error('price') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Status</label>
+                            <select name="status" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                <option value="scheduled" {{ old('status') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
+                            @error('status') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full bg-primary-maroon text-white font-bold rounded-lg px-4 py-3 hover:bg-dark-maroon transition shadow-md mt-4">
@@ -166,10 +177,10 @@
                                 <h3 class="text-lg leading-6 font-extrabold text-gray-900" id="modal-title">Edit Schedule</h3>
                                 <div class="mt-4 space-y-4">
                                     <div>
-                                        <label class="block text-xs font-bold text-gray-700 mb-1">Bus Operator</label>
+                                        <label class="block text-xs font-bold text-gray-700 mb-1">Bus</label>
                                         <select name="bus_id" x-model="editData.bus_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                             @foreach($buses as $bus)
-                                                <option value="{{ $bus->id }}">{{ $bus->operator->name ?? 'Unknown' }} ({{ $bus->type }})</option>
+                                                <option value="{{ $bus->id }}">{{ $bus->name }} ({{ $bus->busType->name ?? 'Unknown Type' }})</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -195,9 +206,19 @@
                                             <input type="time" name="arrival_time" x-model="editData.arrival_time" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-gray-700 mb-1">Ticket Price (LKR)</label>
-                                        <input type="number" name="price" x-model="editData.price" step="0.01" min="0" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Ticket Price (LKR)</label>
+                                            <input type="number" name="price" x-model="editData.price" step="0.01" min="0" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Status</label>
+                                            <select name="status" x-model="editData.status" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                                <option value="scheduled">Scheduled</option>
+                                                <option value="completed">Completed</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

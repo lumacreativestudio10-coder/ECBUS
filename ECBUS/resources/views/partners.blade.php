@@ -48,8 +48,8 @@
                         <div class="flex items-start space-x-3">
                             <i data-lucide="map-pin" class="w-5 h-5 text-primary-maroon mt-0.5 flex-shrink-0"></i>
                             <div>
-                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Operating Routes</h4>
-                                <p class="text-sm font-semibold text-gray-700 whitespace-pre-line">{{ $partner->operating_routes ?: 'Multiple Routes' }}</p>
+                                <h4 class="text-xs uppercase tracking-wider text-gray-500 font-bold mb-1">Status</h4>
+                                <p class="text-sm font-semibold text-gray-700 whitespace-pre-line">{{ $partner->status ? 'Active Partner' : 'Inactive' }}</p>
                             </div>
                         </div>
 
