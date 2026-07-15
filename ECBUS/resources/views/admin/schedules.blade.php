@@ -15,13 +15,15 @@
 <div x-data="scheduleManager()">
 
     <!-- Header Actions & Search -->
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div class="relative w-full sm:w-96">
-            <i data-lucide="search" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400"></i>
-            <input type="text" x-model="searchQuery" placeholder="Search by Company, Bus or Route..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:border-primary-maroon outline-none transition text-sm">
+    <div class="flex justify-between items-center mb-6 gap-4">
+        <div class="relative w-full max-w-md">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+            </div>
+            <input type="text" x-model="searchQuery" placeholder="Search by Company, Bus or Route..." class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition">
         </div>
-        <button @click="isAddOpen = true" class="w-full sm:w-auto bg-primary-maroon text-white font-bold rounded-xl px-5 py-2.5 hover:bg-dark-maroon transition shadow-md flex items-center justify-center">
-            <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Add New Schedule
+        <button @click="isAddOpen = true" class="inline-flex items-center justify-center bg-primary-maroon text-white text-sm font-bold rounded-lg px-4 py-2 hover:bg-dark-maroon transition shadow-sm whitespace-nowrap">
+            <i data-lucide="plus" class="w-4 h-4 mr-1.5"></i> Add Schedule
         </button>
     </div>
 
