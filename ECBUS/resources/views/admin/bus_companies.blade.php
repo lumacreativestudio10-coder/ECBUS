@@ -37,7 +37,7 @@
                 <style>
                     .custom-filter-container { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; align-items: flex-end; }
                     .custom-search { width: 100%; }
-                    .custom-filters-right { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; }
+                    .custom-filters-right { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; align-items: flex-end; }
                     .custom-dropdown { width: 100%; }
                     .custom-btn-group { display: flex; gap: 8px; width: 100%; }
                     .custom-btn { flex: 1; justify-content: center; }
