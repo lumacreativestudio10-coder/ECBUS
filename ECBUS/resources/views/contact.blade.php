@@ -83,35 +83,43 @@
                     <h3 class="text-3xl font-extrabold text-dark-text mb-2">Send us a Message</h3>
                     <p class="text-gray-500 mb-10">Have a question about your booking? Fill out the form below and we'll get back to you immediately.</p>
                     
-                    <form class="space-y-6">
+                    @if(session('success'))
+                        <div class="mb-6 bg-green-100 border border-green-200 text-green-700 px-6 py-4 rounded-xl relative flex items-center shadow-sm">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-600"></i>
+                            <span class="font-medium">{{ session('success') }}</span>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
+                        @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-bold text-dark-text mb-2">Full Name</label>
-                                <input type="text" placeholder="John Doe" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
+                                <input type="text" name="name" required placeholder="John Doe" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-dark-text mb-2">Email Address</label>
-                                <input type="email" placeholder="john@example.com" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
+                                <input type="email" name="email" required placeholder="john@example.com" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-bold text-dark-text mb-2">Phone Number</label>
-                                <input type="tel" placeholder="+94 77 XXX XXXX" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
+                                <input type="tel" name="phone" oninput="this.value = this.value.replace(/[^0-9+]/g, '')" placeholder="+94 77 XXX XXXX" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-dark-text mb-2">Subject</label>
-                                <input type="text" placeholder="Booking Inquiry" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
+                                <input type="text" name="subject" placeholder="Booking Inquiry" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-bold text-dark-text mb-2">Your Message</label>
-                            <textarea rows="5" placeholder="How can we help you?" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition resize-none"></textarea>
+                            <textarea rows="5" name="message" required placeholder="How can we help you?" class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700 outline-none transition resize-none"></textarea>
                         </div>
 
-                        <button type="button" class="bg-primary-maroon text-white font-bold py-4 px-8 rounded-xl hover:bg-dark-maroon transition duration-300 shadow-md flex items-center justify-center w-full md:w-auto">
+                        <button type="submit" class="bg-primary-maroon text-white font-bold py-4 px-8 rounded-xl hover:bg-dark-maroon transition duration-300 shadow-md flex items-center justify-center w-full md:w-auto">
                             SEND MESSAGE <i data-lucide="send" class="w-5 h-5 ml-2"></i>
                         </button>
                     </form>

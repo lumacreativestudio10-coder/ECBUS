@@ -44,24 +44,7 @@
                         </p>
                     @endif
 
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-3">
-                            <i data-lucide="map-pin" class="w-5 h-5 text-primary-maroon mt-0.5 flex-shrink-0"></i>
-                            <div>
-                                <h4 class="text-xs uppercase tracking-wider text-gray-500 font-bold mb-1">Status</h4>
-                                <p class="text-sm font-semibold text-gray-700 whitespace-pre-line">{{ $partner->status ? 'Active Partner' : 'Inactive' }}</p>
-                            </div>
-                        </div>
 
-                        <div class="flex items-start space-x-3">
-                            <i data-lucide="star" class="w-5 h-5 text-primary-gold mt-0.5 flex-shrink-0"></i>
-                            <div>
-                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Experience</h4>
-                                <p class="text-sm font-semibold text-gray-700">Luxury AC & Non-AC</p>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <a href="{{ route('home') }}" class="block w-full text-center bg-gray-50 hover:bg-primary-maroon hover:text-white text-dark-maroon font-bold py-3 px-4 rounded-xl transition duration-300 border border-gray-100 hover:border-transparent mt-4">
                         View Routes
                     </a>

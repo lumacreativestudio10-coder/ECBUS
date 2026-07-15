@@ -107,8 +107,11 @@
 
             <!-- Table -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-                <div class="px-6 py-4 border-b border-gray-100 bg-white">
+                <div class="px-6 py-4 border-b border-gray-100 bg-white flex justify-between items-center">
                     <h3 class="font-extrabold text-lg text-dark-text">Registered Bus Companies</h3>
+                    <button @click="isAddOpen = true" class="bg-primary-maroon hover:bg-dark-maroon text-white font-bold rounded-lg px-4 py-2 text-sm transition flex items-center shadow-md">
+                        <i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add Company
+                    </button>
                 </div>
                 
                 <div class="overflow-x-auto flex-grow">

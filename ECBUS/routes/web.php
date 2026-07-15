@@ -35,9 +35,11 @@ Route::get('/about', function () {
     return view('about');
 })->name('about');
 
+use App\Http\Controllers\ContactController;
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 use App\Http\Controllers\BookingController;
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
@@ -91,5 +93,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/buses', [AdminController::class, 'storeBus'])->name('buses.store');
         Route::put('/buses/{bus}', [AdminController::class, 'updateBus'])->name('buses.update');
         Route::delete('/buses/{bus}', [AdminController::class, 'destroyBus'])->name('buses.destroy');
+
+        Route::get('/contact-messages', [App\Http\Controllers\AdminContactMessageController::class, 'index'])->name('contact_messages');
+        Route::patch('/contact-messages/{message}', [App\Http\Controllers\AdminContactMessageController::class, 'updateStatus'])->name('contact_messages.update');
+        Route::delete('/contact-messages/{message}', [App\Http\Controllers\AdminContactMessageController::class, 'destroy'])->name('contact_messages.destroy');
     });
 });
