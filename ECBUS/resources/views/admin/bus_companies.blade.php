@@ -34,10 +34,29 @@
         <div class="flex flex-col gap-6">
             
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                <form action="{{ route('admin.bus_companies') }}" method="GET" class="flex flex-wrap items-end w-full" style="gap: 16px;">
+                <style>
+                    .custom-filter-container { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; align-items: flex-end; }
+                    .custom-search { width: 100%; }
+                    .custom-filters-right { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; }
+                    .custom-dropdown { width: 100%; }
+                    .custom-btn-group { display: flex; gap: 8px; width: 100%; }
+                    .custom-btn { flex: 1; justify-content: center; }
+                    
+                    @media (min-width: 640px) {
+                        .custom-dropdown { width: 150px; }
+                        .custom-btn-group { width: auto; }
+                        .custom-btn { flex: none; width: auto; }
+                    }
+                    @media (min-width: 850px) {
+                        .custom-search { flex-grow: 1; max-width: 350px; }
+                        .custom-filters-right { width: auto; margin-left: auto; }
+                    }
+                </style>
+
+                <form action="{{ route('admin.bus_companies') }}" method="GET" class="custom-filter-container">
                     
                     <!-- Search Input (Left) -->
-                    <div style="flex-grow: 1; min-width: 200px; max-width: 350px;">
+                    <div class="custom-search">
                         <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Search</label>
                         <div class="relative">
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search company name..." class="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-800 focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white shadow-sm">
@@ -46,11 +65,11 @@
                     </div>
 
                     <!-- Filter Dropdowns & Buttons (Right) -->
-                    <div class="flex flex-wrap items-end" style="gap: 12px; margin-left: auto;">
+                    <div class="custom-filters-right">
                         
-                        <div>
+                        <div class="custom-dropdown">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Status</label>
-                            <div class="relative" style="width: 150px;">
+                            <div class="relative w-full">
                                 <select name="status" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
                                     <option value="">All Statuses</option>
                                     <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
@@ -60,9 +79,9 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div class="custom-dropdown">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">District</label>
-                            <div class="relative" style="width: 150px;">
+                            <div class="relative w-full">
                                 <select name="district" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
                                     <option value="">All Districts</option>
                                     @foreach($districts as $district)
@@ -73,9 +92,9 @@
                             </div>
                         </div>
                         
-                        <div>
+                        <div class="custom-dropdown">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Commission</label>
-                            <div class="relative" style="width: 150px;">
+                            <div class="relative w-full">
                                 <select name="commission" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
                                     <option value="">All Commission</option>
                                 </select>
@@ -84,11 +103,11 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="flex" style="gap: 8px;">
-                            <button type="submit" class="bg-primary-maroon hover:bg-dark-maroon text-white font-bold rounded-lg px-5 py-2.5 text-sm transition flex items-center justify-center shadow-md">
+                        <div class="custom-btn-group">
+                            <button type="submit" class="custom-btn bg-primary-maroon hover:bg-dark-maroon text-white font-bold rounded-lg px-5 py-2.5 text-sm transition flex items-center shadow-md">
                                 <i data-lucide="filter" class="w-4 h-4 mr-2"></i> Filter
                             </button>
-                            <a href="{{ route('admin.bus_companies') }}" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-lg px-4 py-2.5 text-sm transition flex items-center justify-center shadow-sm" title="Reset Filters">
+                            <a href="{{ route('admin.bus_companies') }}" class="custom-btn bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-lg px-4 py-2.5 text-sm transition flex items-center shadow-sm" title="Reset Filters">
                                 <i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i> Reset
                             </a>
                         </div>
@@ -549,80 +568,129 @@
     <!-- View Modal -->
     <div x-show="isViewOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="isViewOpen" @click="isViewOpen = false" class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
+            <div x-show="isViewOpen" @click="isViewOpen = false" x-transition.opacity class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div x-show="isViewOpen" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex justify-between items-center mb-5 border-b pb-3">
-                        <h3 class="text-xl leading-6 font-extrabold text-gray-900 flex items-center" id="modal-title">
-                            <i data-lucide="building" class="w-5 h-5 mr-2 text-primary-maroon"></i> Company Details
-                        </h3>
-                        <button type="button" @click="isViewOpen = false" class="text-gray-400 hover:text-gray-500">
-                            <i data-lucide="x" class="w-6 h-6"></i>
+            <div x-show="isViewOpen" x-transition.scale.origin.bottom class="inline-block align-bottom bg-gray-50 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle w-full" style="max-width: 800px;">
+                
+                <!-- Modal Header (Profile Style) -->
+                <div class="bg-white border-b border-gray-100 px-6 py-6 sm:px-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-primary-maroon/5 rounded-full blur-2xl"></div>
+                    <div class="flex justify-between items-start relative z-10">
+                        <div class="flex items-center space-x-5">
+                            <div class="w-16 h-16 bg-primary-maroon/10 rounded-2xl flex items-center justify-center border border-primary-maroon/20 shrink-0 shadow-sm">
+                                <i data-lucide="building-2" class="w-8 h-8 text-primary-maroon"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <h3 class="text-2xl font-extrabold text-gray-900" x-text="viewData.company_name"></h3>
+                                    <span x-show="viewData.status == 1 || viewData.status === true" class="text-green-700 bg-green-100 border border-green-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">Active</span>
+                                    <span x-show="viewData.status == 0 || viewData.status === false" class="text-red-700 bg-red-100 border border-red-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide">Inactive</span>
+                                </div>
+                                <div class="text-sm font-medium text-gray-500 flex items-center">
+                                    <i data-lucide="hash" class="w-4 h-4 mr-1 opacity-70"></i> Code: <span class="ml-1" x-text="viewData.company_code || 'N/A'"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" @click="isViewOpen = false" class="text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-200 p-2 rounded-full transition outline-none">
+                            <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Company Name</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.company_name"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Company Code</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.company_code || 'N/A'"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Contact Person</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.contact_person"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Mobile Number</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.mobile_number"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">WhatsApp Number</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.whatsapp_number || 'N/A'"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Email</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.email || 'N/A'"></div>
-                        </div>
-                        <div class="md:col-span-2">
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Address</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.address || 'N/A'"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">City / District</span>
-                            <div class="font-bold text-gray-900">
-                                <span x-text="viewData.city || '-'"></span> / <span x-text="viewData.district || '-'"></span>
+                <!-- Modal Body (Cards) -->
+                <div class="px-6 py-6 sm:px-8 max-h-[65vh] overflow-y-auto">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Contact Info Card -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                            <h4 class="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-4 flex items-center border-b border-gray-50 pb-2">
+                                <i data-lucide="user" class="w-4 h-4 mr-2 text-blue-500"></i> Contact Information
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <span class="block text-[10px] font-bold text-gray-400 uppercase">Contact Person</span>
+                                    <div class="font-bold text-gray-800 text-sm mt-0.5" x-text="viewData.contact_person"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">Mobile</span>
+                                        <div class="font-bold text-gray-800 text-sm mt-0.5 flex items-center">
+                                            <i data-lucide="phone" class="w-3 h-3 mr-1.5 text-gray-400"></i> <span x-text="viewData.mobile_number"></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">WhatsApp</span>
+                                        <div class="font-bold text-gray-800 text-sm mt-0.5 flex items-center">
+                                            <i data-lucide="message-circle" class="w-3 h-3 mr-1.5 text-green-500"></i> <span x-text="viewData.whatsapp_number || 'N/A'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] font-bold text-gray-400 uppercase">Email</span>
+                                    <div class="font-bold text-blue-600 text-sm mt-0.5" x-text="viewData.email || 'N/A'"></div>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Commission Per Seat</span>
-                            <div class="font-bold text-red-600">LKR <span x-text="viewData.commission_per_seat"></span></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Bank Name & Branch</span>
-                            <div class="font-bold text-gray-900">
-                                <span x-text="viewData.bank_name || '-'"></span> - <span x-text="viewData.branch_name || '-'"></span>
+
+                        <!-- Location Card -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                            <h4 class="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-4 flex items-center border-b border-gray-50 pb-2">
+                                <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-red-500"></i> Location Details
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <span class="block text-[10px] font-bold text-gray-400 uppercase">Address</span>
+                                    <div class="font-bold text-gray-800 text-sm mt-0.5 leading-relaxed" x-text="viewData.address || 'N/A'"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">City</span>
+                                        <div class="font-bold text-gray-800 text-sm mt-0.5" x-text="viewData.city || 'N/A'"></div>
+                                    </div>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">District</span>
+                                        <div class="font-bold text-gray-800 text-sm mt-0.5" x-text="viewData.district || 'N/A'"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Account No</span>
-                            <div class="font-bold text-gray-900" x-text="viewData.account_number || 'N/A'"></div>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</span>
-                            <div>
-                                <span x-show="viewData.status == 1 || viewData.status === true" class="text-green-600 bg-green-50 border border-green-100 px-2 py-0.5 rounded text-xs font-bold uppercase">Active</span>
-                                <span x-show="viewData.status == 0 || viewData.status === false" class="text-red-500 bg-red-50 border border-red-100 px-2 py-0.5 rounded text-xs font-bold uppercase">Inactive</span>
+
+                        <!-- Financials Card -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:col-span-2">
+                            <h4 class="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-4 flex items-center border-b border-gray-50 pb-2">
+                                <i data-lucide="landmark" class="w-4 h-4 mr-2 text-primary-gold"></i> Financial & Bank Information
+                            </h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div class="bg-red-50 rounded-xl p-4 border border-red-100 flex flex-col justify-center shadow-sm">
+                                    <span class="block text-[10px] font-bold text-red-400 uppercase">Commission Per Seat</span>
+                                    <div class="font-extrabold text-red-600 text-xl mt-1">LKR <span x-text="viewData.commission_per_seat"></span></div>
+                                </div>
+                                
+                                <div class="sm:col-span-2 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">Bank Name</span>
+                                        <div class="font-bold text-gray-800 text-sm mt-0.5" x-text="viewData.bank_name || 'N/A'"></div>
+                                    </div>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">Branch</span>
+                                        <div class="font-bold text-gray-800 text-sm mt-0.5" x-text="viewData.branch_name || 'N/A'"></div>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <span class="block text-[10px] font-bold text-gray-400 uppercase">Account Number</span>
+                                        <div class="font-mono font-bold text-gray-900 text-sm mt-0.5 bg-gray-50 inline-block px-3 py-1.5 rounded-lg border border-gray-200" x-text="viewData.account_number || 'N/A'"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
-                    <button type="button" @click="isViewOpen = false" class="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:w-auto sm:text-sm transition">
-                        Close
+                
+                <!-- Modal Footer -->
+                <div class="bg-white px-6 py-4 border-t border-gray-100 flex justify-end">
+                    <button type="button" @click="isViewOpen = false" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-bold rounded-xl px-6 py-2.5 text-sm transition shadow-sm">
+                        Close Details
                     </button>
                 </div>
             </div>
