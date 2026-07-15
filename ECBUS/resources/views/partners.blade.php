@@ -5,49 +5,62 @@
 @section('content')
 
 <!-- Hero Section -->
-<div class="pt-32 pb-16 bg-gradient-to-b from-gray-50 to-white text-center px-6">
-    <div class="max-w-3xl mx-auto animate-fade-in-up">
-        <div class="inline-flex items-center space-x-2 bg-primary-gold/20 text-dark-maroon px-4 py-2 rounded-full font-bold text-sm mb-6">
-            <i data-lucide="handshake" class="w-4 h-4"></i>
+<section class="relative pt-24 pb-32 lg:pt-36 lg:pb-40 overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Bus Partners" class="w-full h-full object-cover">
+        <!-- Dark Maroon Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-r from-dark-maroon/95 to-dark-maroon/80"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-6 relative z-10 text-center text-white">
+        <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-full font-bold text-sm mb-8 shadow-sm animate-fade-in-up" style="animation: fadeInUp 0.6s ease-out;">
+            <i data-lucide="award" class="w-4 h-4 text-primary-gold"></i>
             <span>Our Trusted Network</span>
         </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-dark-text mb-6 leading-tight">
-            Our Official <span class="text-primary-maroon">Bus Partners</span>
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 animate-fade-in-up" style="animation: fadeInUp 0.8s ease-out;">
+            Our Official <br class="hidden md:block">
+            <span class="text-primary-gold">Bus Partners</span>
         </h1>
-        <p class="text-gray-600 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-            We proudly work with trusted transport partners to provide safe, comfortable and reliable journeys across Sri Lanka.
+        <p class="text-lg md:text-xl font-light opacity-90 max-w-2xl mx-auto animate-fade-in-up" style="animation: fadeInUp 1s ease-out;">
+            Experience premium travel. We proudly collaborate with Sri Lanka's finest transport partners to ensure your journey is safe, comfortable, and unforgettable.
         </p>
     </div>
-</div>
+</section>
 
 <!-- Partner Cards Section -->
-<div class="py-12 bg-white px-6">
-    <div class="max-w-7xl mx-auto">
+<section class="py-20 bg-cream">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-dark-text mb-4 uppercase">Our Trusted Partners</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto">Travel with Sri Lanka's finest and most reliable transport operators.</p>
+        </div>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($partners as $partner)
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                <div class="p-8 text-center border-b border-gray-50 bg-gradient-to-b from-gray-50/50 to-transparent">
-                    @if($partner->logo)
-                        <img src="{{ Storage::url($partner->logo) }}" alt="{{ $partner->company_name }}" class="w-24 h-24 mx-auto rounded-full object-cover border-4 border-white shadow-md mb-4 group-hover:scale-105 transition duration-300">
-                    @else
-                        <div class="w-24 h-24 mx-auto rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-md mb-4 group-hover:scale-105 transition duration-300">
-                            <i data-lucide="bus" class="w-10 h-10 text-gray-400"></i>
-                        </div>
-                    @endif
-                    <h3 class="text-2xl font-extrabold text-dark-text">{{ $partner->company_name }}</h3>
-                </div>
+            <div class="bg-white rounded-3xl border border-gray-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-500 overflow-hidden group relative flex flex-col">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary-maroon/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 
-                <div class="p-8 space-y-6">
+                <div class="p-8 pb-8 text-center relative z-10 flex-grow flex flex-col justify-center">
+                    <div class="relative inline-block mb-6 mx-auto">
+                        <div class="absolute inset-0 bg-primary-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 group-hover:scale-110"></div>
+                        @if($partner->logo)
+                            <div class="relative w-24 h-24 mx-auto rounded-full bg-white border-4 border-white shadow-lg overflow-hidden group-hover:scale-105 transition duration-500 z-10">
+                                <img src="{{ Storage::url($partner->logo) }}" alt="{{ $partner->company_name }}" class="w-full h-full object-cover">
+                            </div>
+                        @else
+                            <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center border-4 border-white shadow-lg group-hover:scale-105 transition duration-500 z-10">
+                                <i data-lucide="bus" class="w-12 h-12 text-gray-400 group-hover:text-primary-maroon transition-colors duration-300"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-gray-900 group-hover:text-primary-maroon transition-colors duration-300 mb-4">{{ $partner->company_name }}</h3>
+                    
                     @if($partner->description)
-                        <p class="text-sm text-gray-600 text-center leading-relaxed">
+                        <p class="text-sm text-gray-500 text-center leading-relaxed line-clamp-3">
                             {{ $partner->description }}
                         </p>
                     @endif
-
-
-                    <a href="{{ route('home') }}" class="block w-full text-center bg-gray-50 hover:bg-primary-maroon hover:text-white text-dark-maroon font-bold py-3 px-4 rounded-xl transition duration-300 border border-gray-100 hover:border-transparent mt-4">
-                        View Routes
-                    </a>
                 </div>
             </div>
             @empty
@@ -58,57 +71,54 @@
             @endforelse
         </div>
     </div>
-</div>
+</section>
 
 <!-- Why Travel Section -->
-<div class="py-20 bg-gray-50 px-6">
-    <div class="max-w-5xl mx-auto text-center">
-        <h2 class="text-3xl font-extrabold text-dark-text mb-12">Why Travel With Our Partners</h2>
+<section class="py-20 bg-white border-y border-gray-100">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-dark-text mb-4 uppercase">WHY TRAVEL WITH <span class="text-primary-gold">OUR PARTNERS</span></h2>
+            <p class="text-gray-500 max-w-2xl mx-auto">We've selected the best operators to ensure your journey is nothing short of excellent.</p>
+        </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center relative z-10">
+                <div class="w-24 h-24 mx-auto bg-white rounded-full shadow-xl border border-gray-100 flex items-center justify-center mb-6 relative group hover:-translate-y-2 transition duration-300">
+                    <div class="absolute inset-0 rounded-full bg-primary-gold/20 scale-0 group-hover:scale-100 transition duration-500"></div>
+                    <i data-lucide="shield-check" class="w-10 h-10 text-primary-maroon relative z-10"></i>
                 </div>
-                <h3 class="font-bold text-gray-800 mb-2">Safe Travel</h3>
-                <p class="text-sm text-gray-500">Verified operators prioritizing your safety on every journey.</p>
+                <h4 class="text-xl font-bold text-dark-text mb-2">Safe Travel</h4>
+                <p class="text-gray-500">Verified operators prioritizing your safety on every journey.</p>
             </div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="sofa" class="w-6 h-6"></i>
+            <div class="text-center relative z-10">
+                <div class="w-24 h-24 mx-auto bg-white rounded-full shadow-xl border border-gray-100 flex items-center justify-center mb-6 relative group hover:-translate-y-2 transition duration-300">
+                    <div class="absolute inset-0 rounded-full bg-primary-gold/20 scale-0 group-hover:scale-100 transition duration-500"></div>
+                    <i data-lucide="sofa" class="w-10 h-10 text-primary-maroon relative z-10"></i>
                 </div>
-                <h3 class="font-bold text-gray-800 mb-2">Comfortable Seats</h3>
-                <p class="text-sm text-gray-500">Modern buses with spacious and comfortable seating.</p>
+                <h4 class="text-xl font-bold text-dark-text mb-2">Supreme Comfort</h4>
+                <p class="text-gray-500">Modern buses with spacious, ergonomic and comfortable seating.</p>
             </div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="clock" class="w-6 h-6"></i>
+            <div class="text-center relative z-10">
+                <div class="w-24 h-24 mx-auto bg-white rounded-full shadow-xl border border-gray-100 flex items-center justify-center mb-6 relative group hover:-translate-y-2 transition duration-300">
+                    <div class="absolute inset-0 rounded-full bg-primary-gold/20 scale-0 group-hover:scale-100 transition duration-500"></div>
+                    <i data-lucide="clock" class="w-10 h-10 text-primary-maroon relative z-10"></i>
                 </div>
-                <h3 class="font-bold text-gray-800 mb-2">On-Time Service</h3>
-                <p class="text-sm text-gray-500">Punctual departures and arrivals to respect your schedule.</p>
+                <h4 class="text-xl font-bold text-dark-text mb-2">On-Time Service</h4>
+                <p class="text-gray-500">Punctual departures and arrivals to respect your schedule.</p>
             </div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="user-check" class="w-6 h-6"></i>
+            <div class="text-center relative z-10">
+                <div class="w-24 h-24 mx-auto bg-white rounded-full shadow-xl border border-gray-100 flex items-center justify-center mb-6 relative group hover:-translate-y-2 transition duration-300">
+                    <div class="absolute inset-0 rounded-full bg-primary-gold/20 scale-0 group-hover:scale-100 transition duration-500"></div>
+                    <i data-lucide="user-check" class="w-10 h-10 text-primary-maroon relative z-10"></i>
                 </div>
-                <h3 class="font-bold text-gray-800 mb-2">Professional Drivers</h3>
-                <p class="text-sm text-gray-500">Experienced staff ensuring a smooth and pleasant trip.</p>
+                <h4 class="text-xl font-bold text-dark-text mb-2">Expert Drivers</h4>
+                <p class="text-gray-500">Experienced staff ensuring a smooth and pleasant trip.</p>
             </div>
         </div>
     </div>
-</div>
-
-<!-- CTA Section -->
-<div class="py-16 bg-white text-center px-6 border-t border-gray-100">
-    <div class="max-w-2xl mx-auto">
-        <h2 class="text-2xl font-extrabold text-dark-text mb-6">Ready to start your journey?</h2>
-        <a href="{{ route('home') }}" class="inline-flex items-center bg-primary-maroon text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-dark-maroon transition shadow-lg hover:shadow-xl hover:-translate-y-1">
-            <i data-lucide="search" class="w-5 h-5 mr-2"></i> Book Your Seat Now
-        </a>
-    </div>
-</div>
+</section>
 
 @endsection

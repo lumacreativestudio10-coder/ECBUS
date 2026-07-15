@@ -18,6 +18,8 @@ class Booking extends Model
         'phone',
         'passenger_count',
         'seat_numbers',
+        'boarding_point',
+        'dropping_point',
         'total_amount',
         'payment_receipt_path',
         'booking_status'

@@ -167,22 +167,44 @@
     <div class="lg:col-span-1">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 sticky top-6">
             <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="font-extrabold text-lg text-dark-text">Manual Booking</h3>
+                <h3 class="font-extrabold text-lg text-dark-text">
+                    {{ isset($targetBooking) ? 'Assign Seats' : 'Manual Booking' }}
+                </h3>
             </div>
             <div class="p-6">
-                <p class="text-sm text-gray-500 mb-6">Select available seats on the map to book them manually for offline customers.</p>
+                @if(isset($targetBooking))
+                    <div class="bg-blue-50 border border-blue-100 text-blue-700 p-3 rounded-lg text-xs font-bold mb-6">
+                        <i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Assigning seats for Booking: {{ $targetBooking->booking_reference }} ({{ $targetBooking->passenger_count }} passengers)
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500 mb-6">Select available seats on the map to book them manually for offline customers.</p>
+                @endif
                 
                 <form action="{{ route('admin.schedules.seats.update', $schedule) }}" method="POST" id="manual-booking-form">
                     @csrf
                     
+                    @if(isset($targetBooking))
+                        <input type="hidden" name="target_booking_id" value="{{ $targetBooking->id }}">
+                    @endif
+                    
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Passenger Name</label>
-                        <input type="text" name="customer_name" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                        <input type="text" name="customer_name" required {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->customer_name ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                     </div>
                     
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Phone Number</label>
-                        <input type="text" name="phone_number" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                        <input type="text" name="phone_number" required {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->phone ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Boarding Point (Optional)</label>
+                        <input type="text" name="boarding_point" {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->boarding_point ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" placeholder="e.g. Jaffna Bus Stand">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Dropping Point (Optional)</label>
+                        <input type="text" name="dropping_point" {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->dropping_point ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" placeholder="e.g. Mulliyawalai">
                     </div>
                     
                     <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-6">
@@ -216,11 +238,19 @@
             return false;
         }
         
+        const seats = JSON.parse(rawValue);
+        
+        @if(isset($targetBooking))
+        if (seats.length !== {{ $targetBooking->passenger_count }}) {
+            alert('Please select exactly {{ $targetBooking->passenger_count }} seat(s) for this booking.');
+            return false;
+        }
+        @endif
+        
         // Remove old inputs
         document.querySelectorAll('.seat-input-array').forEach(e => e.remove());
         
         // Create hidden inputs for each seat
-        const seats = JSON.parse(rawValue);
         const form = document.getElementById('manual-booking-form');
         
         seats.forEach(seat => {
@@ -238,10 +268,15 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('seatMap', () => ({
             selectedSeats: [],
+            maxSeats: {{ isset($targetBooking) ? $targetBooking->passenger_count : 'null' }},
             toggleSeat(seat) {
                 if(this.selectedSeats.includes(seat)) {
                     this.selectedSeats = this.selectedSeats.filter(s => s !== seat);
                 } else {
+                    if (this.maxSeats !== null && this.selectedSeats.length >= this.maxSeats) {
+                        alert(`You can only select ${this.maxSeats} seat(s) for this booking.`);
+                        return;
+                    }
                     this.selectedSeats.push(seat);
                 }
                 

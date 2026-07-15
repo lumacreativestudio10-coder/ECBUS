@@ -15,14 +15,14 @@ class AdminController extends Controller
         $totalBookings = Booking::count();
         $totalRevenue = Booking::where('booking_status', 'confirmed')->sum('total_amount');
         $activeSchedules = Schedule::whereDate('date', '>=', now())->count();
-        $recentBookings = Booking::with('schedule.bus.operator')->latest()->take(5)->get();
+        $recentBookings = Booking::with('schedule.bus.busCompany')->latest()->take(5)->get();
 
         return view('admin.dashboard', compact('totalBookings', 'totalRevenue', 'activeSchedules', 'recentBookings'));
     }
 
     public function bookings()
     {
-        $bookings = Booking::with('schedule.bus.operator', 'schedule.route.fromLocation', 'schedule.route.toLocation')->latest()->get();
+        $bookings = Booking::with('schedule.bus.busCompany', 'schedule.route.fromLocation', 'schedule.route.toLocation')->latest()->get();
         return view('admin.bookings', compact('bookings'));
     }
 
@@ -101,9 +101,9 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Schedule deleted successfully!');
     }
 
-    public function manageSeats(Schedule $schedule)
+    public function manageSeats(Request $request, Schedule $schedule)
     {
-        $schedule->load('bus.operator', 'route.fromLocation', 'route.toLocation');
+        $schedule->load('bus.busCompany', 'route.fromLocation', 'route.toLocation');
         
         $bookings = Booking::where('schedule_id', $schedule->id)->where('booking_status', '!=', 'cancelled')->get();
         
@@ -119,23 +119,32 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.manage-seats', compact('schedule', 'bookedSeats', 'seatDetails'));
+        $targetBooking = null;
+        if ($request->has('booking_id')) {
+            $targetBooking = Booking::find($request->booking_id);
+        }
+
+        return view('admin.manage-seats', compact('schedule', 'bookedSeats', 'seatDetails', 'targetBooking'));
     }
 
     public function updateSeats(Request $request, Schedule $schedule)
     {
         $request->validate([
             'seat_numbers' => 'required|array',
-            'passenger_name' => 'required|string',
+            'customer_name' => 'required|string',
             'phone_number' => 'required|string'
         ]);
 
         $existingBookings = Booking::where('schedule_id', $schedule->id)
-                                   ->where('status', '!=', 'Cancelled')
+                                   ->where('booking_status', '!=', 'cancelled')
                                    ->whereNotNull('seat_numbers')
                                    ->get();
                                    
         foreach ($existingBookings as $booking) {
+            // Skip checking against the target booking if we are updating it
+            if ($request->has('target_booking_id') && $booking->id == $request->target_booking_id) {
+                continue;
+            }
             if (is_array($booking->seat_numbers)) {
                 foreach ($request->seat_numbers as $seat) {
                     if (in_array($seat, $booking->seat_numbers)) {
@@ -145,17 +154,58 @@ class AdminController extends Controller
             }
         }
 
-        Booking::create([
-            'schedule_id' => $schedule->id,
-            'passenger_name' => $request->passenger_name,
-            'phone' => $request->phone_number,
-            'passenger_count' => count($request->seat_numbers),
-            'seat_numbers' => $request->seat_numbers,
-            'total_amount' => count($request->seat_numbers) * $schedule->price,
-            'status' => 'Confirmed'
-        ]);
+        if ($request->has('target_booking_id') && $request->target_booking_id) {
+            $booking = Booking::findOrFail($request->target_booking_id);
+            $booking->update([
+                'seat_numbers' => $request->seat_numbers,
+                'booking_status' => 'confirmed'
+            ]);
+            return redirect()->route('admin.bookings')->with('success', 'Seats successfully assigned to booking!');
+        } else {
+            Booking::create([
+                'schedule_id' => $schedule->id,
+                'customer_name' => $request->customer_name,
+                'phone' => $request->phone_number,
+                'passenger_count' => count($request->seat_numbers),
+                'seat_numbers' => $request->seat_numbers,
+                'boarding_point' => $request->boarding_point,
+                'dropping_point' => $request->dropping_point,
+                'total_amount' => $schedule->price * count($request->seat_numbers),
+                'booking_status' => 'confirmed'
+            ]);
+            return redirect()->back()->with('success', 'Seats manually booked successfully!');
+        }
+    }
 
-        return redirect()->back()->with('success', 'Seats manually booked successfully!');
+    public function printManifest(Schedule $schedule)
+    {
+        $schedule->load('bus.busCompany', 'route.fromLocation', 'route.toLocation');
+        
+        $bookings = Booking::where('schedule_id', $schedule->id)
+                           ->where('booking_status', '!=', 'cancelled')
+                           ->get();
+                           
+        // Prepare passenger list
+        $passengers = [];
+        foreach ($bookings as $booking) {
+            if ($booking->seat_numbers && is_array($booking->seat_numbers)) {
+                foreach ($booking->seat_numbers as $seat) {
+                    $passengers[] = [
+                        'seat' => $seat,
+                        'name' => $booking->customer_name,
+                        'phone' => $booking->phone,
+                        'ref' => $booking->booking_reference
+                    ];
+                }
+            }
+        }
+        
+        // Sort by seat number if possible (e.g., 1A, 1B, 2A)
+        usort($passengers, function($a, $b) {
+            return strcmp($a['seat'], $b['seat']);
+        });
+
+        return view('admin.manifest_print', compact('schedule', 'passengers'));
     }
 
     // Locations Management

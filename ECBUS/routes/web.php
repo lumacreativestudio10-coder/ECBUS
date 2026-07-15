@@ -44,6 +44,7 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 use App\Http\Controllers\BookingController;
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/my-booking', [BookingController::class, 'myBookings'])->name('booking');
+Route::get('/booking/{booking}/ticket', [BookingController::class, 'downloadTicket'])->name('booking.ticket');
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
@@ -66,6 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/schedules/{schedule}', [AdminController::class, 'destroySchedule'])->name('schedules.destroy');
     Route::get('/schedules/{schedule}/seats', [AdminController::class, 'manageSeats'])->name('schedules.seats');
     Route::post('/schedules/{schedule}/seats', [AdminController::class, 'updateSeats'])->name('schedules.seats.update');
+    Route::get('/schedules/{schedule}/manifest', [AdminController::class, 'printManifest'])->name('schedules.manifest');
 
     Route::get('/locations', [AdminController::class, 'locations'])->name('locations');
     Route::post('/locations', [AdminController::class, 'storeLocation'])->name('locations.store');

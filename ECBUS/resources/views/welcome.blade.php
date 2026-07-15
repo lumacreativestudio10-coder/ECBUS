@@ -61,7 +61,7 @@
                 <label class="block text-sm font-bold text-dark-text mb-2 uppercase tracking-wide">Travel Date</label>
                 <div class="relative">
                     <i data-lucide="calendar" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400"></i>
-                    <input type="date" x-model="date" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700" :class="{'border-red-500': errors.date}">
+                    <input type="date" x-model="date" min="{{ date('Y-m-d') }}" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700" :class="{'border-red-500': errors.date}">
                     <p x-show="errors.date" class="text-red-500 text-xs mt-1 absolute" x-text="errors.date"></p>
                 </div>
             </div>
@@ -70,12 +70,7 @@
                 <label class="block text-sm font-bold text-dark-text mb-2 uppercase tracking-wide">Passengers</label>
                 <div class="relative">
                     <i data-lucide="users" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400"></i>
-                    <select x-model="passengers" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon appearance-none font-medium">
-                        <option value="1">1 Passenger</option>
-                        <option value="2">2 Passengers</option>
-                        <option value="3">3 Passengers</option>
-                        <option value="4">4 Passengers</option>
-                    </select>
+                    <input type="number" x-model.number="passengers" min="1" max="4" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700">
                 </div>
             </div>
 

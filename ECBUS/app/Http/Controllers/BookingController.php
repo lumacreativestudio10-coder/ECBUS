@@ -16,7 +16,9 @@ class BookingController extends Controller
             'customer_name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:20',
-            'passenger_count' => 'required|integer|min:1'
+            'passenger_count' => 'required|integer|min:1',
+            'boarding_point' => 'nullable|string|max:255',
+            'dropping_point' => 'nullable|string|max:255',
         ]);
 
         $schedule = Schedule::findOrFail($request->schedule_id);
@@ -34,9 +36,11 @@ class BookingController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'passenger_count' => $request->passenger_count,
+            'boarding_point' => $request->boarding_point,
+            'dropping_point' => $request->dropping_point,
             'seat_numbers' => [], // To be assigned later by Admin or via future seat map
             'total_amount' => $schedule->price * $request->passenger_count,
-            'booking_status' => 'confirmed' // Assuming auto-confirm for now
+            'booking_status' => 'pending' // Enquiry status
         ]);
 
         $schedule->decrement('available_seats', $request->passenger_count);
@@ -61,5 +65,11 @@ class BookingController extends Controller
         }
 
         return view('my-booking', compact('bookings', 'phone'));
+    }
+
+    public function downloadTicket(Booking $booking)
+    {
+        $booking->load('schedule.bus.busCompany', 'schedule.route.fromLocation', 'schedule.route.toLocation');
+        return view('ticket_print', compact('booking'));
     }
 }

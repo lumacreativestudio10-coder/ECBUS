@@ -53,9 +53,9 @@
             <h4 class="text-3xl font-extrabold text-dark-maroon">LKR {{ number_format($booking->total_amount, 0) }}</h4>
         </div>
         
-        <button class="w-full bg-primary-gold text-dark-maroon py-3 px-4 rounded-xl font-bold shadow-md hover:bg-yellow-500 transition flex items-center justify-center mb-3">
+        <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="w-full bg-primary-gold text-dark-maroon py-3 px-4 rounded-xl font-bold shadow-md hover:bg-yellow-500 transition flex items-center justify-center mb-3">
             <i data-lucide="download" class="w-5 h-5 mr-2"></i> E-Ticket
-        </button>
+        </a>
         @if($booking->status === 'Confirmed')
         <form action="#" method="POST" class="w-full" onsubmit="return confirm('Contact admin to cancel ticket?');">
             @csrf

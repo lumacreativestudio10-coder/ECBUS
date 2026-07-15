@@ -62,6 +62,9 @@
                         </td>
                         <td class="px-6 py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('admin.schedules.manifest', $schedule) }}" target="_blank" class="inline-flex items-center text-dark-maroon hover:text-white bg-gray-100 hover:bg-dark-maroon transition px-3 py-1.5 rounded-lg font-bold text-xs">
+                                    <i data-lucide="printer" class="w-3.5 h-3.5 mr-1"></i> CMS
+                                </a>
                                 <a href="{{ route('admin.schedules.seats', $schedule) }}" class="inline-flex items-center text-primary-maroon hover:text-dark-maroon bg-primary-gold/20 hover:bg-primary-gold/40 transition px-3 py-1.5 rounded-lg font-bold text-xs">
                                     <i data-lucide="armchair" class="w-3.5 h-3.5 mr-1"></i> Seats
                                 </a>

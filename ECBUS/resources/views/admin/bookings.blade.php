@@ -40,7 +40,14 @@
                         <p class="font-bold text-dark-text">{{ $booking->customer_name }}</p>
                         <p class="text-xs text-gray-500">{{ $booking->phone }}</p>
                         @if($booking->email)<p class="text-xs text-gray-500">{{ $booking->email }}</p>@endif
-                        <p class="text-xs text-gray-400 mt-1"><i data-lucide="users" class="w-3 h-3 inline"></i> {{ $booking->passenger_count }} Passengers</p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            <i data-lucide="users" class="w-3 h-3 inline"></i> {{ $booking->passenger_count }} Passengers
+                            @if(!empty($booking->seat_numbers))
+                                <span class="ml-2 font-bold text-primary-maroon">
+                                    <i data-lucide="armchair" class="w-3 h-3 inline"></i> {{ is_array($booking->seat_numbers) ? implode(', ', $booking->seat_numbers) : $booking->seat_numbers }}
+                                </span>
+                            @endif
+                        </p>
                     </td>
                     <td class="px-6 py-4">
                         <p class="font-bold text-dark-text">{{ $booking->schedule?->route?->fromLocation?->name }} &rarr; {{ $booking->schedule?->route?->toLocation?->name }}</p>
@@ -70,9 +77,14 @@
                         </form>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <button class="text-gray-400 hover:text-dark-maroon transition p-2 rounded-lg hover:bg-gray-100">
-                            <i data-lucide="more-vertical" class="w-5 h-5"></i>
-                        </button>
+                        @if(empty($booking->seat_numbers) && $booking->schedule_id)
+                            <a href="{{ route('admin.schedules.seats', ['schedule' => $booking->schedule_id, 'booking_id' => $booking->id]) }}" class="text-white bg-primary-maroon hover:bg-dark-maroon transition px-2 py-1 rounded-lg text-[10px] font-bold mr-1" title="Assign Seats">
+                                <i data-lucide="armchair" class="w-3 h-3 inline"></i> Assign Seats
+                            </a>
+                        @endif
+                        <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="text-primary-maroon hover:text-dark-maroon transition p-2 rounded-lg hover:bg-gray-100" title="Download Ticket">
+                            <i data-lucide="printer" class="w-5 h-5 inline"></i>
+                        </a>
                     </td>
                 </tr>
                 @empty

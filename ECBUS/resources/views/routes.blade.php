@@ -8,34 +8,36 @@
     <!-- Search Summary Header -->
     <div class="bg-dark-maroon text-white pt-24 pb-8 shadow-md">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/20">
-                <div class="flex items-center space-x-6 mb-4 md:mb-0">
-                    <div class="text-center">
-                        <p class="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-1">From</p>
-                        <h2 class="text-2xl font-bold" x-text="params.from || 'Colombo'"></h2>
-                    </div>
-                    <div class="bg-primary-gold/20 p-3 rounded-full text-primary-gold">
-                        <i data-lucide="arrow-right-left" class="w-6 h-6"></i>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-1">To</p>
-                        <h2 class="text-2xl font-bold" x-text="params.to || 'Kandy'"></h2>
-                    </div>
+            <div class="flex flex-wrap justify-between md:justify-around items-center bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/20 gap-4 md:gap-0">
+                <div class="text-center md:text-left flex-shrink-0">
+                    <p class="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-1">From</p>
+                    <h2 class="text-xl md:text-2xl font-bold" x-text="params.from || 'Colombo'"></h2>
                 </div>
                 
-                <div class="flex items-center space-x-8">
-                    <div class="flex items-center">
-                        <i data-lucide="calendar" class="w-5 h-5 text-primary-gold mr-2"></i>
-                        <span class="font-medium" x-text="formatDate(params.date) || '24 July 2026'"></span>
-                    </div>
-                    <div class="flex items-center">
-                        <i data-lucide="users" class="w-5 h-5 text-primary-gold mr-2"></i>
-                        <span class="font-medium" x-text="(params.passengers || '1') + ' Passenger(s)'"></span>
-                    </div>
-                    <a href="{{ route('home') }}" class="bg-white text-dark-maroon px-5 py-2.5 rounded-lg font-bold hover:bg-primary-gold hover:text-white transition shadow-sm text-sm">
-                        MODIFY SEARCH
-                    </a>
+                <div class="bg-primary-gold/20 p-2 md:p-3 rounded-full text-primary-gold flex-shrink-0">
+                    <i data-lucide="arrow-right-left" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </div>
+                
+                <div class="text-center md:text-left flex-shrink-0">
+                    <p class="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-1">To</p>
+                    <h2 class="text-xl md:text-2xl font-bold" x-text="params.to || 'Kandy'"></h2>
+                </div>
+                
+                <div class="hidden md:block w-px h-12 bg-white/20 mx-2"></div>
+                
+                <div class="flex items-center flex-shrink-0">
+                    <i data-lucide="calendar" class="w-5 h-5 text-primary-gold mr-2 md:mr-3"></i>
+                    <span class="font-medium text-sm md:text-base" x-text="formatDate(params.date) || '24 July 2026'"></span>
+                </div>
+                
+                <div class="flex items-center flex-shrink-0">
+                    <i data-lucide="users" class="w-5 h-5 text-primary-gold mr-2 md:mr-3"></i>
+                    <span class="font-medium text-sm md:text-base" x-text="(params.passengers || '1') + ' Passenger(s)'"></span>
+                </div>
+                
+                <a href="{{ route('home') }}" class="bg-white text-dark-maroon px-5 py-2.5 rounded-lg font-bold hover:bg-primary-gold hover:text-white transition shadow-sm text-sm flex-shrink-0 mt-4 md:mt-0 w-full md:w-auto text-center">
+                    MODIFY SEARCH
+                </a>
             </div>
         </div>
     </div>
@@ -52,6 +54,24 @@
                             <i data-lucide="sliders-horizontal" class="w-5 h-5 mr-2 text-primary-maroon"></i> Filters
                         </h3>
                         <button class="text-sm text-primary-maroon font-bold hover:text-dark-maroon">Clear All</button>
+                    </div>
+
+                    <!-- Travel Date -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-dark-text mb-2 uppercase tracking-wide">Travel Date</label>
+                        <div class="relative">
+                            <i data-lucide="calendar" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400"></i>
+                            <input type="date" name="date" value="{{ $date ?? date('Y-m-d') }}" min="{{ date('Y-m-d') }}" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon font-medium text-gray-700 outline-none">
+                        </div>
+                    </div>
+                    
+                    <!-- Passengers -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-bold text-dark-text mb-2 uppercase tracking-wide">Passengers</label>
+                        <div class="relative">
+                            <i data-lucide="users" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400"></i>
+                            <input type="number" name="passengers" value="{{ $passengers ?? 1 }}" min="1" max="4" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon font-medium text-gray-700 outline-none">
+                        </div>
                     </div>
 
                     <!-- Departure Time -->
@@ -294,43 +314,23 @@
                         </div>
                         <div class="w-1/3">
                             <label class="block text-sm font-bold text-dark-text mb-1">Passengers</label>
-                            <input type="number" x-model.number="booking.count" required min="1" max="10" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition text-center font-bold">
+                            <input type="number" x-model.number="booking.count" required min="1" max="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition text-center font-bold">
                         </div>
                     </div>
 
-                    <!-- Payment Section -->
-                    <div class="border-t border-gray-100 pt-5 mt-2">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="font-bold text-dark-text">Total Payment</h4>
-                            <span class="text-2xl font-extrabold text-primary-maroon" x-text="'LKR ' + (booking.count * selectedBus.price).toLocaleString()"></span>
+                    <div class="flex gap-4">
+                        <div class="w-1/2">
+                            <label class="block text-sm font-bold text-dark-text mb-1">Boarding Point</label>
+                            <input type="text" x-model="booking.boarding_point" required placeholder="Where do you get in?" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
                         </div>
-
-                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4">
-                            <p class="text-xs text-gray-500 font-bold mb-2 uppercase">Please deposit to:</p>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-sm font-semibold text-dark-text">Bank:</span>
-                                <span class="text-sm font-bold text-dark-maroon">Commercial Bank</span>
-                            </div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-sm font-semibold text-dark-text">Account No:</span>
-                                <span class="text-sm font-bold text-dark-maroon">8123 4567 8900</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-semibold text-dark-text">Name:</span>
-                                <span class="text-sm font-bold text-dark-maroon">ECBUS PVT LTD</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-dark-text mb-1">Upload Payment Receipt</label>
-                            <div class="relative">
-                                <input type="file" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary-maroon file:text-white hover:file:bg-dark-maroon cursor-pointer text-sm">
-                            </div>
+                        <div class="w-1/2">
+                            <label class="block text-sm font-bold text-dark-text mb-1">Dropping Point</label>
+                            <input type="text" x-model="booking.dropping_point" required placeholder="Where do you get off?" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
                         </div>
                     </div>
 
                     <button type="submit" :disabled="isSubmitting" class="w-full bg-primary-gold text-dark-text font-bold py-4 rounded-xl shadow-md hover:bg-yellow-500 transition mt-6 flex justify-center items-center">
-                        <span x-show="!isSubmitting">CONFIRM & BOOK</span>
+                        <span x-show="!isSubmitting">SUBMIT ENQUIRY</span>
                         <span x-show="isSubmitting" class="flex items-center">
                             <i data-lucide="loader-2" class="w-5 h-5 mr-2 animate-spin"></i> Processing...
                         </span>
@@ -372,8 +372,13 @@
 
             openBookingModal(busName, price, scheduleId) {
                 this.selectedBus = { name: busName, price: price, schedule_id: scheduleId };
+                this.booking.count = {{ $passengers ?? 1 }};
+                this.booking.name = '';
+                this.booking.phone = '';
+                this.booking.boarding_point = '';
+                this.booking.dropping_point = '';
                 this.isModalOpen = true;
-                // re-initialize lucide icons inside modal if needed, or just let alpine render
+                this.isSuccess = false;
                 setTimeout(() => lucide.createIcons(), 50);
             },
 
@@ -382,7 +387,7 @@
                 setTimeout(() => {
                     this.isSubmitting = false;
                     this.isSuccess = false;
-                    this.booking = { name: '', phone: '', count: this.params.passengers };
+                    this.booking = { name: '', phone: '', count: this.params.passengers, boarding_point: '', dropping_point: '' };
                 }, 300);
             },
 
@@ -400,7 +405,9 @@
                             schedule_id: this.selectedBus.schedule_id,
                             customer_name: this.booking.name,
                             phone: this.booking.phone,
-                            passenger_count: this.booking.count
+                            passenger_count: this.booking.count,
+                            boarding_point: this.booking.boarding_point,
+                            dropping_point: this.booking.dropping_point
                         })
                     });
                     
