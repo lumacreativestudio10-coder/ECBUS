@@ -187,18 +187,18 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-1.5">
-                                        <button @click="openView({{ json_encode($company) }})" type="button" class="text-gray-400 hover:text-gray-700 bg-white border border-gray-200 transition p-1.5 rounded-md hover:bg-gray-50 shadow-sm" title="View">
-                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                    <div class="flex items-center justify-end gap-3">
+                                        <button @click="openView({{ json_encode($company) }})" type="button" class="text-gray-400 hover:text-blue-600 transition p-1" title="View">
+                                            <i data-lucide="eye" class="w-5 h-5"></i>
                                         </button>
-                                        <button @click="openEdit({{ json_encode($company) }})" type="button" class="text-gray-400 hover:text-blue-600 bg-white border border-gray-200 transition p-1.5 rounded-md hover:bg-blue-50 shadow-sm" title="Edit">
-                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        <button @click="openEdit({{ json_encode($company) }})" type="button" class="text-gray-400 hover:text-green-600 transition p-1" title="Edit">
+                                            <i data-lucide="edit" class="w-5 h-5"></i>
                                         </button>
                                         <form action="{{ route('admin.bus_companies.destroy', $company) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this bus company?');" class="inline-block">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-400 hover:text-red-600 bg-red-50 border border-red-100 transition p-1.5 rounded-md hover:bg-red-100 shadow-sm" title="Delete">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            <button type="submit" class="text-gray-400 hover:text-red-600 transition p-1" title="Delete">
+                                                <i data-lucide="trash-2" class="w-5 h-5"></i>
                                             </button>
                                         </form>
                                     </div>
