@@ -91,16 +91,6 @@
                                 <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute pointer-events-none" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
                             </div>
                         </div>
-                        
-                        <div class="custom-dropdown">
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Commission</label>
-                            <div class="relative w-full">
-                                <select name="commission" style="color-scheme: light;" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2.5 text-sm text-black focus:border-primary-maroon focus:ring-1 focus:ring-primary-maroon outline-none transition bg-white cursor-pointer shadow-sm appearance-none">
-                                    <option value="">All Commission</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute pointer-events-none" style="right: 12px; top: 50%; transform: translateY(-50%);"></i>
-                            </div>
-                        </div>
 
                         <!-- Buttons -->
                         <div class="custom-btn-group">
