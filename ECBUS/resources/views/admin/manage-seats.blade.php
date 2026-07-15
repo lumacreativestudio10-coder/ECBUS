@@ -1,0 +1,262 @@
+@extends('layouts.admin')
+
+@section('title', 'Manage Seats')
+@section('header', 'Manage Seats: ' . $schedule->bus->operator->name)
+
+@section('content')
+
+@if(session('success'))
+<div class="mb-6 bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative" role="alert">
+    <strong class="font-bold">Success!</strong>
+    <span class="block sm:inline">{{ session('success') }}</span>
+</div>
+@endif
+
+@if($errors->any())
+<div class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative" role="alert">
+    <ul class="list-disc list-inside font-bold text-sm">
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+<div class="flex items-center mb-6 text-gray-500 text-sm font-bold">
+    <a href="{{ route('admin.schedules') }}" class="hover:text-primary-maroon transition flex items-center">
+        <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Schedules
+    </a>
+    <span class="mx-3">|</span>
+    <span class="text-dark-text">{{ $schedule->route->fromLocation->name ?? '?' }} &rarr; {{ $schedule->route->toLocation->name ?? '?' }}</span>
+    <span class="mx-3">|</span>
+    <span>{{ \Carbon\Carbon::parse($schedule->date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}</span>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Seat Map -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col items-center">
+            
+            <div class="w-full max-w-sm flex justify-between mb-8 text-xs font-bold text-gray-500 uppercase">
+                <div class="flex items-center"><div class="w-4 h-4 rounded bg-gray-200 mr-2 border border-gray-300"></div> Available</div>
+                <div class="flex items-center"><div class="w-4 h-4 rounded bg-red-500 mr-2 shadow-sm shadow-red-500/50"></div> Booked</div>
+                <div class="flex items-center"><div class="w-4 h-4 rounded bg-primary-gold mr-2 shadow-sm shadow-primary-gold/50"></div> Selected</div>
+            </div>
+
+            <!-- Front of Bus -->
+            <div class="w-full max-w-sm border-2 border-gray-300 rounded-[2rem] p-4 bg-gray-50 mb-8 relative overflow-hidden" x-data="seatMap()">
+                <div class="absolute top-0 inset-x-0 h-12 bg-gray-200 border-b-2 border-gray-300 rounded-t-[1.8rem] flex justify-center items-center">
+                    <div class="w-20 h-2 bg-gray-300 rounded-full"></div>
+                </div>
+                
+                <div class="mt-16 relative">
+                    <!-- Steering Wheel -->
+                    <div class="absolute -top-8 right-4">
+                        <i data-lucide="circle-dashed" class="w-8 h-8 text-gray-400"></i>
+                    </div>
+
+                    <div>
+                        <div class="space-y-4">
+                            @if($schedule->bus->seat_layout && is_array($schedule->bus->seat_layout) && isset($schedule->bus->seat_layout['map']))
+                                @php
+                                    $layout = $schedule->bus->seat_layout;
+                                    $cols = $layout['cols'];
+                                @endphp
+                                @foreach($layout['map'] as $rIndex => $rowConfig)
+                                    @php $rowNum = $rIndex + 1; @endphp
+                                    <div class="flex justify-center space-x-2">
+                                        @foreach($rowConfig as $cIndex => $cellType)
+                                            @if($cellType === 'empty')
+                                                <!-- Empty Aisle Space -->
+                                                <div class="w-10 h-10"></div>
+                                            @else
+                                                @php
+                                                    // Generate a seat ID like 1A, 1B, 1C based on column index
+                                                    $seatChar = chr(65 + $cIndex); 
+                                                    $seatId = $rowNum . $seatChar;
+                                                @endphp
+                                                
+                                                @if(in_array($seatId, $bookedSeats))
+                                                    <!-- Booked Seat -->
+                                                    <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
+                                                        {{ $seatId }}
+                                                        <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
+                                                            {{ $seatDetails[$seatId]->passenger_name ?? 'Unknown' }}<br>
+                                                            {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <!-- Available Seat -->
+                                                    <button type="button" @click="toggleSeat('{{ $seatId }}')" 
+                                                        :class="selectedSeats.includes('{{ $seatId }}') ? 'bg-primary-gold text-dark-maroon shadow-primary-gold/50' : 'bg-white hover:bg-gray-100 hover:border-gray-300 border-gray-200 {{ $cellType === 'window' ? 'border-blue-300 text-blue-700 bg-blue-50' : 'text-gray-400' }}'" 
+                                                        class="w-10 h-10 border-2 rounded-t-lg rounded-b shadow-sm flex flex-col justify-end items-center pb-1 text-[10px] font-bold transition relative">
+                                                        {{ $seatId }}
+                                                        @if($cellType === 'window')
+                                                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full border border-white"></div>
+                                                        @endif
+                                                    </button>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            @else
+                                <!-- Fallback standard 2x2 layout -->
+                                @php
+                                    $totalRows = ceil($schedule->bus->total_seats / 4);
+                                @endphp
+                                @for($row = 1; $row <= $totalRows; $row++)
+                                    <div class="flex justify-between">
+                                        <!-- Left Side (A, B) -->
+                                        <div class="flex space-x-3">
+                                            @foreach(['A', 'B'] as $col)
+                                                @php $seatId = $row . $col; @endphp
+                                                @if(in_array($seatId, $bookedSeats))
+                                                    <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
+                                                        {{ $seatId }}
+                                                        <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
+                                                            {{ $seatDetails[$seatId]->passenger_name ?? 'Unknown' }}<br>
+                                                            {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <button type="button" @click="toggleSeat('{{ $seatId }}')" :class="selectedSeats.includes('{{ $seatId }}') ? 'bg-primary-gold text-dark-maroon shadow-primary-gold/50' : 'bg-white text-gray-400 hover:bg-gray-100 hover:border-gray-300 border-gray-200'" class="w-10 h-10 border-2 rounded-t-lg rounded-b shadow-sm flex flex-col justify-end items-center pb-1 text-[10px] font-bold transition">
+                                                        {{ $seatId }}
+                                                    </button>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                        
+                                        <!-- Aisle -->
+                                        <div class="w-10 flex items-center justify-center text-gray-300 text-xs font-bold">{{ $row }}</div>
+                                        
+                                        <!-- Right Side (C, D) -->
+                                        <div class="flex space-x-3">
+                                            @foreach(['C', 'D'] as $col)
+                                                @php $seatId = $row . $col; @endphp
+                                                @if(($row - 1) * 4 + (ord($col) - 64) <= $schedule->bus->total_seats)
+                                                    @if(in_array($seatId, $bookedSeats))
+                                                        <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
+                                                            {{ $seatId }}
+                                                            <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
+                                                                {{ $seatDetails[$seatId]->passenger_name ?? 'Unknown' }}<br>
+                                                                {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <button type="button" @click="toggleSeat('{{ $seatId }}')" :class="selectedSeats.includes('{{ $seatId }}') ? 'bg-primary-gold text-dark-maroon shadow-primary-gold/50' : 'bg-white text-gray-400 hover:bg-gray-100 hover:border-gray-300 border-gray-200'" class="w-10 h-10 border-2 rounded-t-lg rounded-b shadow-sm flex flex-col justify-end items-center pb-1 text-[10px] font-bold transition">
+                                                            {{ $seatId }}
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endfor
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Manual Booking Form -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 sticky top-6">
+            <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="font-extrabold text-lg text-dark-text">Manual Booking</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-gray-500 mb-6">Select available seats on the map to book them manually for offline customers.</p>
+                
+                <form action="{{ route('admin.schedules.seats.update', $schedule) }}" method="POST" id="manual-booking-form">
+                    @csrf
+                    
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Passenger Name</label>
+                        <input type="text" name="passenger_name" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Phone Number</label>
+                        <input type="text" name="phone_number" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-500 font-bold">Ticket Price</span>
+                            <span class="text-sm font-bold text-dark-text">LKR {{ number_format($schedule->price, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-200 mt-2">
+                            <span class="text-sm text-gray-700 font-extrabold">Selected Seats</span>
+                            <span class="text-lg font-extrabold text-primary-maroon" id="display-selected-count">0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" onclick="return prepareForm()" class="w-full bg-primary-maroon text-white font-bold rounded-lg px-4 py-3 hover:bg-dark-maroon transition shadow-md">
+                        Confirm Manual Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+    function prepareForm() {
+        const rawValue = document.getElementById('selected-seats-input') ? document.getElementById('selected-seats-input').value : '[]';
+        if(!rawValue || rawValue === '[]') {
+            alert('Please select at least one seat from the map.');
+            return false;
+        }
+        
+        // Remove old inputs
+        document.querySelectorAll('.seat-input-array').forEach(e => e.remove());
+        
+        // Create hidden inputs for each seat
+        const seats = JSON.parse(rawValue);
+        const form = document.getElementById('manual-booking-form');
+        
+        seats.forEach(seat => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'seat_numbers[]';
+            input.value = seat;
+            input.className = 'seat-input-array';
+            form.appendChild(input);
+        });
+        
+        return true;
+    }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('seatMap', () => ({
+            selectedSeats: [],
+            toggleSeat(seat) {
+                if(this.selectedSeats.includes(seat)) {
+                    this.selectedSeats = this.selectedSeats.filter(s => s !== seat);
+                } else {
+                    this.selectedSeats.push(seat);
+                }
+                
+                // Expose to outside
+                if(!document.getElementById('selected-seats-input')) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.id = 'selected-seats-input';
+                    document.body.appendChild(input);
+                }
+                
+                document.getElementById('selected-seats-input').value = JSON.stringify(this.selectedSeats);
+                document.getElementById('display-selected-count').innerText = this.selectedSeats.length;
+            }
+        }));
+    });
+</script>
+@endpush

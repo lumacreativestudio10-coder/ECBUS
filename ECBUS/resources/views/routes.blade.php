@@ -71,7 +71,7 @@
                                 </span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon" checked>
+                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
                                 <span class="ml-3 text-gray-600 group-hover:text-dark-text flex items-center">
                                     <i data-lucide="moon" class="w-4 h-4 mr-2 text-gray-400"></i> Night (18:00 - 06:00)
                                 </span>
@@ -84,11 +84,11 @@
                         <h4 class="font-bold text-dark-text mb-4 text-sm uppercase tracking-wide">Bus Type</h4>
                         <div class="space-y-3">
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon" checked>
+                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
                                 <span class="ml-3 text-gray-600 group-hover:text-dark-text">Super Luxury (A/C)</span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon" checked>
+                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
                                 <span class="ml-3 text-gray-600 group-hover:text-dark-text">Luxury (A/C)</span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
@@ -123,7 +123,7 @@
             <div class="w-full lg:w-3/4">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-extrabold text-dark-text">
-                        <span class="text-primary-maroon">12 Buses</span> found
+                        <span class="text-primary-maroon">{{ $schedules->count() ?? 0 }} Buses</span> found
                     </h3>
                     <div class="flex items-center">
                         <span class="text-sm text-gray-500 font-bold mr-3">Sort By:</span>
@@ -138,179 +138,76 @@
 
                 <!-- Bus Cards List -->
                 <div class="space-y-6">
-                    
-                    <!-- Bus Card 1 -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition duration-300">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                            
-                            <!-- Operator Info -->
-                            <div class="flex items-center mb-6 md:mb-0 w-full md:w-1/4">
-                                <div class="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mr-4 flex-shrink-0">
-                                    <i data-lucide="bus-front" class="w-8 h-8 text-primary-maroon"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-lg text-dark-text">EC Express</h4>
-                                    <span class="inline-block bg-primary-gold/20 text-dark-maroon text-xs px-2 py-0.5 rounded font-bold mt-1">Super Luxury A/C</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Journey Time -->
-                            <div class="flex items-center justify-between w-full md:w-2/5 px-2 mb-6 md:mb-0">
-                                <div class="text-center">
-                                    <h5 class="text-xl font-extrabold text-dark-text">20:00</h5>
-                                    <p class="text-xs font-semibold text-gray-500">Pettah</p>
-                                </div>
-                                <div class="flex-grow mx-4 relative flex flex-col items-center">
-                                    <span class="text-xs text-gray-400 font-bold mb-1">04h 30m</span>
-                                    <div class="w-full h-px bg-gray-300 relative">
-                                        <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary-gold"></div>
-                                        <div class="absolute -top-1 -left-1 w-2 h-2 rounded-full border border-gray-300 bg-white"></div>
+                    @forelse ($schedules as $schedule)
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition duration-300">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                                
+                                <!-- Operator Info -->
+                                <div class="flex items-center mb-6 md:mb-0 w-full md:w-1/4">
+                                    <div class="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mr-4 flex-shrink-0">
+                                        <i data-lucide="{{ $schedule->bus->operator->logo ?? 'bus-front' }}" class="w-8 h-8 text-primary-maroon"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-extrabold text-lg text-dark-text">{{ $schedule->bus->operator->name }}</h4>
+                                        <span class="inline-block bg-primary-gold/20 text-dark-maroon text-xs px-2 py-0.5 rounded font-bold mt-1">{{ $schedule->bus->type }}</span>
                                     </div>
                                 </div>
-                                <div class="text-center">
-                                    <h5 class="text-xl font-extrabold text-dark-text">00:30</h5>
-                                    <p class="text-xs font-semibold text-gray-500 text-red-500">Next Day</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Amenities -->
-                            <div class="hidden md:flex w-1/5 justify-center space-x-3 text-gray-400">
-                                <div class="relative group cursor-pointer hover:text-primary-maroon transition">
-                                    <i data-lucide="wifi" class="w-5 h-5"></i>
-                                </div>
-                                <div class="relative group cursor-pointer hover:text-primary-maroon transition">
-                                    <i data-lucide="snowflake" class="w-5 h-5"></i>
-                                </div>
-                                <div class="relative group cursor-pointer hover:text-primary-maroon transition">
-                                    <i data-lucide="plug" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-
-                            <!-- Price & Action -->
-                            <div class="w-full md:w-auto flex md:flex-col justify-between items-center md:items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 mt-4 md:mt-0">
-                                <div class="text-left md:text-right mb-0 md:mb-3">
-                                    <p class="text-xs font-bold text-gray-400 line-through">LKR 2,800</p>
-                                    <h4 class="text-2xl font-extrabold text-dark-maroon">LKR 2,500</h4>
-                                    <p class="text-xs font-semibold text-green-600 mt-1">12 Seats Available</p>
-                                </div>
-                                <button @click="openBookingModal('EC Express', 2500)" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
-                                    BOOK NOW
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bus Card 2 -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition duration-300">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                            
-                            <!-- Operator Info -->
-                            <div class="flex items-center mb-6 md:mb-0 w-full md:w-1/4">
-                                <div class="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mr-4 flex-shrink-0">
-                                    <i data-lucide="bus-front" class="w-8 h-8 text-primary-maroon"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-lg text-dark-text">Royal Travels</h4>
-                                    <span class="inline-block bg-primary-gold/20 text-dark-maroon text-xs px-2 py-0.5 rounded font-bold mt-1">Luxury A/C</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Journey Time -->
-                            <div class="flex items-center justify-between w-full md:w-2/5 px-2 mb-6 md:mb-0">
-                                <div class="text-center">
-                                    <h5 class="text-xl font-extrabold text-dark-text">21:30</h5>
-                                    <p class="text-xs font-semibold text-gray-500">Bambalapitiya</p>
-                                </div>
-                                <div class="flex-grow mx-4 relative flex flex-col items-center">
-                                    <span class="text-xs text-gray-400 font-bold mb-1">04h 00m</span>
-                                    <div class="w-full h-px bg-gray-300 relative">
-                                        <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary-gold"></div>
-                                        <div class="absolute -top-1 -left-1 w-2 h-2 rounded-full border border-gray-300 bg-white"></div>
+                                
+                                <!-- Journey Time -->
+                                <div class="flex items-center justify-between w-full md:w-2/5 px-2 mb-6 md:mb-0">
+                                    <div class="text-center">
+                                        <h5 class="text-xl font-extrabold text-dark-text">{{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}</h5>
+                                        <p class="text-xs font-semibold text-gray-500">{{ $schedule->route->fromLocation->name ?? '?' }}</p>
+                                    </div>
+                                    <div class="flex-grow mx-4 relative flex flex-col items-center">
+                                        @php
+                                            $departure = \Carbon\Carbon::parse($schedule->departure_time);
+                                            $arrival = \Carbon\Carbon::parse($schedule->arrival_time);
+                                            if($arrival < $departure) $arrival->addDay();
+                                            $duration = $departure->diff($arrival);
+                                        @endphp
+                                        <span class="text-xs text-gray-400 font-bold mb-1">{{ $duration->format('%Hh %Im') }}</span>
+                                        <div class="w-full h-px bg-gray-300 relative">
+                                            <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary-gold"></div>
+                                            <div class="absolute -top-1 -left-1 w-2 h-2 rounded-full border border-gray-300 bg-white"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <h5 class="text-xl font-extrabold text-dark-text">{{ \Carbon\Carbon::parse($schedule->arrival_time)->format('H:i') }}</h5>
+                                        <p class="text-xs font-semibold text-gray-500">{{ $schedule->route->toLocation->name ?? '?' }}</p>
+                                        @if($arrival > $departure->copy()->endOfDay())
+                                            <p class="text-xs font-semibold text-gray-500 text-red-500">Next Day</p>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="text-center">
-                                    <h5 class="text-xl font-extrabold text-dark-text">01:30</h5>
-                                    <p class="text-xs font-semibold text-gray-500 text-red-500">Next Day</p>
+                                
+                                <!-- Amenities (Dummy for now) -->
+                                <div class="hidden md:flex w-1/5 justify-center space-x-3 text-gray-400">
+                                    <div class="relative group cursor-pointer hover:text-primary-maroon transition"><i data-lucide="wifi" class="w-5 h-5"></i></div>
+                                    <div class="relative group cursor-pointer hover:text-primary-maroon transition"><i data-lucide="snowflake" class="w-5 h-5"></i></div>
                                 </div>
-                            </div>
-                            
-                            <!-- Amenities -->
-                            <div class="hidden md:flex w-1/5 justify-center space-x-3 text-gray-400">
-                                <div class="relative group cursor-pointer hover:text-primary-maroon transition">
-                                    <i data-lucide="snowflake" class="w-5 h-5"></i>
-                                </div>
-                                <div class="relative group cursor-pointer hover:text-primary-maroon transition">
-                                    <i data-lucide="video" class="w-5 h-5"></i>
-                                </div>
-                            </div>
 
-                            <!-- Price & Action -->
-                            <div class="w-full md:w-auto flex md:flex-col justify-between items-center md:items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 mt-4 md:mt-0">
-                                <div class="text-left md:text-right mb-0 md:mb-3">
-                                    <h4 class="text-2xl font-extrabold text-dark-maroon">LKR 2,200</h4>
-                                    <p class="text-xs font-semibold text-orange-500 mt-1">Only 4 Seats Left</p>
-                                </div>
-                                <button @click="openBookingModal('Royal Travels', 2200)" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
-                                    BOOK NOW
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bus Card 3 -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition duration-300">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                            
-                            <!-- Operator Info -->
-                            <div class="flex items-center mb-6 md:mb-0 w-full md:w-1/4">
-                                <div class="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mr-4 flex-shrink-0">
-                                    <i data-lucide="bus-front" class="w-8 h-8 text-primary-maroon"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-lg text-dark-text">Super Line</h4>
-                                    <span class="inline-block bg-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded font-bold mt-1">Semi-Luxury Non A/C</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Journey Time -->
-                            <div class="flex items-center justify-between w-full md:w-2/5 px-2 mb-6 md:mb-0">
-                                <div class="text-center">
-                                    <h5 class="text-xl font-extrabold text-dark-text">22:00</h5>
-                                    <p class="text-xs font-semibold text-gray-500">Wellawatte</p>
-                                </div>
-                                <div class="flex-grow mx-4 relative flex flex-col items-center">
-                                    <span class="text-xs text-gray-400 font-bold mb-1">05h 00m</span>
-                                    <div class="w-full h-px bg-gray-300 relative">
-                                        <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-gray-400"></div>
-                                        <div class="absolute -top-1 -left-1 w-2 h-2 rounded-full border border-gray-300 bg-white"></div>
+                                <!-- Price & Action -->
+                                <div class="w-full md:w-auto flex md:flex-col justify-between items-center md:items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 mt-4 md:mt-0">
+                                    <div class="text-left md:text-right mb-0 md:mb-3">
+                                        <h4 class="text-2xl font-extrabold text-dark-maroon">LKR {{ number_format($schedule->price, 0) }}</h4>
+                                        <p class="text-xs font-semibold text-green-600 mt-1">{{ $schedule->bus->total_seats }} Seats Available</p>
                                     </div>
+                                    <button @click="openBookingModal('{{ $schedule->bus->operator->name }}', {{ $schedule->price }}, {{ $schedule->id }})" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
+                                        BOOK NOW
+                                    </button>
                                 </div>
-                                <div class="text-center">
-                                    <h5 class="text-xl font-extrabold text-dark-text">03:00</h5>
-                                    <p class="text-xs font-semibold text-gray-500 text-red-500">Next Day</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Amenities -->
-                            <div class="hidden md:flex w-1/5 justify-center space-x-3 text-gray-400">
-                                <div class="relative group cursor-pointer hover:text-primary-maroon transition">
-                                    <i data-lucide="music" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-
-                            <!-- Price & Action -->
-                            <div class="w-full md:w-auto flex md:flex-col justify-between items-center md:items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 mt-4 md:mt-0">
-                                <div class="text-left md:text-right mb-0 md:mb-3">
-                                    <h4 class="text-2xl font-extrabold text-dark-maroon">LKR 1,500</h4>
-                                    <p class="text-xs font-semibold text-green-600 mt-1">20+ Seats Available</p>
-                                </div>
-                                <button @click="openBookingModal('Super Line', 1500)" class="bg-primary-gold text-dark-text px-6 py-2.5 rounded-lg font-bold hover:bg-yellow-500 transition shadow-md whitespace-nowrap">
-                                    BOOK NOW
-                                </button>
                             </div>
                         </div>
-                    </div>
-
+                    @empty
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center col-span-full">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="bus" class="w-10 h-10 text-gray-400"></i>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-dark-text mb-2">No Buses Found</h3>
+                            <p class="text-gray-500">We couldn't find any buses for this route on the selected date.</p>
+                        </div>
+                    @endforelse
                 </div>
                 
                 <!-- Pagination -->
@@ -473,8 +370,8 @@
                 return new Date(dateString).toLocaleDateString('en-GB', options);
             },
 
-            openBookingModal(busName, price) {
-                this.selectedBus = { name: busName, price: price };
+            openBookingModal(busName, price, scheduleId) {
+                this.selectedBus = { name: busName, price: price, schedule_id: scheduleId };
                 this.isModalOpen = true;
                 // re-initialize lucide icons inside modal if needed, or just let alpine render
                 setTimeout(() => lucide.createIcons(), 50);
@@ -489,20 +386,43 @@
                 }, 300);
             },
 
-            submitBooking() {
+            async submitBooking() {
                 this.isSubmitting = true;
                 
-                // Simulate API call delay
-                setTimeout(() => {
+                try {
+                    const response = await fetch("{{ route('booking.store') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            schedule_id: this.selectedBus.schedule_id,
+                            passenger_name: this.booking.name,
+                            phone: this.booking.phone,
+                            passenger_count: this.booking.count
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.isSubmitting = false;
+                        this.isSuccess = true;
+                        
+                        // Redirect to My Bookings page with phone number
+                        setTimeout(() => {
+                            window.location.href = "{{ route('booking') }}?phone=" + encodeURIComponent(this.booking.phone);
+                        }, 2000);
+                    } else {
+                        alert(data.message || 'Something went wrong.');
+                        this.isSubmitting = false;
+                    }
+                } catch (error) {
+                    console.error("Error submitting booking:", error);
+                    alert("Error submitting booking.");
                     this.isSubmitting = false;
-                    this.isSuccess = true;
-                    
-                    // Redirect to My Bookings page after success
-                    setTimeout(() => {
-                        window.location.href = "{{ route('booking') }}";
-                    }, 2000);
-                    
-                }, 1500);
+                }
             }
         }));
     });
