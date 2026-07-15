@@ -27,7 +27,7 @@ use App\Http\Controllers\ReviewController;
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 Route::get('/partners', function () {
-    $partners = \App\Models\Operator::where('status', 1)->orderBy('name')->get();
+    $partners = \App\Models\BusCompany::where('status', 1)->orderBy('company_name')->get();
     return view('partners', compact('partners'));
 })->name('partners');
 
@@ -45,7 +45,7 @@ Route::get('/my-booking', [BookingController::class, 'myBookings'])->name('booki
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\AdminPartnerController;
+
 use App\Http\Controllers\AdminBusCompanyController;
 use App\Http\Controllers\AdminRouteController;
 
@@ -71,10 +71,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/locations/{location}', [AdminController::class, 'destroyLocation'])->name('locations.destroy');
 
     // CRM Modules
-    Route::get('/partners', [AdminPartnerController::class, 'index'])->name('partners');
-    Route::post('/partners', [AdminPartnerController::class, 'store'])->name('partners.store');
-    Route::put('/partners/{partner}', [AdminPartnerController::class, 'update'])->name('partners.update');
-    Route::delete('/partners/{partner}', [AdminPartnerController::class, 'destroy'])->name('partners.destroy');
+
 
     Route::get('/bus-companies', [AdminBusCompanyController::class, 'index'])->name('bus_companies');
     Route::post('/bus-companies', [AdminBusCompanyController::class, 'store'])->name('bus_companies.store');

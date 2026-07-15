@@ -145,10 +145,10 @@
                                 <!-- Operator Info -->
                                 <div class="flex items-center mb-6 md:mb-0 w-full md:w-1/4">
                                     <div class="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mr-4 flex-shrink-0">
-                                        <i data-lucide="{{ $schedule->bus->operator->logo ?? 'bus-front' }}" class="w-8 h-8 text-primary-maroon"></i>
+                                        <i data-lucide="{{ $schedule->bus->busCompany->logo ?? 'bus-front' }}" class="w-8 h-8 text-primary-maroon"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-extrabold text-lg text-dark-text">{{ $schedule->bus->operator->name }}</h4>
+                                        <h4 class="font-extrabold text-lg text-dark-text">{{ $schedule->bus->busCompany->company_name }}</h4>
                                         <span class="inline-block bg-primary-gold/20 text-dark-maroon text-xs px-2 py-0.5 rounded font-bold mt-1">{{ $schedule->bus->type }}</span>
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@
                                         <h4 class="text-2xl font-extrabold text-dark-maroon">LKR {{ number_format($schedule->price, 0) }}</h4>
                                         <p class="text-xs font-semibold text-green-600 mt-1">{{ $schedule->bus->total_seats }} Seats Available</p>
                                     </div>
-                                    <button @click="openBookingModal('{{ $schedule->bus->operator->name }}', {{ $schedule->price }}, {{ $schedule->id }})" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
+                                    <button @click="openBookingModal('{{ $schedule->bus->busCompany->company_name }}', {{ $schedule->price }}, {{ $schedule->id }})" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
                                         BOOK NOW
                                     </button>
                                 </div>

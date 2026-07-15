@@ -12,7 +12,7 @@
 </div>
 @endif
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="{ isEditOpen: false, editData: {}, openEdit(route) { this.editData = { ...route, status_string: route.status ? 'active' : 'inactive' }; this.isEditOpen = true; } }">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="routeManager()">
 
     <!-- Add New Route Form -->
     <div class="lg:col-span-1">
@@ -79,6 +79,36 @@
                                 <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
                             @error('status') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Stops Builder for New Route -->
+                    <div class="border-t border-gray-100 pt-4 mt-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-sm text-gray-700">Intermediate Stops</h4>
+                            <button type="button" @click="addStop('new')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md font-bold transition">
+                                + Add Stop
+                            </button>
+                        </div>
+                        <input type="hidden" name="stops" :value="JSON.stringify(newStops)">
+                        
+                        <div class="space-y-2">
+                            <template x-for="(stop, index) in newStops" :key="index">
+                                <div class="flex gap-2 items-start bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                    <div class="flex-grow">
+                                        <input type="text" x-model="stop.stop_name" placeholder="Stop Name (e.g. Kilinochchi)" class="w-full border border-gray-200 rounded text-xs px-2 py-1.5 focus:border-primary-maroon outline-none" required>
+                                    </div>
+                                    <div class="w-24">
+                                        <input type="number" x-model="stop.time_offset_minutes" placeholder="Mins from start" class="w-full border border-gray-200 rounded text-xs px-2 py-1.5 focus:border-primary-maroon outline-none" title="Minutes from start">
+                                    </div>
+                                    <button type="button" @click="removeStop('new', index)" class="text-red-500 hover:bg-red-50 p-1.5 rounded transition">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </template>
+                            <div x-show="newStops.length === 0" class="text-xs text-gray-400 text-center py-2 italic">
+                                No stops added. This route is point-to-point.
+                            </div>
                         </div>
                     </div>
 
@@ -219,6 +249,37 @@
                                             </select>
                                         </div>
                                     </div>
+                                    </div>
+
+                                    <!-- Stops Builder for Edit Route -->
+                                    <div class="border-t border-gray-100 pt-4 mt-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-bold text-sm text-gray-700">Intermediate Stops</h4>
+                                            <button type="button" @click="addStop('edit')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md font-bold transition">
+                                                + Add Stop
+                                            </button>
+                                        </div>
+                                        <input type="hidden" name="stops" :value="JSON.stringify(editStops)">
+                                        
+                                        <div class="space-y-2">
+                                            <template x-for="(stop, index) in editStops" :key="index">
+                                                <div class="flex gap-2 items-start bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                                    <div class="flex-grow">
+                                                        <input type="text" x-model="stop.stop_name" placeholder="Stop Name" class="w-full border border-gray-200 rounded text-xs px-2 py-1.5 focus:border-primary-maroon outline-none" required>
+                                                    </div>
+                                                    <div class="w-24">
+                                                        <input type="number" x-model="stop.time_offset_minutes" placeholder="Mins" class="w-full border border-gray-200 rounded text-xs px-2 py-1.5 focus:border-primary-maroon outline-none" title="Minutes from start">
+                                                    </div>
+                                                    <button type="button" @click="removeStop('edit', index)" class="text-red-500 hover:bg-red-50 p-1.5 rounded transition">
+                                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                                    </button>
+                                                </div>
+                                            </template>
+                                            <div x-show="editStops.length === 0" class="text-xs text-gray-400 text-center py-2 italic">
+                                                No stops configured.
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -237,3 +298,29 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('routeManager', () => ({
+        isEditOpen: false, 
+        editData: {}, 
+        newStops: [],
+        editStops: [],
+        openEdit(route) { 
+            this.editData = { ...route, status_string: route.status ? 'active' : 'inactive' }; 
+            this.editStops = route.stops ? JSON.parse(JSON.stringify(route.stops)) : [];
+            this.isEditOpen = true; 
+        },
+        addStop(type) {
+            if(type === 'new') this.newStops.push({stop_name: '', time_offset_minutes: 0});
+            else this.editStops.push({stop_name: '', time_offset_minutes: 0});
+        },
+        removeStop(type, index) {
+            if(type === 'new') this.newStops.splice(index, 1);
+            else this.editStops.splice(index, 1);
+        }
+    }));
+});
+</script>
+@endpush

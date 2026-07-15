@@ -41,7 +41,7 @@
             <div>
                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-1">Bus Type</p>
                 <p class="font-bold text-dark-text">{{ $booking->schedule->bus->busType->name ?? 'Unknown' }}</p>
-                <p class="text-xs text-gray-500">{{ $booking->schedule->bus->operator->name ?? 'Unknown' }}</p>
+                <p class="text-xs text-gray-500">{{ $booking->schedule->bus->busCompany->company_name ?? 'Unknown' }}</p>
             </div>
         </div>
     </div>

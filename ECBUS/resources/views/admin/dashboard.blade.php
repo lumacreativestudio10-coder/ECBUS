@@ -65,7 +65,7 @@
                         <p class="text-xs text-gray-500">{{ $booking->phone }}</p>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="font-semibold text-gray-700">{{ $booking->schedule?->bus?->operator?->name ?? 'N/A' }}</span>
+                        <span class="font-semibold text-gray-700">{{ $booking->schedule?->bus?->busCompany?->company_name ?? 'N/A' }}</span>
                     </td>
                     <td class="px-6 py-4 font-extrabold text-dark-maroon">LKR {{ number_format($booking->total_amount, 2) }}</td>
                     <td class="px-6 py-4">

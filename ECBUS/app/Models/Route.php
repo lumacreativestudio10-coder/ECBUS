@@ -33,6 +33,11 @@ class Route extends Model
         return $this->belongsTo(Location::class, 'to_location_id');
     }
 
+    public function stops()
+    {
+        return $this->hasMany(RouteStop::class)->orderBy('stop_order');
+    }
+
     public function boardingPoints()
     {
         return $this->hasMany(BoardingPoint::class);

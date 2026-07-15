@@ -41,10 +41,6 @@
                 <i data-lucide="building" class="w-5 h-5 mr-3"></i> Bus Companies
             </a>
 
-            <a href="{{ route('admin.partners') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.partners') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
-                <i data-lucide="users" class="w-5 h-5 mr-3"></i> Bus Partners
-            </a>
-
             <a href="{{ route('admin.routes') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.routes') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
                 <i data-lucide="map" class="w-5 h-5 mr-3"></i> Routes
             </a>

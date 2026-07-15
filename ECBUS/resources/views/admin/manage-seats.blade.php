@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Manage Seats')
-@section('header', 'Manage Seats: ' . $schedule->bus->operator->name)
+@section('header', 'Manage Seats: ' . $schedule->bus->busCompany->company_name)
 
 @section('content')
 

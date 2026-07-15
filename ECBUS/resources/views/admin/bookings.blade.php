@@ -45,7 +45,7 @@
                     <td class="px-6 py-4">
                         <p class="font-bold text-dark-text">{{ $booking->schedule?->route?->fromLocation?->name }} &rarr; {{ $booking->schedule?->route?->toLocation?->name }}</p>
                         <p class="text-xs text-gray-500">{{ $booking->schedule?->date }} | {{ $booking->schedule ? \Carbon\Carbon::parse($booking->schedule->departure_time)->format('h:i A') : '' }}</p>
-                        <span class="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold mt-1 uppercase">{{ $booking->schedule?->bus?->operator?->name ?? 'N/A' }}</span>
+                        <span class="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold mt-1 uppercase">{{ $booking->schedule?->bus?->busCompany?->company_name ?? 'N/A' }}</span>
                     </td>
                     <td class="px-6 py-4">
                         <p class="font-extrabold text-dark-maroon">LKR {{ number_format($booking->total_amount, 2) }}</p>

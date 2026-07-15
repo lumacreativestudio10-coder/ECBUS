@@ -38,11 +38,12 @@ class AdminController extends Controller
 
     public function schedules()
     {
-        $schedules = Schedule::with('bus.operator', 'route.fromLocation', 'route.toLocation')->orderBy('date', 'desc')->get();
-        $buses = Bus::with('operator', 'busType')->get();
+        $schedules = Schedule::with('bus.busCompany', 'route.fromLocation', 'route.toLocation')->orderBy('date', 'desc')->get();
+        $buses = Bus::with('busCompany', 'busType')->get();
         $routes = \App\Models\Route::with('fromLocation', 'toLocation')->where('status', 1)->get();
+        $busCompanies = \App\Models\BusCompany::orderBy('company_name')->get();
         
-        return view('admin.schedules', compact('schedules', 'buses', 'routes'));
+        return view('admin.schedules', compact('schedules', 'buses', 'routes', 'busCompanies'));
     }
 
     public function storeSchedule(Request $request)
@@ -187,11 +188,10 @@ class AdminController extends Controller
     // Buses Management
     public function buses()
     {
-        $buses = Bus::with('operator', 'busCompany', 'busType')->latest()->get();
-        $operators = \App\Models\Operator::orderBy('name')->get();
+        $buses = Bus::with('busCompany', 'busType')->latest()->get();
         $busCompanies = \App\Models\BusCompany::orderBy('company_name')->get();
         $busTypes = \App\Models\BusType::orderBy('name')->get();
-        return view('admin.buses', compact('buses', 'operators', 'busCompanies', 'busTypes'));
+        return view('admin.buses', compact('buses', 'busCompanies', 'busTypes'));
     }
 
     public function storeBus(Request $request)

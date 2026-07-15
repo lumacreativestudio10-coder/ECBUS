@@ -28,13 +28,13 @@
             <div class="bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
                 <div class="p-8 text-center border-b border-gray-50 bg-gradient-to-b from-gray-50/50 to-transparent">
                     @if($partner->logo)
-                        <img src="{{ Storage::url($partner->logo) }}" alt="{{ $partner->name }}" class="w-24 h-24 mx-auto rounded-full object-cover border-4 border-white shadow-md mb-4 group-hover:scale-105 transition duration-300">
+                        <img src="{{ Storage::url($partner->logo) }}" alt="{{ $partner->company_name }}" class="w-24 h-24 mx-auto rounded-full object-cover border-4 border-white shadow-md mb-4 group-hover:scale-105 transition duration-300">
                     @else
                         <div class="w-24 h-24 mx-auto rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-md mb-4 group-hover:scale-105 transition duration-300">
                             <i data-lucide="bus" class="w-10 h-10 text-gray-400"></i>
                         </div>
                     @endif
-                    <h3 class="text-2xl font-extrabold text-dark-text">{{ $partner->name }}</h3>
+                    <h3 class="text-2xl font-extrabold text-dark-text">{{ $partner->company_name }}</h3>
                 </div>
                 
                 <div class="p-8 space-y-6">

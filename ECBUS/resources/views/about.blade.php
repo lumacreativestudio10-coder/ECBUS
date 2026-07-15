@@ -37,7 +37,7 @@
                     Founded in 2024, ECBUS was born out of the necessity to make long-distance bus travel in Sri Lanka completely hassle-free. We realized that passengers often struggled with booking seats, facing long queues and uncertain schedules. 
                 </p>
                 <p class="text-gray-600 mb-8 leading-relaxed">
-                    Our platform connects passengers with top-rated bus operators, offering a seamless online booking experience. From choosing your favorite window seat to receiving an instant e-ticket on WhatsApp, we have digitized the entire process.
+                    Our platform connects passengers with top-rated bus companies, offering a seamless online booking experience. From choosing your favorite window seat to receiving an instant e-ticket on WhatsApp, we have digitized the entire process.
                 </p>
                 
                 <div class="grid grid-cols-2 gap-6">
@@ -105,7 +105,7 @@
                     <i data-lucide="shield-check" class="w-8 h-8"></i>
                 </div>
                 <h4 class="text-xl font-bold text-dark-text mb-3">Verified Partners</h4>
-                <p class="text-gray-500 text-sm">We only collaborate with highly rated, government-registered bus operators.</p>
+                <p class="text-gray-500 text-sm">We only collaborate with highly rated, government-registered bus companies.</p>
             </div>
             
             <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:-translate-y-2 transition duration-300">
