@@ -64,6 +64,17 @@
             <a href="{{ route('admin.locations') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.locations') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
                 <i data-lucide="map-pin" class="w-5 h-5 mr-3"></i> Destinations
             </a>
+            <div class="pt-4 pb-2">
+                <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Settings</p>
+            </div>
+            
+            <!-- Manage Users (Super Admin and Company Admin only) -->
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isCompanyAdmin())
+                <a href="{{ route('admin.users') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.users') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+                    <i data-lucide="users" class="w-5 h-5 mr-3"></i> Manage Users
+                </a>
+            @endif
+
         </nav>
 
         <div class="p-4 border-t border-white/10">
@@ -93,8 +104,8 @@
             
             <div class="flex items-center space-x-4">
                 <div class="hidden md:block text-right">
-                    <p class="text-sm font-bold text-dark-text">Administrator</p>
-                    <p class="text-xs text-gray-500">ECBUS Panel</p>
+                    <p class="text-sm font-bold text-dark-text">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-500">{{ auth()->user()->role->name ?? 'ECBUS Panel' }}</p>
                 </div>
                 <div class="w-10 h-10 bg-primary-gold rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                     <i data-lucide="shield-check" class="w-5 h-5 text-dark-maroon"></i>

@@ -36,4 +36,9 @@ class BusCompany extends Model
         'swift_code',
         'status',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'company_id');
+    }
 }

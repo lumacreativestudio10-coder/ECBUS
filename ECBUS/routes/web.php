@@ -51,6 +51,7 @@ use App\Http\Controllers\AdminAuthController;
 
 use App\Http\Controllers\AdminBusCompanyController;
 use App\Http\Controllers\AdminRouteController;
+use App\Http\Controllers\AdminUserController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
@@ -103,5 +104,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/contact-messages', [App\Http\Controllers\AdminContactMessageController::class, 'index'])->name('contact_messages');
         Route::patch('/contact-messages/{message}', [App\Http\Controllers\AdminContactMessageController::class, 'updateStatus'])->name('contact_messages.update');
         Route::delete('/contact-messages/{message}', [App\Http\Controllers\AdminContactMessageController::class, 'destroy'])->name('contact_messages.destroy');
+        
+        // Manage Users Module
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+        Route::patch('/users/{user}/status', [AdminUserController::class, 'updateStatus'])->name('users.updateStatus');
     });
 });
