@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-6 flex items-center justify-between">
-    <a href="{{ route('admin.bookings.show', $booking) }}" class="text-gray-500 hover:text-primary-maroon font-bold text-sm transition flex items-center">
+    <a href="{{ route(auth()->user()->getRolePrefix().'.bookings.show', $booking) }}" class="text-gray-500 hover:text-primary-maroon font-bold text-sm transition flex items-center">
         <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Booking
     </a>
 </div>
@@ -23,7 +23,7 @@
 <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-3xl mx-auto">
     <h3 class="font-extrabold text-lg text-dark-text border-b border-gray-100 pb-4 mb-6">Update Passenger Details</h3>
     
-    <form action="{{ route('admin.bookings.updateDetails', $booking) }}" method="POST">
+    <form action="{{ route(auth()->user()->getRolePrefix().'.bookings.updateDetails', $booking) }}" method="POST">
         @csrf
         @method('PUT')
         
@@ -56,7 +56,7 @@
         </div>
 
         <div class="mt-8 flex justify-end space-x-4 border-t border-gray-100 pt-6">
-            <a href="{{ route('admin.bookings.show', $booking) }}" class="px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition">
+            <a href="{{ route(auth()->user()->getRolePrefix().'.bookings.show', $booking) }}" class="px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition">
                 Cancel
             </a>
             <button type="submit" class="px-6 py-3 bg-primary-maroon text-white font-bold rounded-lg hover:bg-dark-maroon transition shadow-md">

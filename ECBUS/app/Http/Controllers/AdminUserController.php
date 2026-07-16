@@ -7,6 +7,7 @@ use App\Models\BusCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Services\ActivityLogger;
 
 class AdminUserController extends Controller
 {
@@ -74,22 +75,24 @@ class AdminUserController extends Controller
         $companyId = $currentUser->isSuperAdmin() ? $request->company_id : $currentUser->company_id;
 
         // Company Admin can only create Staff
-        $roleId = $request->role_id;
+        $role_id = $request->role_id;
         if ($currentUser->isCompanyAdmin()) {
-            $roleId = 3; // Force to staff if company admin tries to spoof
+            $role_id = 3; // Force to staff if company admin tries to spoof
         }
 
-        User::create([
+        $user = User::create([
+            'company_id' => $companyId,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
-            'role_id' => $roleId,
-            'company_id' => $companyId,
-            'status' => 1, // Default active
+            'role_id' => $role_id,
+            'status' => 1, // default status
         ]);
 
-        return redirect()->route('admin.users')->with('success', 'User created successfully.');
+        ActivityLogger::log('User Created', "Created new user: {$user->name} ({$user->email})");
+
+        return redirect()->back()->with('success', 'User added successfully.');
     }
 
     public function update(Request $request, User $user)
@@ -118,28 +121,28 @@ class AdminUserController extends Controller
 
         $request->validate($rules);
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-        ];
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
 
         // Only super admin can change company
         if ($currentUser->isSuperAdmin()) {
-            $data['company_id'] = $request->company_id;
-            $data['role_id'] = $request->role_id;
+            $user->company_id = $request->company_id;
+            $user->role_id = $request->role_id;
         } else {
             // Company Admin can only edit staff roles to staff
-            $data['role_id'] = 3;
+            $user->role_id = 3;
         }
 
         if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            $user->password = Hash::make($request->password);
         }
 
-        $user->update($data);
+        $user->save();
 
-        return redirect()->route('admin.users')->with('success', 'User updated successfully.');
+        ActivityLogger::log('User Updated', "Updated user details for: {$user->name}");
+
+        return redirect()->back()->with('success', 'User updated successfully.');
     }
 
     public function destroy(User $user)
@@ -157,6 +160,8 @@ class AdminUserController extends Controller
 
         $user->delete();
 
+        ActivityLogger::log('User Deleted', "Deleted user: {$user->name}");
+
         return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
     }
 
@@ -173,8 +178,11 @@ class AdminUserController extends Controller
              return redirect()->back()->with('error', 'You cannot deactivate yourself.');
         }
 
-        $user->update(['status' => $request->status]);
+        $user->status = $request->status;
+        $user->save();
 
-        return redirect()->route('admin.users')->with('success', 'User status updated successfully.');
+        ActivityLogger::log('User Status Changed', "Changed status of {$user->name} to {$user->status}");
+
+        return redirect()->back()->with('success', "User marked as " . ($user->status == 1 ? 'Active' : 'Inactive'));
     }
 }

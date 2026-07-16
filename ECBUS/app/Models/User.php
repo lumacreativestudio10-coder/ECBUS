@@ -69,4 +69,16 @@ class User extends Authenticatable
     {
         return $this->role_id === 3; // 3 = Staff
     }
+
+    public function getRolePrefix()
+    {
+        return match($this->role_id) {
+            1 => 'admin',
+            2 => 'company',
+            3 => 'staff',
+            4 => 'driver',
+            5 => 'conductor',
+            default => 'admin'
+        };
+    }
 }

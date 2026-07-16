@@ -23,7 +23,7 @@
 @endif
 
 <div class="flex items-center mb-6 text-gray-500 text-sm font-bold">
-    <a href="{{ route('admin.schedules') }}" class="hover:text-primary-maroon transition flex items-center">
+    <a href="{{ route(auth()->user()->getRolePrefix().'.schedules') }}" class="hover:text-primary-maroon transition flex items-center">
         <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Schedules
     </a>
     <span class="mx-3">|</span>
@@ -186,7 +186,7 @@
                     <p class="text-sm text-gray-500 mb-6">Select available seats on the map to book them manually for offline customers.</p>
                 @endif
                 
-                <form action="{{ route('admin.schedules.seats.update', $schedule) }}" method="POST" id="manual-booking-form">
+                <form action="{{ route(auth()->user()->getRolePrefix().'.schedules.seats.update', $schedule) }}" method="POST" id="manual-booking-form">
                     @csrf
                     
                     @if(isset($targetBooking))

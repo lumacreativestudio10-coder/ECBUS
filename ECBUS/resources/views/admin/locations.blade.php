@@ -31,7 +31,7 @@
                 <h3 class="font-extrabold text-lg text-dark-text">Add Destination</h3>
             </div>
             <div class="p-6">
-                <form action="{{ route('admin.locations.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route(auth()->user()->getRolePrefix().'.locations.store') }}" method="POST" class="space-y-4">
                     @csrf
                     
                     <div>
@@ -72,7 +72,7 @@
                                     <button @click="openEdit({{ $location->id }}, '{{ addslashes($location->name) }}')" type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                     </button>
-                                    <form action="{{ route('admin.locations.destroy', $location) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this location?');">
+                                    <form action="{{ route(auth()->user()->getRolePrefix().'.locations.destroy', $location) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this location?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
@@ -101,7 +101,7 @@
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <div x-show="isEditOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form :action="`{{ url('/admin/locations') }}/${editLoc.id}`" method="POST">
+                <form :action="`{{ url('/'.auth()->user()->getRolePrefix().'/locations') }}/${editLoc.id}`" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

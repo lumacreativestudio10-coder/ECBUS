@@ -83,7 +83,7 @@
                                 <button @click='openEdit({{ json_encode($review) }})' type="button" class="text-gray-400 hover:text-primary-maroon transition p-2 rounded-lg hover:bg-red-50" title="Edit">
                                     <i data-lucide="edit-2" class="w-4 h-4"></i>
                                 </button>
-                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this review?');" class="inline">
+                                <form action="{{ route(auth()->user()->getRolePrefix().'.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this review?');" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
@@ -120,7 +120,7 @@
                     </button>
                 </div>
 
-                <form :action="isEditing ? `{{ url('/admin/reviews') }}/${formData.id}` : '{{ route('admin.reviews.store') }}'" method="POST" enctype="multipart/form-data">
+                <form :action="isEditing ? `{{ url('/'.auth()->user()->getRolePrefix().'/reviews') }}/${formData.id}` : '{{ route(auth()->user()->getRolePrefix().'.reviews.store') }}'" method="POST" enctype="multipart/form-data">
                     @csrf
                     <template x-if="isEditing">
                         <input type="hidden" name="_method" value="PUT">

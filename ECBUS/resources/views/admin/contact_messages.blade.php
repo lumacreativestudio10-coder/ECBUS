@@ -66,7 +66,7 @@
                                 <button @click='openView({{ json_encode($message) }})' type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="View Message">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </button>
-                                <form action="{{ route('admin.contact_messages.destroy', $message) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                <form action="{{ route(auth()->user()->getRolePrefix().'.contact_messages.destroy', $message) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this message?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
@@ -120,7 +120,7 @@
                     </div>
 
                     <div class="mt-6 border-t border-gray-100 pt-4">
-                        <form :action="`{{ url('/admin/contact-messages') }}/${viewData.id}`" method="POST" class="flex items-center gap-4">
+                        <form :action="`{{ url('/'.auth()->user()->getRolePrefix().'/contact-messages') }}/${viewData.id}`" method="POST" class="flex items-center gap-4">
                             @csrf
                             @method('PATCH')
                             <label class="text-sm font-bold text-gray-700">Update Status:</label>

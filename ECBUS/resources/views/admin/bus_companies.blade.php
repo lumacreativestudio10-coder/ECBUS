@@ -53,7 +53,7 @@
                     }
                 </style>
 
-                <form action="{{ route('admin.bus_companies') }}" method="GET" class="custom-filter-container">
+                <form action="{{ route(auth()->user()->getRolePrefix().'.bus_companies') }}" method="GET" class="custom-filter-container">
                     
                     <!-- Search Input (Left) -->
                     <div class="custom-search">
@@ -97,7 +97,7 @@
                             <button type="submit" class="custom-btn bg-primary-maroon hover:bg-dark-maroon text-white font-bold rounded-lg px-5 py-2.5 text-sm transition flex items-center shadow-md">
                                 <i data-lucide="filter" class="w-4 h-4 mr-2"></i> Filter
                             </button>
-                            <a href="{{ route('admin.bus_companies') }}" class="custom-btn bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-lg px-4 py-2.5 text-sm transition flex items-center shadow-sm" title="Reset Filters">
+                            <a href="{{ route(auth()->user()->getRolePrefix().'.bus_companies') }}" class="custom-btn bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-lg px-4 py-2.5 text-sm transition flex items-center shadow-sm" title="Reset Filters">
                                 <i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i> Reset
                             </a>
                         </div>
@@ -187,7 +187,7 @@
                                         <button @click="openEdit({{ json_encode($company) }})" type="button" class="text-gray-400 hover:text-green-600 transition p-1" title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </button>
-                                        <form action="{{ route('admin.bus_companies.destroy', $company) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this bus company?');" class="inline-block">
+                                        <form action="{{ route(auth()->user()->getRolePrefix().'.bus_companies.destroy', $company) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this bus company?');" class="inline-block">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-gray-400 hover:text-red-600 transition p-1" title="Delete">
@@ -229,7 +229,7 @@
             <div x-show="isAddOpen" @click="isAddOpen = false" class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div x-show="isAddOpen" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                <form action="{{ route('admin.bus_companies.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route(auth()->user()->getRolePrefix().'.bus_companies.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="flex justify-between items-center mb-5 border-b pb-3">
@@ -392,7 +392,7 @@
             <div x-show="isEditOpen" @click="isEditOpen = false" class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div x-show="isEditOpen" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                <form :action="`{{ url('/admin/bus-companies') }}/${editData.id}`" method="POST" enctype="multipart/form-data">
+                <form :action="`{{ url('/'.auth()->user()->getRolePrefix().'/bus-companies') }}/${editData.id}`" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

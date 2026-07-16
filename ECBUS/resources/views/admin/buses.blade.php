@@ -31,7 +31,7 @@
                 <h3 class="font-extrabold text-lg text-dark-text">Add New Bus</h3>
             </div>
             <div class="p-6">
-                <form action="{{ route('admin.buses.store') }}" method="POST" id="add-bus-form" @submit.prevent="submitForm">
+                <form action="{{ route(auth()->user()->getRolePrefix().'.buses.store') }}" method="POST" id="add-bus-form" @submit.prevent="submitForm">
                     @csrf
                     
                     <input type="hidden" name="seat_layout" id="seat_layout_input">
@@ -164,7 +164,7 @@
                             </td>
                             <td class="px-6 py-4 font-extrabold text-primary-maroon">{{ $bus->total_seats }}</td>
                             <td class="px-6 py-4 text-right">
-                                <form action="{{ route('admin.buses.destroy', $bus) }}" method="POST" class="inline-flex gap-2" onsubmit="return confirm('Are you sure you want to delete this bus?');">
+                                <form action="{{ route(auth()->user()->getRolePrefix().'.buses.destroy', $bus) }}" method="POST" class="inline-flex gap-2" onsubmit="return confirm('Are you sure you want to delete this bus?');">
                                     <button type="button" @click='viewBus({{ $bus->id }}, @json($bus->name), @json($bus->busType->name ?? "N/A"), @json($bus->registration_number), {{ $bus->total_seats }}, @json($bus->seat_layout), @json($bus->busCompany->company_name ?? "N/A"))' class="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition" title="View Bus">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                     </button>
@@ -257,7 +257,7 @@
 
                 <!-- EDIT MODE -->
                 <div x-show="isEditMode" x-data="editLayoutBuilder()">
-                    <form :action="`{{ url('/admin/buses') }}/${viewingBus.id}`" method="POST" @submit.prevent="submitEditForm">
+                    <form :action="`{{ url('/'.auth()->user()->getRolePrefix().'/buses') }}/${viewingBus.id}`" method="POST" @submit.prevent="submitEditForm">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="seat_layout" id="edit_seat_layout_input">

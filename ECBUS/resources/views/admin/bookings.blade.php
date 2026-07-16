@@ -65,7 +65,7 @@
                         @endif
                     </td>
                     <td class="px-6 py-4">
-                        <form action="{{ route('admin.bookings.update', $booking) }}" method="POST">
+                        <form action="{{ route(auth()->user()->getRolePrefix().'.bookings.update', $booking) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <select name="booking_status" onchange="this.form.submit()" class="text-xs font-bold rounded-full px-3 py-1 outline-none border border-gray-200 cursor-pointer hover:bg-gray-50 {{ $booking->booking_status == 'confirmed' ? 'text-green-700 bg-green-50' : ($booking->booking_status == 'pending' ? 'text-yellow-700 bg-yellow-50' : 'text-red-700 bg-red-50') }}">
@@ -78,14 +78,14 @@
                     </td>
                     <td class="px-6 py-4 text-right whitespace-nowrap">
                         @if(empty($booking->seat_numbers) && $booking->schedule_id)
-                            <a href="{{ route('admin.schedules.seats', ['schedule' => $booking->schedule_id, 'booking_id' => $booking->id]) }}" class="text-white bg-primary-maroon hover:bg-dark-maroon transition px-2 py-1 rounded-lg text-[10px] font-bold mr-1" title="Assign Seats">
+                            <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.seats', ['schedule' => $booking->schedule_id, 'booking_id' => $booking->id]) }}" class="text-white bg-primary-maroon hover:bg-dark-maroon transition px-2 py-1 rounded-lg text-[10px] font-bold mr-1" title="Assign Seats">
                                 <i data-lucide="armchair" class="w-3 h-3 inline"></i> Assign Seats
                             </a>
                         @endif
-                        <a href="{{ route('admin.bookings.show', $booking) }}" class="text-blue-600 hover:text-blue-800 transition p-2 rounded-lg hover:bg-blue-50 inline-block" title="View Booking">
+                        <a href="{{ route(auth()->user()->getRolePrefix().'.bookings.show', $booking) }}" class="text-blue-600 hover:text-blue-800 transition p-2 rounded-lg hover:bg-blue-50 inline-block" title="View Booking">
                             <i data-lucide="eye" class="w-5 h-5 inline"></i>
                         </a>
-                        <a href="{{ route('admin.bookings.edit', $booking) }}" class="text-green-600 hover:text-green-800 transition p-2 rounded-lg hover:bg-green-50 inline-block" title="Edit Booking">
+                        <a href="{{ route(auth()->user()->getRolePrefix().'.bookings.edit', $booking) }}" class="text-green-600 hover:text-green-800 transition p-2 rounded-lg hover:bg-green-50 inline-block" title="Edit Booking">
                             <i data-lucide="edit" class="w-5 h-5 inline"></i>
                         </a>
                         <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="text-primary-maroon hover:text-dark-maroon transition p-2 rounded-lg hover:bg-gray-100 inline-block" title="Download Ticket">

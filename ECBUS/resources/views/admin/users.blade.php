@@ -33,7 +33,7 @@
 
     <!-- Filters & Search -->
     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
-        <form method="GET" action="{{ route('admin.users') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="GET" action="{{ route(auth()->user()->getRolePrefix().'.users') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Search</label>
                 <div class="relative">
@@ -70,7 +70,7 @@
                 <button type="submit" class="bg-dark-text text-white px-5 py-2 rounded-xl font-bold hover:bg-black transition w-full md:w-auto">
                     Filter
                 </button>
-                <a href="{{ route('admin.users') }}" class="bg-gray-100 text-gray-600 px-5 py-2 rounded-xl font-bold hover:bg-gray-200 transition text-center w-full md:w-auto">
+                <a href="{{ route(auth()->user()->getRolePrefix().'.users') }}" class="bg-gray-100 text-gray-600 px-5 py-2 rounded-xl font-bold hover:bg-gray-200 transition text-center w-full md:w-auto">
                     Reset
                 </a>
             </div>
@@ -123,7 +123,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                <form action="{{ route('admin.users.updateStatus', $user) }}" method="POST" class="inline">
+                                <form action="{{ route(auth()->user()->getRolePrefix().'.users.updateStatus', $user) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="status" value="{{ $user->status ? 0 : 1 }}">
@@ -137,7 +137,7 @@
                                     <i data-lucide="edit-2" class="w-4 h-4"></i>
                                 </button>
                                 @if($user->id !== auth()->id())
-                                <button onclick="confirmDelete('{{ route('admin.users.destroy', $user) }}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                                <button onclick="confirmDelete('{{ route(auth()->user()->getRolePrefix().'.users.destroy', $user) }}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                                 @endif
@@ -279,7 +279,7 @@
         return {
             isModalOpen: false,
             isEdit: false,
-            formAction: '{{ route('admin.users.store') }}',
+            formAction: '{{ route(auth()->user()->getRolePrefix().'.users.store') }}',
             form: {
                 id: null,
                 name: '',
@@ -295,7 +295,7 @@
                     this.isEdit = {{ old('_method') == 'PUT' ? 'true' : 'false' }};
                     this.formAction = this.isEdit && '{{ old('id') }}' 
                         ? `/admin/users/{{ old('id') }}` 
-                        : '{{ route('admin.users.store') }}';
+                        : '{{ route(auth()->user()->getRolePrefix().'.users.store') }}';
                     
                     this.form.id = '{{ old('id') }}';
                     this.form.name = @json(old('name'));
@@ -317,7 +317,7 @@
                     this.form.role_id = user.role_id || '';
                 } else {
                     this.isEdit = false;
-                    this.formAction = '{{ route('admin.users.store') }}';
+                    this.formAction = '{{ route(auth()->user()->getRolePrefix().'.users.store') }}';
                     this.form = {
                         id: null, name: '', email: '', phone_number: '', company_id: '', role_id: ''
                     };

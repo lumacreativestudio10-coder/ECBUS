@@ -5,11 +5,11 @@
 
 @section('content')
 <div class="mb-6 flex items-center justify-between">
-    <a href="{{ route('admin.bookings') }}" class="text-gray-500 hover:text-primary-maroon font-bold text-sm transition flex items-center">
+    <a href="{{ route(auth()->user()->getRolePrefix().'.bookings') }}" class="text-gray-500 hover:text-primary-maroon font-bold text-sm transition flex items-center">
         <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Bookings
     </a>
     <div>
-        <a href="{{ route('admin.bookings.edit', $booking) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-sm mr-2 text-sm inline-flex items-center">
+        <a href="{{ route(auth()->user()->getRolePrefix().'.bookings.edit', $booking) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-sm mr-2 text-sm inline-flex items-center">
             <i data-lucide="edit" class="w-4 h-4 mr-2"></i> Edit Booking
         </a>
         <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="bg-primary-maroon text-white px-4 py-2 rounded-lg font-bold hover:bg-dark-maroon transition shadow-sm text-sm inline-flex items-center">

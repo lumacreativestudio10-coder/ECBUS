@@ -62,16 +62,16 @@
                         </td>
                         <td class="px-6 py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.schedules.manifest', $schedule) }}" target="_blank" class="inline-flex items-center text-dark-maroon hover:text-white bg-gray-100 hover:bg-dark-maroon transition px-3 py-1.5 rounded-lg font-bold text-xs">
+                                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.manifest', $schedule) }}" target="_blank" class="inline-flex items-center text-dark-maroon hover:text-white bg-gray-100 hover:bg-dark-maroon transition px-3 py-1.5 rounded-lg font-bold text-xs">
                                     <i data-lucide="printer" class="w-3.5 h-3.5 mr-1"></i> CMS
                                 </a>
-                                <a href="{{ route('admin.schedules.seats', $schedule) }}" class="inline-flex items-center text-primary-maroon hover:text-dark-maroon bg-primary-gold/20 hover:bg-primary-gold/40 transition px-3 py-1.5 rounded-lg font-bold text-xs">
+                                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.seats', $schedule) }}" class="inline-flex items-center text-primary-maroon hover:text-dark-maroon bg-primary-gold/20 hover:bg-primary-gold/40 transition px-3 py-1.5 rounded-lg font-bold text-xs">
                                     <i data-lucide="armchair" class="w-3.5 h-3.5 mr-1"></i> Seats
                                 </a>
                                 <button @click="openEdit({{ json_encode($schedule) }})" type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                 </button>
-                                <form action="{{ route('admin.schedules.destroy', $schedule) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                <form action="{{ route(auth()->user()->getRolePrefix().'.schedules.destroy', $schedule) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
@@ -97,7 +97,7 @@
             <div x-show="isAddOpen" @click="isAddOpen = false" class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div x-show="isAddOpen" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form action="{{ route('admin.schedules.store') }}" method="POST">
+                <form action="{{ route(auth()->user()->getRolePrefix().'.schedules.store') }}" method="POST">
                     @csrf
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
@@ -187,7 +187,7 @@
             <div x-show="isEditOpen" @click="isEditOpen = false" class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div x-show="isEditOpen" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form :action="`{{ url('/admin/schedules') }}/${editData.id}`" method="POST">
+                <form :action="`{{ url('/'.auth()->user()->getRolePrefix().'/schedules') }}/${editData.id}`" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

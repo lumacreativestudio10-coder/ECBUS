@@ -21,7 +21,11 @@ class AdminAuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('admin.dashboard'));
+            
+            \App\Services\ActivityLogger::log('Login', 'User successfully logged into the system.');
+            
+            $prefix = auth()->user()->getRolePrefix();
+            return redirect()->intended(route($prefix . '.dashboard'));
         }
 
         return back()->withErrors([
@@ -31,6 +35,8 @@ class AdminAuthController extends Controller
 
     public function logout(Request $request)
     {
+        \App\Services\ActivityLogger::log('Logout', 'User logged out of the system.');
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
