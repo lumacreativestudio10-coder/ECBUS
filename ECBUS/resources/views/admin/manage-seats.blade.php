@@ -79,11 +79,13 @@
                                                 
                                                 @if(in_array($seatId, $bookedSeats))
                                                     <!-- Booked Seat -->
-                                                    <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
+                                                    <div @mouseenter="hoveredBooking = {{ $seatDetails[$seatId]->id }}" @mouseleave="hoveredBooking = null" :class="hoveredBooking == {{ $seatDetails[$seatId]->id }} ? 'bg-primary-maroon scale-110 shadow-lg shadow-primary-maroon/50 z-40' : 'bg-red-500 shadow-sm shadow-red-500/50 z-10'" class="w-10 h-10 rounded-t-lg rounded-b flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative transition-all duration-300">
                                                         {{ $seatId }}
-                                                        <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
-                                                            {{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}<br>
-                                                            {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
+                                                        <div class="absolute bottom-full mb-3 hidden group-hover:block w-48 bg-dark-text text-white text-left p-3 rounded-xl shadow-xl z-50 pointer-events-none">
+                                                            <div class="font-extrabold text-[11px] text-gray-400 mb-1 border-b border-gray-600 pb-1">Ref: {{ $seatDetails[$seatId]->booking_reference ?? '#'.$seatDetails[$seatId]->id }}</div>
+                                                            <div class="font-bold text-sm mb-1">{{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}</div>
+                                                            <div class="text-[11px] text-gray-300 mb-1">Phone: {{ $seatDetails[$seatId]->phone ?? 'N/A' }}</div>
+                                                            <div class="text-[11px] text-gray-300">Seats: {{ is_array($seatDetails[$seatId]->seat_numbers) ? implode(', ', $seatDetails[$seatId]->seat_numbers) : $seatDetails[$seatId]->seat_numbers }}</div>
                                                         </div>
                                                     </div>
                                                 @else
@@ -113,11 +115,13 @@
                                             @foreach(['A', 'B'] as $col)
                                                 @php $seatId = $row . $col; @endphp
                                                 @if(in_array($seatId, $bookedSeats))
-                                                    <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
+                                                    <div @mouseenter="hoveredBooking = {{ $seatDetails[$seatId]->id }}" @mouseleave="hoveredBooking = null" :class="hoveredBooking == {{ $seatDetails[$seatId]->id }} ? 'bg-primary-maroon scale-110 shadow-lg shadow-primary-maroon/50 z-40' : 'bg-red-500 shadow-sm shadow-red-500/50 z-10'" class="w-10 h-10 rounded-t-lg rounded-b flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative transition-all duration-300">
                                                         {{ $seatId }}
-                                                        <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
-                                                            {{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}<br>
-                                                            {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
+                                                        <div class="absolute bottom-full mb-3 hidden group-hover:block w-48 bg-dark-text text-white text-left p-3 rounded-xl shadow-xl z-50 pointer-events-none">
+                                                            <div class="font-extrabold text-[11px] text-gray-400 mb-1 border-b border-gray-600 pb-1">Ref: {{ $seatDetails[$seatId]->booking_reference ?? '#'.$seatDetails[$seatId]->id }}</div>
+                                                            <div class="font-bold text-sm mb-1">{{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}</div>
+                                                            <div class="text-[11px] text-gray-300 mb-1">Phone: {{ $seatDetails[$seatId]->phone ?? 'N/A' }}</div>
+                                                            <div class="text-[11px] text-gray-300">Seats: {{ is_array($seatDetails[$seatId]->seat_numbers) ? implode(', ', $seatDetails[$seatId]->seat_numbers) : $seatDetails[$seatId]->seat_numbers }}</div>
                                                         </div>
                                                     </div>
                                                 @else
@@ -137,11 +141,13 @@
                                                 @php $seatId = $row . $col; @endphp
                                                 @if(($row - 1) * 4 + (ord($col) - 64) <= $schedule->bus->total_seats)
                                                     @if(in_array($seatId, $bookedSeats))
-                                                        <div class="w-10 h-10 bg-red-500 rounded-t-lg rounded-b shadow-sm shadow-red-500/50 flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative z-10">
+                                                        <div @mouseenter="hoveredBooking = {{ $seatDetails[$seatId]->id }}" @mouseleave="hoveredBooking = null" :class="hoveredBooking == {{ $seatDetails[$seatId]->id }} ? 'bg-primary-maroon scale-110 shadow-lg shadow-primary-maroon/50 z-40' : 'bg-red-500 shadow-sm shadow-red-500/50 z-10'" class="w-10 h-10 rounded-t-lg rounded-b flex flex-col justify-end items-center pb-1 text-white text-[10px] font-bold cursor-not-allowed group relative transition-all duration-300">
                                                             {{ $seatId }}
-                                                            <div class="absolute bottom-full mb-2 hidden group-hover:block w-32 bg-dark-text text-white text-xs p-2 rounded z-20 text-center pointer-events-none">
-                                                                {{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}<br>
-                                                                {{ $seatDetails[$seatId]->phone ?? 'No Phone' }}
+                                                            <div class="absolute bottom-full mb-3 hidden group-hover:block w-48 bg-dark-text text-white text-left p-3 rounded-xl shadow-xl z-50 pointer-events-none">
+                                                                <div class="font-extrabold text-[11px] text-gray-400 mb-1 border-b border-gray-600 pb-1">Ref: {{ $seatDetails[$seatId]->booking_reference ?? '#'.$seatDetails[$seatId]->id }}</div>
+                                                                <div class="font-bold text-sm mb-1">{{ $seatDetails[$seatId]->customer_name ?? 'Unknown' }}</div>
+                                                                <div class="text-[11px] text-gray-300 mb-1">Phone: {{ $seatDetails[$seatId]->phone ?? 'N/A' }}</div>
+                                                                <div class="text-[11px] text-gray-300">Seats: {{ is_array($seatDetails[$seatId]->seat_numbers) ? implode(', ', $seatDetails[$seatId]->seat_numbers) : $seatDetails[$seatId]->seat_numbers }}</div>
                                                             </div>
                                                         </div>
                                                     @else
@@ -199,12 +205,34 @@
 
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Boarding Point (Optional)</label>
-                        <input type="text" name="boarding_point" {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->boarding_point ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" placeholder="e.g. Jaffna Bus Stand">
+                        <select name="boarding_point" {{ isset($targetBooking) ? 'disabled' : '' }} class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
+                            <option value="">Select boarding point</option>
+                            @if($schedule->route->fromLocation)
+                                <option value="{{ $schedule->route->fromLocation->name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $schedule->route->fromLocation->name) ? 'selected' : '' }}>{{ $schedule->route->fromLocation->name }}</option>
+                            @endif
+                            @foreach($schedule->route->stops as $stop)
+                                <option value="{{ $stop->stop_name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $stop->stop_name) ? 'selected' : '' }}>{{ $stop->stop_name }}</option>
+                            @endforeach
+                            @if($schedule->route->toLocation)
+                                <option value="{{ $schedule->route->toLocation->name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $schedule->route->toLocation->name) ? 'selected' : '' }}>{{ $schedule->route->toLocation->name }}</option>
+                            @endif
+                        </select>
                     </div>
 
                     <div class="mb-6">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Dropping Point (Optional)</label>
-                        <input type="text" name="dropping_point" {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->dropping_point ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" placeholder="e.g. Mulliyawalai">
+                        <select name="dropping_point" {{ isset($targetBooking) ? 'disabled' : '' }} class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
+                            <option value="">Select dropping point</option>
+                            @if($schedule->route->fromLocation)
+                                <option value="{{ $schedule->route->fromLocation->name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $schedule->route->fromLocation->name) ? 'selected' : '' }}>{{ $schedule->route->fromLocation->name }}</option>
+                            @endif
+                            @foreach($schedule->route->stops as $stop)
+                                <option value="{{ $stop->stop_name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $stop->stop_name) ? 'selected' : '' }}>{{ $stop->stop_name }}</option>
+                            @endforeach
+                            @if($schedule->route->toLocation)
+                                <option value="{{ $schedule->route->toLocation->name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $schedule->route->toLocation->name) ? 'selected' : '' }}>{{ $schedule->route->toLocation->name }}</option>
+                            @endif
+                        </select>
                     </div>
                     
                     <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 mb-6">
@@ -268,6 +296,7 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('seatMap', () => ({
             selectedSeats: [],
+            hoveredBooking: null,
             maxSeats: {{ isset($targetBooking) ? $targetBooking->passenger_count : 'null' }},
             toggleSeat(seat) {
                 if(this.selectedSeats.includes(seat)) {

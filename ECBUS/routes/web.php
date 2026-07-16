@@ -60,6 +60,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
+    Route::get('/bookings/{booking}', [AdminController::class, 'showBooking'])->name('bookings.show');
+    Route::get('/bookings/{booking}/edit', [AdminController::class, 'editBooking'])->name('bookings.edit');
+    Route::put('/bookings/{booking}/details', [AdminController::class, 'updateBookingDetails'])->name('bookings.updateDetails');
     Route::patch('/bookings/{booking}', [AdminController::class, 'updateBookingStatus'])->name('bookings.update');
     Route::get('/schedules', [AdminController::class, 'schedules'])->name('schedules');
     Route::post('/schedules', [AdminController::class, 'storeSchedule'])->name('schedules.store');

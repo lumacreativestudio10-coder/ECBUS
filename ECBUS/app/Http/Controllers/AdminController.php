@@ -33,7 +33,35 @@ class AdminController extends Controller
         ]);
 
         $booking->update(['booking_status' => $request->booking_status]);
-        return redirect()->back()->with('success', 'Booking status updated!');
+
+        return redirect()->back()->with('success', 'Booking status updated successfully!');
+    }
+
+    public function showBooking(Booking $booking)
+    {
+        $booking->load('schedule.route.fromLocation', 'schedule.route.toLocation', 'schedule.bus.busCompany');
+        return view('admin.show-booking', compact('booking'));
+    }
+
+    public function editBooking(Booking $booking)
+    {
+        $booking->load('schedule.route.fromLocation', 'schedule.route.toLocation', 'schedule.bus.busCompany');
+        return view('admin.edit-booking', compact('booking'));
+    }
+
+    public function updateBookingDetails(Request $request, Booking $booking)
+    {
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'boarding_point' => 'nullable|string|max:255',
+            'dropping_point' => 'nullable|string|max:255',
+        ]);
+
+        $booking->update($validated);
+
+        return redirect()->route('admin.bookings.show', $booking)->with('success', 'Booking details updated successfully!');
     }
 
     public function schedules()

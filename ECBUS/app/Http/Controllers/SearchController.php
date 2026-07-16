@@ -15,7 +15,10 @@ class SearchController extends Controller
         $dateStr = $request->get('date');
         $passengers = $request->get('passengers', 1);
 
-        $query = Schedule::with(['bus.busCompany', 'route.fromLocation', 'route.toLocation']);
+        $query = Schedule::with(['bus.busCompany', 'route.fromLocation', 'route.toLocation', 'route.stops'])
+                         ->withSum(['bookings as booked_seats' => function($query) {
+                             $query->where('booking_status', '!=', 'cancelled');
+                         }], 'passenger_count');
 
         if ($fromName && $toName) {
             $from = Location::where('name', $fromName)->first();

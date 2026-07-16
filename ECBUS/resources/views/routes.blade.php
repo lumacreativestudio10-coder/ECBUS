@@ -211,9 +211,20 @@
                                 <div class="w-full md:w-auto flex md:flex-col justify-between items-center md:items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 mt-4 md:mt-0">
                                     <div class="text-left md:text-right mb-0 md:mb-3">
                                         <h4 class="text-2xl font-extrabold text-dark-maroon">LKR {{ number_format($schedule->price, 0) }}</h4>
-                                        <p class="text-xs font-semibold text-green-600 mt-1">{{ $schedule->bus->total_seats }} Seats Available</p>
+                                        @php
+                                            $availableSeats = max(0, $schedule->bus->total_seats - ($schedule->booked_seats ?? 0));
+                                            $locs = [];
+                                            if($schedule->route->fromLocation) $locs[] = $schedule->route->fromLocation->name;
+                                            if($schedule->route->stops) {
+                                                foreach($schedule->route->stops as $stop) {
+                                                    $locs[] = $stop->stop_name;
+                                                }
+                                            }
+                                            if($schedule->route->toLocation) $locs[] = $schedule->route->toLocation->name;
+                                        @endphp
+                                        <p class="text-xs font-semibold {{ $availableSeats > 5 ? 'text-green-600' : 'text-red-600' }} mt-1">{{ $availableSeats }} Seats Available</p>
                                     </div>
-                                    <button @click="openBookingModal('{{ $schedule->bus->busCompany->company_name }}', {{ $schedule->price }}, {{ $schedule->id }})" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
+                                    <button @click="openBookingModal('{{ addslashes($schedule->bus->busCompany->company_name) }}', {{ $schedule->price }}, {{ $schedule->id }}, {{ json_encode($locs) }})" class="bg-primary-maroon text-white px-6 py-2.5 rounded-lg font-bold hover:bg-dark-maroon transition shadow-md whitespace-nowrap">
                                         BOOK NOW
                                     </button>
                                 </div>
@@ -321,11 +332,21 @@
                     <div class="flex gap-4">
                         <div class="w-1/2">
                             <label class="block text-sm font-bold text-dark-text mb-1">Boarding Point</label>
-                            <input type="text" x-model="booking.boarding_point" required placeholder="Where do you get in?" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
+                            <select x-model="booking.boarding_point" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
+                                <option value="" disabled>Select boarding point</option>
+                                <template x-for="loc in locations">
+                                    <option :value="loc" x-text="loc"></option>
+                                </template>
+                            </select>
                         </div>
                         <div class="w-1/2">
                             <label class="block text-sm font-bold text-dark-text mb-1">Dropping Point</label>
-                            <input type="text" x-model="booking.dropping_point" required placeholder="Where do you get off?" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
+                            <select x-model="booking.dropping_point" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
+                                <option value="" disabled>Select dropping point</option>
+                                <template x-for="loc in locations">
+                                    <option :value="loc" x-text="loc"></option>
+                                </template>
+                            </select>
                         </div>
                     </div>
 
@@ -350,8 +371,9 @@
             isModalOpen: false,
             isSubmitting: false,
             isSuccess: false,
+            locations: [],
             selectedBus: { name: '', price: 0 },
-            booking: { name: '', phone: '', count: 1 },
+            booking: { name: '', phone: '', count: 1, boarding_point: '', dropping_point: '' },
             
             init() {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -370,8 +392,9 @@
                 return new Date(dateString).toLocaleDateString('en-GB', options);
             },
 
-            openBookingModal(busName, price, scheduleId) {
+            openBookingModal(busName, price, scheduleId, locsArray) {
                 this.selectedBus = { name: busName, price: price, schedule_id: scheduleId };
+                this.locations = locsArray || [];
                 this.booking.count = {{ $passengers ?? 1 }};
                 this.booking.name = '';
                 this.booking.phone = '';

@@ -76,13 +76,19 @@
                             </select>
                         </form>
                     </td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4 text-right whitespace-nowrap">
                         @if(empty($booking->seat_numbers) && $booking->schedule_id)
                             <a href="{{ route('admin.schedules.seats', ['schedule' => $booking->schedule_id, 'booking_id' => $booking->id]) }}" class="text-white bg-primary-maroon hover:bg-dark-maroon transition px-2 py-1 rounded-lg text-[10px] font-bold mr-1" title="Assign Seats">
                                 <i data-lucide="armchair" class="w-3 h-3 inline"></i> Assign Seats
                             </a>
                         @endif
-                        <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="text-primary-maroon hover:text-dark-maroon transition p-2 rounded-lg hover:bg-gray-100" title="Download Ticket">
+                        <a href="{{ route('admin.bookings.show', $booking) }}" class="text-blue-600 hover:text-blue-800 transition p-2 rounded-lg hover:bg-blue-50 inline-block" title="View Booking">
+                            <i data-lucide="eye" class="w-5 h-5 inline"></i>
+                        </a>
+                        <a href="{{ route('admin.bookings.edit', $booking) }}" class="text-green-600 hover:text-green-800 transition p-2 rounded-lg hover:bg-green-50 inline-block" title="Edit Booking">
+                            <i data-lucide="edit" class="w-5 h-5 inline"></i>
+                        </a>
+                        <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="text-primary-maroon hover:text-dark-maroon transition p-2 rounded-lg hover:bg-gray-100 inline-block" title="Download Ticket">
                             <i data-lucide="printer" class="w-5 h-5 inline"></i>
                         </a>
                     </td>
