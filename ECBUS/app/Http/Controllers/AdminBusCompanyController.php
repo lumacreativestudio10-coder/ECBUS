@@ -78,6 +78,10 @@ class AdminBusCompanyController extends Controller
             'commission_per_seat' => 'required|numeric|min:0',
             'status' => 'required|in:1,0',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'bank_name' => 'nullable|string|max:255',
+            'branch_name' => 'nullable|string|max:255',
+            'account_name' => 'nullable|string|max:255',
+            'account_number' => 'nullable|string|max:255',
         ]);
 
         $data = $request->all();
@@ -100,6 +104,10 @@ class AdminBusCompanyController extends Controller
             'commission_per_seat' => 'required|numeric|min:0',
             'status' => 'required|in:1,0',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'bank_name' => 'nullable|string|max:255',
+            'branch_name' => 'nullable|string|max:255',
+            'account_name' => 'nullable|string|max:255',
+            'account_number' => 'nullable|string|max:255',
         ]);
 
         $data = $request->all();
