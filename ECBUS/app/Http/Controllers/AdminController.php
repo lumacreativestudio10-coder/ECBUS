@@ -70,8 +70,10 @@ class AdminController extends Controller
         $buses = Bus::with('busCompany', 'busType')->get();
         $routes = \App\Models\Route::with('fromLocation', 'toLocation')->where('status', 1)->get();
         $busCompanies = \App\Models\BusCompany::orderBy('company_name')->get();
+        $drivers = \App\Models\User::where('role_id', 4)->where('status', 1)->get();
+        $conductors = \App\Models\User::where('role_id', 5)->where('status', 1)->get();
         
-        return view('admin.schedules', compact('schedules', 'buses', 'routes', 'busCompanies'));
+        return view('admin.schedules', compact('schedules', 'buses', 'routes', 'busCompanies', 'drivers', 'conductors'));
     }
 
     public function storeSchedule(Request $request)

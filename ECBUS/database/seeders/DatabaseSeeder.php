@@ -152,11 +152,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'arun@example.com',
             'phone' => '0779876543',
             'passenger_count' => 2,
-            'seat_numbers' => ['A1', 'A2'],
+            'seat_numbers' => ['W1', 'S1'],
             'total_amount' => 5000.00,
             'booking_status' => 'confirmed',
             'is_verified' => true,
-            'boarding_statuses' => ['A1' => 'boarded', 'A2' => 'boarded']
+            'boarding_statuses' => ['W1' => 'boarded', 'S1' => 'boarded']
         ]);
 
         // Booking 2: Verified, one boarded, one pending
@@ -166,11 +166,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'bala@example.com',
             'phone' => '0712345678',
             'passenger_count' => 2,
-            'seat_numbers' => ['B1', 'B2'],
+            'seat_numbers' => ['S2', 'W2'],
             'total_amount' => 5000.00,
             'booking_status' => 'confirmed',
             'is_verified' => true,
-            'boarding_statuses' => ['B1' => 'boarded', 'B2' => 'pending']
+            'boarding_statuses' => ['S2' => 'boarded', 'W2' => 'pending']
         ]);
 
         // Booking 3: Not verified, pending
@@ -180,11 +180,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'meena@example.com',
             'phone' => '0755555555',
             'passenger_count' => 1,
-            'seat_numbers' => ['C1'],
+            'seat_numbers' => ['W3'],
             'total_amount' => 2500.00,
             'booking_status' => 'confirmed',
             'is_verified' => false,
-            'boarding_statuses' => ['C1' => 'pending']
+            'boarding_statuses' => ['W3' => 'pending']
         ]);
 
         // Booking 4: Verified, No show
@@ -194,11 +194,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'karthi@example.com',
             'phone' => '0761122334',
             'passenger_count' => 1,
-            'seat_numbers' => ['C2'],
+            'seat_numbers' => ['S3'],
             'total_amount' => 2500.00,
             'booking_status' => 'confirmed',
             'is_verified' => true,
-            'boarding_statuses' => ['C2' => 'no_show']
+            'boarding_statuses' => ['S3' => 'no_show']
         ]);
     }
 }

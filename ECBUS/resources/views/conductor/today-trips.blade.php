@@ -50,9 +50,6 @@
                     <a href="{{ route('conductor.passenger_list', $trip->id) }}" class="inline-flex items-center justify-center bg-primary-gold text-dark-maroon px-4 py-2 rounded-lg font-bold hover:bg-yellow-400 transition">
                         <i data-lucide="users" class="w-4 h-4 mr-2"></i> Passengers
                     </a>
-                    <a href="{{ route('conductor.seat_verification', $trip->id) }}" class="inline-flex items-center justify-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 transition ml-2">
-                        <i data-lucide="layout-grid" class="w-4 h-4 mr-2"></i> Seats
-                    </a>
                 </td>
             </tr>
             @endforeach

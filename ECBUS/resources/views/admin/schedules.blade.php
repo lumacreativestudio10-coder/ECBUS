@@ -142,6 +142,26 @@
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Driver</label>
+                                            <select name="driver_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                                <option value="">Select Driver...</option>
+                                                @foreach($drivers as $driver)
+                                                    <option value="{{ $driver->id }}">{{ $driver->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Conductor</label>
+                                            <select name="conductor_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                                <option value="">Select Conductor...</option>
+                                                @foreach($conductors as $conductor)
+                                                    <option value="{{ $conductor->id }}">{{ $conductor->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Departure Time</label>
                                             <input type="time" name="departure_time" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                         </div>
@@ -230,6 +250,26 @@
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Date</label>
                                         <input type="date" name="date" x-model="editData.date_formatted" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Driver</label>
+                                            <select name="driver_id" x-model="editData.driver_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                                <option value="">Select Driver...</option>
+                                                @foreach($drivers as $driver)
+                                                    <option value="{{ $driver->id }}">{{ $driver->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Conductor</label>
+                                            <select name="conductor_id" x-model="editData.conductor_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                                <option value="">Select Conductor...</option>
+                                                @foreach($conductors as $conductor)
+                                                    <option value="{{ $conductor->id }}">{{ $conductor->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
