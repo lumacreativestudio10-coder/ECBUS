@@ -19,6 +19,14 @@ class Bus extends Model
         'facilities' => 'array',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('company', function (\Illuminate\Database\Eloquent\Builder $builder) {
+            if (auth()->check() && !auth()->user()->isSuperAdmin() && auth()->user()->company_id) {
+                $builder->where('bus_company_id', auth()->user()->company_id);
+            }
+        });
+    }
 
     public function busCompany()
     {

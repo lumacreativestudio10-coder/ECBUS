@@ -22,14 +22,31 @@
 </div>
 @endif
 
-<div class="flex items-center mb-6 text-gray-500 text-sm font-bold">
-    <a href="{{ route(auth()->user()->getRolePrefix().'.schedules') }}" class="hover:text-primary-maroon transition flex items-center">
-        <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Schedules
-    </a>
-    <span class="mx-3">|</span>
-    <span class="text-dark-text">{{ $schedule->route->fromLocation->name ?? '?' }} &rarr; {{ $schedule->route->toLocation->name ?? '?' }}</span>
-    <span class="mx-3">|</span>
-    <span>{{ \Carbon\Carbon::parse($schedule->date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}</span>
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
+    <div class="flex flex-wrap items-center text-gray-500 text-sm font-bold">
+        <a href="{{ route(auth()->user()->getRolePrefix().'.schedules') }}" class="hover:text-primary-maroon transition flex items-center">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Schedules
+        </a>
+        <span class="mx-3">|</span>
+        <span class="text-dark-text">{{ $schedule->route->fromLocation->name ?? '?' }} &rarr; {{ $schedule->route->toLocation->name ?? '?' }}</span>
+        <span class="mx-3">|</span>
+        <span>{{ \Carbon\Carbon::parse($schedule->date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}</span>
+    </div>
+
+    <div class="flex flex-wrap gap-4">
+        <div class="bg-white rounded-lg border border-gray-200 px-4 py-2 shadow-sm text-right">
+            <p class="text-[10px] text-gray-500 uppercase">Gross Revenue</p>
+            <p class="text-base font-bold text-dark-text">LKR {{ number_format($totalRevenue, 2) }}</p>
+        </div>
+        <div class="bg-red-50 rounded-lg border border-red-100 px-4 py-2 shadow-sm text-right">
+            <p class="text-[10px] text-red-500 uppercase">Commission</p>
+            <p class="text-base font-bold text-red-700">LKR {{ number_format($commissionAmount, 2) }}</p>
+        </div>
+        <div class="bg-green-50 rounded-lg border border-green-100 px-4 py-2 shadow-sm text-right">
+            <p class="text-[10px] text-green-500 uppercase">Net Revenue</p>
+            <p class="text-base font-extrabold text-green-700">LKR {{ number_format($netRevenue, 2) }}</p>
+        </div>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

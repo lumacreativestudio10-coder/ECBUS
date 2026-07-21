@@ -45,6 +45,7 @@ use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\AdminContactMessageController;
 use App\Http\Controllers\ProfileController;
 
+Route::post('/booking/lock-seats', [BookingController::class, 'lockSeats'])->name('booking.lock');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/my-booking', [BookingController::class, 'myBookings'])->name('booking');
 Route::get('/booking/{booking}/ticket', [BookingController::class, 'downloadTicket'])->name('booking.ticket');
@@ -119,15 +120,32 @@ $sharedRoutes = function () {
 // ROLE-BASED ROUTE GROUPS
 // ==========================================
 
+use App\Http\Controllers\AdminSettlementController;
+use App\Http\Controllers\CompanySettlementController;
+
 // 1. Super Admin
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(function() use ($sharedRoutes) {
     Route::get('/dashboard', [App\Http\Controllers\Dashboards\SuperAdminDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('commission-rules', [AdminSettlementController::class, 'rules'])->name('commission_rules');
+    Route::post('commission-rules', [AdminSettlementController::class, 'storeRule'])->name('commission_rules.store');
+    Route::put('commission-rules/{rule}', [AdminSettlementController::class, 'updateRule'])->name('commission_rules.update');
+    Route::delete('commission-rules/{rule}', [AdminSettlementController::class, 'destroyRule'])->name('commission_rules.destroy');
+    Route::post('commission-rules/{rule}/toggle', [AdminSettlementController::class, 'toggleRule'])->name('commission_rules.toggle');
+    
+    Route::get('settlements', [AdminSettlementController::class, 'settlements'])->name('settlements');
+    Route::post('settlements/{settlement}/pay', [AdminSettlementController::class, 'paySettlement'])->name('settlements.pay');
+
     $sharedRoutes();
 });
 
 // 2. Company Admin
 Route::prefix('company')->name('company.')->middleware(['auth', 'role:2'])->group(function() use ($sharedRoutes) {
     Route::get('/dashboard', [App\Http\Controllers\Dashboards\CompanyDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('settlements', [CompanySettlementController::class, 'index'])->name('settlements');
+    Route::get('commission-rules', [CompanySettlementController::class, 'rules'])->name('commission_rules');
+
     $sharedRoutes();
 });
 
@@ -140,11 +158,37 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:3'])->group(fu
 // 4. Driver
 Route::prefix('driver')->name('driver.')->middleware(['auth', 'role:4'])->group(function() use ($sharedRoutes) {
     Route::get('/dashboard', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/my-trips', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'myTrips'])->name('my_trips');
+    Route::get('/passenger-list', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'globalPassengerList'])->name('global_passenger_list');
+    Route::get('/route-details', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'globalRouteDetails'])->name('global_route_details');
+    Route::get('/trip-history', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'tripHistory'])->name('trip_history');
+    
+    Route::get('/trips/{schedule}/passengers', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'passengerList'])->name('passenger_list');
+    Route::get('/trips/{schedule}/route', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'routeDetails'])->name('route_details');
+    Route::post('/trips/{schedule}/start', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'startTrip'])->name('start_trip');
+    Route::post('/trips/{schedule}/complete', [App\Http\Controllers\Dashboards\DriverDashboardController::class, 'completeTrip'])->name('complete_trip');
+    
     $sharedRoutes();
 });
 
 // 5. Conductor
 Route::prefix('conductor')->name('conductor.')->middleware(['auth', 'role:5'])->group(function() use ($sharedRoutes) {
     Route::get('/dashboard', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/today-trips', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'todayTrips'])->name('today_trips');
+    Route::get('/passenger-list', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'globalPassengerList'])->name('global_passenger_list');
+    Route::get('/ticket-verification', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'ticketVerification'])->name('ticket_verification');
+    Route::post('/ticket-verification/search', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'searchTicket'])->name('search_ticket');
+    Route::post('/bookings/{booking}/verify', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'verifyTicket'])->name('verify_ticket');
+    
+    Route::get('/trips/{schedule}/passengers', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'passengerList'])->name('passenger_list');
+    Route::post('/bookings/{booking}/boarding', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'markBoarded'])->name('mark_boarded');
+    Route::get('/trip-history', [App\Http\Controllers\Dashboards\ConductorDashboardController::class, 'tripHistory'])->name('trip_history');
+    
     $sharedRoutes();
+});
+
+// Mail Preview Route
+Route::get('/mail-preview', function () {
+    $user = \App\Models\User::first() ?? new \App\Models\User(['name' => 'Demo User', 'email' => 'demo@example.com']);
+    return new \App\Mail\UserCredentialsMail($user, 'demo_password_123');
 });

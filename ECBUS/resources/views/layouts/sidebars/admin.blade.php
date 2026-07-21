@@ -9,6 +9,14 @@
     <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">System Modules</p>
 </div>
 
+<a href="{{ route(auth()->user()->getRolePrefix().'.settlements') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.settlements') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="dollar-sign" class="w-5 h-5 mr-3"></i> Settlements
+</a>
+
+<a href="{{ route(auth()->user()->getRolePrefix().'.commission_rules') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.commission_rules') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="percent" class="w-5 h-5 mr-3"></i> Commission Rules
+</a>
+
 <a href="{{ route(auth()->user()->getRolePrefix().'.bus_companies') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.bus_companies') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
     <i data-lucide="building" class="w-5 h-5 mr-3"></i> Bus Companies
 </a>

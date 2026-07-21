@@ -12,6 +12,10 @@ class AdminBusCompanyController extends Controller
     {
         $query = BusCompany::latest();
 
+        if (auth()->user()->role_id == 2) {
+            $query->where('id', auth()->user()->company_id);
+        }
+
         if ($request->has('search') && !empty(trim($request->search))) {
             $searchTerms = explode(' ', trim($request->search));
             
@@ -82,12 +86,33 @@ class AdminBusCompanyController extends Controller
             'branch_name' => 'nullable|string|max:255',
             'account_name' => 'nullable|string|max:255',
             'account_number' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:users,email',
         ]);
 
         $data = $request->all();
         $data['logo'] = $this->handleLogoUpload($request);
 
-        BusCompany::create($data);
+        $company = BusCompany::create($data);
+
+        // Auto-create Company Admin Account if email is provided
+        if (!empty($request->email)) {
+            $password = \Illuminate\Support\Str::random(8);
+            
+            $user = \App\Models\User::create([
+                'company_id' => $company->id,
+                'name' => $request->company_name,
+                'email' => $request->email,
+                'password' => \Illuminate\Support\Facades\Hash::make($password),
+                'phone_number' => $request->mobile_number,
+                'role_id' => 2, // Company Admin
+                'status' => 1,
+            ]);
+            
+            // Send Credentials Email
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $password));
+            
+            return redirect()->back()->with('success', 'Bus Company added successfully and Admin credentials sent to ' . $user->email . '!');
+        }
 
         return redirect()->back()->with('success', 'Bus Company added successfully!');
     }
@@ -111,6 +136,15 @@ class AdminBusCompanyController extends Controller
         ]);
 
         $data = $request->all();
+        if (auth()->user()->role_id != 1) {
+            unset($data['bank_name']);
+            unset($data['branch_name']);
+            unset($data['account_name']);
+            unset($data['account_number']);
+            unset($data['commission_per_seat']);
+            unset($data['status']);
+        }
+        
         if ($request->hasFile('logo')) {
             $data['logo'] = $this->handleLogoUpload($request, $busCompany->logo);
         }

@@ -21,7 +21,9 @@ class Booking extends Model
         'dropping_point',
         'total_amount',
         'payment_receipt_path',
-        'booking_status'
+        'booking_status',
+        'is_verified',
+        'boarding_statuses'
     ];
 
     protected static function boot()
@@ -35,10 +37,19 @@ class Booking extends Model
                 $model->booking_reference = 'ECB' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
             }
         });
+
+        static::addGlobalScope('company', function (\Illuminate\Database\Eloquent\Builder $builder) {
+            if (auth()->check() && !auth()->user()->isSuperAdmin() && auth()->user()->company_id) {
+                $builder->whereHas('schedule.bus', function($q) {
+                    $q->where('bus_company_id', auth()->user()->company_id);
+                });
+            }
+        });
     }
 
     protected $casts = [
         'seat_numbers' => 'array',
+        'boarding_statuses' => 'array',
     ];
 
     public function schedule()

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'status',
+        'company_id',
     ];
 
     /**
@@ -68,6 +69,16 @@ class User extends Authenticatable
     public function isStaff()
     {
         return $this->role_id === 3; // 3 = Staff
+    }
+
+    public function isDriver()
+    {
+        return $this->role_id === 4; // 4 = Driver
+    }
+
+    public function isConductor()
+    {
+        return $this->role_id === 5; // 5 = Conductor
     }
 
     public function getRolePrefix()

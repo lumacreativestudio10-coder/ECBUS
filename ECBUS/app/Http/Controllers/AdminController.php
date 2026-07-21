@@ -83,8 +83,20 @@ class AdminController extends Controller
             'departure_time' => 'required',
             'arrival_time' => 'required',
             'price' => 'required|numeric|min:0',
-            'status' => 'required|in:scheduled,completed,cancelled'
+            'status' => 'required|in:scheduled,completed,cancelled',
+            'driver_id' => 'nullable|exists:users,id',
+            'conductor_id' => 'nullable|exists:users,id',
+            'publish_status' => 'nullable|in:draft,published'
         ]);
+
+        if ($request->driver_id) {
+            $overlap = Schedule::where('driver_id', $request->driver_id)->where('date', $request->date)->exists();
+            if ($overlap) return redirect()->back()->withErrors(['driver_id' => 'Driver is already assigned on this date.']);
+        }
+        if ($request->conductor_id) {
+            $overlap = Schedule::where('conductor_id', $request->conductor_id)->where('date', $request->date)->exists();
+            if ($overlap) return redirect()->back()->withErrors(['conductor_id' => 'Conductor is already assigned on this date.']);
+        }
 
         $data = $request->all();
         $bus = Bus::findOrFail($request->bus_id);
@@ -104,16 +116,24 @@ class AdminController extends Controller
             'departure_time' => 'required',
             'arrival_time' => 'required',
             'price' => 'required|numeric|min:0',
-            'status' => 'required|in:scheduled,completed,cancelled'
+            'status' => 'required|in:scheduled,completed,cancelled',
+            'driver_id' => 'nullable|exists:users,id',
+            'conductor_id' => 'nullable|exists:users,id',
+            'publish_status' => 'nullable|in:draft,published'
         ]);
 
+        if ($request->driver_id && $request->driver_id != $schedule->driver_id) {
+            $overlap = Schedule::where('driver_id', $request->driver_id)->where('date', $request->date)->where('id', '!=', $schedule->id)->exists();
+            if ($overlap) return redirect()->back()->withErrors(['driver_id' => 'Driver is already assigned on this date.']);
+        }
+        if ($request->conductor_id && $request->conductor_id != $schedule->conductor_id) {
+            $overlap = Schedule::where('conductor_id', $request->conductor_id)->where('date', $request->date)->where('id', '!=', $schedule->id)->exists();
+            if ($overlap) return redirect()->back()->withErrors(['conductor_id' => 'Conductor is already assigned on this date.']);
+        }
+
         $data = $request->all();
-        // Recalculate available seats if bus changes
         if ($request->bus_id != $schedule->bus_id) {
             $bus = Bus::findOrFail($request->bus_id);
-            // Rough estimate: we should ideally subtract booked seats but this is a simple update.
-            // A robust way would count existing bookings, but let's just reset to total for now
-            // or just leave it. Let's reset to total_seats - booked_count
             $bookedCount = \App\Models\Booking::where('schedule_id', $schedule->id)->where('booking_status', '!=', 'cancelled')->sum('passenger_count');
             $data['available_seats'] = max(0, $bus->total_seats - $bookedCount);
         }
@@ -152,7 +172,11 @@ class AdminController extends Controller
             $targetBooking = Booking::find($request->booking_id);
         }
 
-        return view('admin.manage-seats', compact('schedule', 'bookedSeats', 'seatDetails', 'targetBooking'));
+        $totalRevenue = $bookings->sum('total_amount');
+        $commissionAmount = \App\Models\BookingCommission::whereIn('booking_id', $bookings->pluck('id'))->sum('commission_amount');
+        $netRevenue = $totalRevenue - $commissionAmount;
+
+        return view('admin.manage-seats', compact('schedule', 'bookedSeats', 'seatDetails', 'targetBooking', 'totalRevenue', 'commissionAmount', 'netRevenue'));
     }
 
     public function updateSeats(Request $request, Schedule $schedule)
@@ -272,6 +296,30 @@ class AdminController extends Controller
         return view('admin.buses', compact('buses', 'busCompanies', 'busTypes'));
     }
 
+    private function parseOrGenerateLayout($layoutInput, $totalSeats)
+    {
+        if (in_array($layoutInput, ['2x2', '2x1', 'sleeper', 'luxury', 'mini'])) {
+            $layout = [];
+            $cols = $layoutInput === '2x1' ? 3 : 4;
+            $rows = ceil($totalSeats / $cols);
+            $seatNo = 1;
+            for ($r = 1; $r <= $rows; $r++) {
+                $rowLayout = [];
+                for ($c = 1; $c <= $cols + 1; $c++) {
+                    if ($seatNo > $totalSeats) break;
+                    if (($layoutInput === '2x1' && $c === 3) || ($layoutInput === '2x2' && $c === 3)) {
+                        $rowLayout[] = null; // Aisle
+                        continue;
+                    }
+                    $rowLayout[] = ['label' => (string)$seatNo++, 'type' => 'Normal'];
+                }
+                $layout[] = $rowLayout;
+            }
+            return $layout;
+        }
+        return json_decode($layoutInput, true) ?? [];
+    }
+
     public function storeBus(Request $request)
     {
         $request->validate([
@@ -281,10 +329,9 @@ class AdminController extends Controller
             'bus_number' => 'required|string|max:255',
             'registration_number' => 'required|string|max:255',
             'total_seats' => 'required|integer|min:1',
-            'seat_layout' => 'required|json'
+            'seat_layout' => 'required|string'
         ]);
 
-        // Find or create the BusType
         $busType = \App\Models\BusType::firstOrCreate(
             ['name' => $request->bus_type_name]
         );
@@ -296,7 +343,7 @@ class AdminController extends Controller
             'bus_number' => $request->bus_number,
             'registration_number' => $request->registration_number,
             'total_seats' => $request->total_seats,
-            'seat_layout' => json_decode($request->seat_layout, true)
+            'seat_layout' => $this->parseOrGenerateLayout($request->seat_layout, $request->total_seats)
         ]);
 
         return redirect()->back()->with('success', 'Bus added successfully!');
@@ -311,7 +358,7 @@ class AdminController extends Controller
             'bus_number' => 'required|string|max:255',
             'registration_number' => 'required|string|max:255',
             'total_seats' => 'required|integer|min:1',
-            'seat_layout' => 'required|json'
+            'seat_layout' => 'required|string'
         ]);
 
         $busType = \App\Models\BusType::firstOrCreate(
@@ -325,7 +372,7 @@ class AdminController extends Controller
             'bus_number' => $request->bus_number,
             'registration_number' => $request->registration_number,
             'total_seats' => $request->total_seats,
-            'seat_layout' => json_decode($request->seat_layout, true)
+            'seat_layout' => $this->parseOrGenerateLayout($request->seat_layout, $request->total_seats)
         ]);
 
         return redirect()->back()->with('success', 'Bus updated successfully!');

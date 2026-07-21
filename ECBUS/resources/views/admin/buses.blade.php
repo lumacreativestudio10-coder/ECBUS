@@ -470,15 +470,26 @@ document.addEventListener('alpine:init', () => {
         map: [],
 
         init() {
+            // Initialize with default or existing if viewingBus already set
+            this.updateFromViewingBus(this.viewingBus);
+
             // Watch for when viewingBus changes
             this.$watch('viewingBus', (val) => {
-                if (val && val.layout) {
-                    this.rows = val.layout.rows || 1;
-                    this.cols = val.layout.cols || 1;
-                    // deep copy the map to avoid mutating the original
-                    this.map = JSON.parse(JSON.stringify(val.layout.map || []));
-                }
+                this.updateFromViewingBus(val);
             });
+        },
+
+        updateFromViewingBus(val) {
+            if (val && val.layout && typeof val.layout === 'object' && val.layout.rows) {
+                this.rows = val.layout.rows;
+                this.cols = val.layout.cols;
+                // deep copy the map to avoid mutating the original
+                this.map = JSON.parse(JSON.stringify(val.layout.map || []));
+            } else {
+                this.rows = 1;
+                this.cols = 1;
+                this.generateMap();
+            }
         },
 
         generateMap() {

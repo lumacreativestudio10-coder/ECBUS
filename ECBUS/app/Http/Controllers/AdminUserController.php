@@ -15,14 +15,19 @@ class AdminUserController extends Controller
     {
         $user = auth()->user();
 
-        // Base query - exclude Driver and Conductor from this module as per requirements (IDs 4 and 5)
-        $query = User::with(['company', 'role'])->whereNotIn('role_id', [4, 5]);
+        // Base query
+        $query = User::with(['company', 'role']);
 
-        // Company Admin can only see their own staff
-        if ($user->isCompanyAdmin()) {
+        // Company Admin and Staff can only see their own staff/drivers/conductors
+        if ($user->isCompanyAdmin() || $user->isStaff()) {
             $query->where('company_id', $user->company_id);
             // Additionally, they can't see Super Admin (ID 1)
             $query->where('role_id', '!=', 1);
+            // Staff cannot manage other Staff or Company Admins? The requirement says Staff manages Drivers & Conductors.
+            // Let's restrict Staff from managing Company Admin. They can see Staff, Driver, Conductor.
+            if ($user->isStaff()) {
+                $query->whereNotIn('role_id', [1, 2]);
+            }
         }
 
         // Apply filters
@@ -60,9 +65,8 @@ class AdminUserController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
             'phone_number' => 'nullable|digits_between:7,15',
-            'role_id' => ['required', Rule::in([2, 3])],
+            'role_id' => ['required', \Illuminate\Validation\Rule::in([2, 3, 4, 5])],
         ];
 
         // Super admin must select a company for the user
@@ -74,25 +78,33 @@ class AdminUserController extends Controller
 
         $companyId = $currentUser->isSuperAdmin() ? $request->company_id : $currentUser->company_id;
 
-        // Company Admin can only create Staff
         $role_id = $request->role_id;
         if ($currentUser->isCompanyAdmin()) {
-            $role_id = 3; // Force to staff if company admin tries to spoof
+            // Company Admin can create Staff, Driver, Conductor
+            if (!in_array($role_id, [3, 4, 5])) $role_id = 3;
+        } elseif ($currentUser->isStaff()) {
+            // Staff can create Driver, Conductor
+            if (!in_array($role_id, [4, 5])) $role_id = 4;
         }
+        
+        $password = \Illuminate\Support\Str::random(8);
 
         $user = User::create([
             'company_id' => $companyId,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($password),
             'phone_number' => $request->phone_number,
             'role_id' => $role_id,
             'status' => 1, // default status
         ]);
+        
+        // Send Credentials Email
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $password));
 
-        ActivityLogger::log('User Created', "Created new user: {$user->name} ({$user->email})");
+        \App\Services\ActivityLogger::log('User Created', "Created new user: {$user->name} ({$user->email})");
 
-        return redirect()->back()->with('success', 'User added successfully.');
+        return redirect()->back()->with('success', 'User added successfully and credentials sent via email.');
     }
 
     public function update(Request $request, User $user)
@@ -100,15 +112,18 @@ class AdminUserController extends Controller
         $currentUser = auth()->user();
 
         // Authorization check
-        if ($currentUser->isCompanyAdmin() && $user->company_id !== $currentUser->company_id) {
+        if (($currentUser->isCompanyAdmin() || $currentUser->isStaff()) && $user->company_id !== $currentUser->company_id) {
             abort(403, 'Unauthorized action.');
+        }
+        if ($currentUser->isStaff() && in_array($user->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action. Staff cannot edit Admins.');
         }
 
         $rules = [
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone_number' => 'nullable|digits_between:7,15',
-            'role_id' => ['required', Rule::in([2, 3])],
+            'role_id' => ['required', Rule::in([2, 3, 4, 5])],
         ];
 
         if ($currentUser->isSuperAdmin()) {
@@ -125,13 +140,13 @@ class AdminUserController extends Controller
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
 
-        // Only super admin can change company
         if ($currentUser->isSuperAdmin()) {
             $user->company_id = $request->company_id;
             $user->role_id = $request->role_id;
-        } else {
-            // Company Admin can only edit staff roles to staff
-            $user->role_id = 3;
+        } elseif ($currentUser->isCompanyAdmin()) {
+            if (in_array($request->role_id, [3, 4, 5])) $user->role_id = $request->role_id;
+        } elseif ($currentUser->isStaff()) {
+            if (in_array($request->role_id, [4, 5])) $user->role_id = $request->role_id;
         }
 
         if ($request->filled('password')) {
@@ -150,8 +165,11 @@ class AdminUserController extends Controller
         $currentUser = auth()->user();
 
         // Authorization check
-        if ($currentUser->isCompanyAdmin() && $user->company_id !== $currentUser->company_id) {
+        if (($currentUser->isCompanyAdmin() || $currentUser->isStaff()) && $user->company_id !== $currentUser->company_id) {
             abort(403, 'Unauthorized action.');
+        }
+        if ($currentUser->isStaff() && in_array($user->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action. Staff cannot delete Admins.');
         }
         
         if ($user->id === $currentUser->id) {
@@ -170,8 +188,11 @@ class AdminUserController extends Controller
         $currentUser = auth()->user();
 
         // Authorization check
-        if ($currentUser->isCompanyAdmin() && $user->company_id !== $currentUser->company_id) {
+        if (($currentUser->isCompanyAdmin() || $currentUser->isStaff()) && $user->company_id !== $currentUser->company_id) {
             abort(403, 'Unauthorized action.');
+        }
+        if ($currentUser->isStaff() && in_array($user->role_id, [1, 2])) {
+            abort(403, 'Unauthorized action. Staff cannot update Admin status.');
         }
 
         if ($user->id === $currentUser->id) {

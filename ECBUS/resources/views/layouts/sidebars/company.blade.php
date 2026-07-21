@@ -9,8 +9,24 @@
     <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Company Management</p>
 </div>
 
+<a href="{{ route(auth()->user()->getRolePrefix().'.settlements') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.settlements') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="dollar-sign" class="w-5 h-5 mr-3"></i> Settlements
+</a>
+
+<a href="{{ route(auth()->user()->getRolePrefix().'.commission_rules') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.commission_rules') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="percent" class="w-5 h-5 mr-3"></i> Commission Rules
+</a>
+
 <a href="{{ route(auth()->user()->getRolePrefix().'.buses') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.buses') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
     <i data-lucide="bus" class="w-5 h-5 mr-3"></i> Manage Buses
+</a>
+
+<a href="{{ route(auth()->user()->getRolePrefix().'.routes') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.routes') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="map" class="w-5 h-5 mr-3"></i> Routes
+</a>
+
+<a href="{{ route(auth()->user()->getRolePrefix().'.locations') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.locations') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="map-pin" class="w-5 h-5 mr-3"></i> Destinations
 </a>
 
 <a href="{{ route(auth()->user()->getRolePrefix().'.schedules') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.schedules') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">

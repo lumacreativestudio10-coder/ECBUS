@@ -8,7 +8,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Route extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['name', 'from_location_id', 'to_location_id', 'distance', 'estimated_duration_minutes', 'description', 'image', 'starting_price', 'is_popular', 'status'];
+    protected $fillable = ['company_id', 'name', 'from_location_id', 'to_location_id', 'distance', 'estimated_duration_minutes', 'description', 'image', 'starting_price', 'is_popular', 'status'];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('company', function (\Illuminate\Database\Eloquent\Builder $builder) {
+            if (auth()->check() && !auth()->user()->isSuperAdmin() && auth()->user()->company_id) {
+                $builder->where('company_id', auth()->user()->company_id);
+            }
+        });
+    }
 
     public function getDurationStringAttribute()
     {

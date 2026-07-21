@@ -109,9 +109,11 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-gray-100 bg-white flex justify-between items-center">
                     <h3 class="font-extrabold text-lg text-dark-text">Registered Bus Companies</h3>
+                    @if(auth()->user()->role_id == 1)
                     <button @click="isAddOpen = true" class="bg-primary-maroon hover:bg-dark-maroon text-white font-bold rounded-lg px-4 py-2 text-sm transition flex items-center shadow-md">
                         <i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add Company
                     </button>
+                    @endif
                 </div>
                 
                 <div class="overflow-x-auto flex-grow">
@@ -187,6 +189,7 @@
                                         <button @click="openEdit({{ json_encode($company) }})" type="button" class="text-gray-400 hover:text-green-600 transition p-1" title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </button>
+                                        @if(auth()->user()->role_id == 1)
                                         <form action="{{ route(auth()->user()->getRolePrefix().'.bus_companies.destroy', $company) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this bus company?');" class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -194,6 +197,7 @@
                                                 <i data-lucide="trash-2" class="w-5 h-5"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -223,6 +227,7 @@
         </div>
     </div>
 
+    @if(auth()->user()->role_id == 1)
     <!-- Add New Modal -->
     <div x-show="isAddOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -284,7 +289,7 @@
                                 <input type="text" name="telephone" value="{{ old('telephone') }}" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Email (For Admin Login)</label>
                                 <input type="email" name="email" value="{{ old('email') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                             </div>
                             <div>
@@ -376,7 +381,7 @@
             </div>
         </div>
     </div>
-
+    @endif
 
     <!-- Edit Modal -->
     <div x-show="isEditOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -468,7 +473,7 @@
                             
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Commission Per Seat (LKR) *</label>
-                                <input type="number" step="0.01" name="commission_per_seat" x-model="editData.commission_per_seat" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                <input type="number" step="0.01" name="commission_per_seat" x-model="editData.commission_per_seat" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required {{ auth()->user()->role_id != 1 ? 'readonly' : '' }}>
                             </div>
                             
                             <!-- Bank Details Separated -->
@@ -480,19 +485,19 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Bank Name</label>
-                                        <input type="text" name="bank_name" x-model="editData.bank_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                        <input type="text" name="bank_name" x-model="editData.bank_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" {{ auth()->user()->role_id != 1 ? 'readonly' : '' }}>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Branch Name</label>
-                                        <input type="text" name="branch_name" x-model="editData.branch_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                        <input type="text" name="branch_name" x-model="editData.branch_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" {{ auth()->user()->role_id != 1 ? 'readonly' : '' }}>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Account Name</label>
-                                        <input type="text" name="account_name" x-model="editData.account_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                        <input type="text" name="account_name" x-model="editData.account_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" {{ auth()->user()->role_id != 1 ? 'readonly' : '' }}>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Account Number</label>
-                                        <input type="text" name="account_number" x-model="editData.account_number" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
+                                        <input type="text" name="account_number" x-model="editData.account_number" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" {{ auth()->user()->role_id != 1 ? 'readonly' : '' }}>
                                     </div>
                                 </div>
                             </div>
@@ -517,10 +522,15 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Status *</label>
+                                @if(auth()->user()->role_id == 1)
                                 <select name="status" x-model="editData.status" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
+                                @else
+                                <input type="hidden" name="status" :value="editData.status">
+                                <input type="text" :value="editData.status == 1 ? 'Active' : 'Inactive'" class="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm bg-gray-100 text-gray-600 outline-none" readonly>
+                                @endif
                             </div>
                             <div class="col-span-1 md:col-span-2" style="grid-column: 1 / -1;">
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Description</label>
