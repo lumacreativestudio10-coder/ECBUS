@@ -70,7 +70,11 @@
                 <label class="block text-sm font-bold text-dark-text mb-2 uppercase tracking-wide">Passengers</label>
                 <div class="relative">
                     <i data-lucide="users" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400"></i>
-                    <input type="number" x-model.number="passengers" min="1" max="4" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700">
+                    <select x-model.number="passengers" style="color-scheme: light;" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon focus:border-primary-maroon font-medium text-gray-700">
+                        @for($i = 1; $i <= 10; $i++)
+                            <option value="{{ $i }}">{{ $i }}</option>
+                        @endfor
+                    </select>
                 </div>
             </div>
 
@@ -126,42 +130,42 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @php
-                $routes = [
-                    ['from' => 'Kalmune', 'to' => 'Colombo', 'price' => '2,500', 'img' => 'photo-1582293041079-7814c27aa606'],
-                    ['from' => 'Jaffna', 'to' => 'Colombo', 'price' => '2,800', 'img' => 'photo-1625732128691-8bc4e3b7b9cb'],
-                    ['from' => 'Colombo', 'to' => 'Jaffna', 'price' => '2,800', 'img' => 'photo-1544620347-c4fd4a3d5957'],
-                    ['from' => 'Batticaloa', 'to' => 'Colombo', 'price' => '2,400', 'img' => 'photo-1588668214407-6ea9a6d8c272'],
-                    ['from' => 'Trincomalee', 'to' => 'Colombo', 'price' => '2,600', 'img' => 'photo-1506461883276-594a12b11e61'],
-                    ['from' => 'Kandy', 'to' => 'Colombo', 'price' => '2,000', 'img' => 'photo-1552465011-b4e21bf6e79a'],
-                ];
-            @endphp
-
-            @foreach($routes as $route)
+            @forelse($popularRoutes as $route)
             <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 group cursor-pointer border border-gray-50 flex flex-col h-full">
                 <div class="relative h-48 overflow-hidden">
-                    <img src="https://images.unsplash.com/{{ $route['img'] }}?auto=format&fit=crop&w=800&q=80" alt="{{ $route['to'] }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                    @if($route->image)
+                        <img src="{{ asset('storage/' . $route->image) }}" alt="{{ $route->toLocation->name ?? 'Destination' }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                    @else
+                        <div class="w-full h-full bg-gray-200 flex items-center justify-center group-hover:scale-110 transition duration-700">
+                            <i data-lucide="image" class="w-12 h-12 text-gray-400"></i>
+                        </div>
+                    @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-white font-bold text-lg flex items-center">
-                        <i data-lucide="map-pin" class="w-5 h-5 mr-1 text-primary-gold"></i> {{ $route['to'] }}
+                        <i data-lucide="map-pin" class="w-5 h-5 mr-1 text-primary-gold"></i> {{ $route->toLocation->name ?? 'Unknown' }}
                     </div>
                 </div>
                 <div class="p-6 flex-grow flex flex-col">
                     <div class="flex items-center justify-between text-dark-text font-bold text-xl mb-4">
-                        <span>{{ $route['from'] }}</span>
+                        <span>{{ $route->fromLocation->name ?? 'Unknown' }}</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 text-primary-gold"></i>
-                        <span>{{ $route['to'] }}</span>
+                        <span>{{ $route->toLocation->name ?? 'Unknown' }}</span>
                     </div>
                     <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
                         <div>
                             <p class="text-xs text-gray-500 font-semibold uppercase">Starting From</p>
-                            <p class="text-xl font-extrabold text-primary-maroon">LKR {{ $route['price'] }}</p>
+                            <p class="text-xl font-extrabold text-primary-maroon">LKR {{ number_format($route->starting_price, 2) }}</p>
                         </div>
-                        <a href="{{ route('routes') }}" class="bg-primary-maroon text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-dark-maroon transition shadow-md">VIEW BUSES</a>
+                        <a href="{{ route('routes') }}?from={{ $route->from_location_id }}&to={{ $route->to_location_id }}" class="bg-primary-maroon text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-dark-maroon transition shadow-md">VIEW BUSES</a>
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+                <div class="col-span-full text-center text-gray-500 py-10">
+                    <i data-lucide="map" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+                    No popular routes added yet.
+                </div>
+            @endforelse
         </div>
     </div>
 </section>

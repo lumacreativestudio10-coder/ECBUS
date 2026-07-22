@@ -25,6 +25,10 @@
     <i data-lucide="map" class="w-5 h-5 mr-3"></i> Routes
 </a>
 
+<a href="{{ route('admin.popular_routes') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.popular_routes') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
+    <i data-lucide="navigation" class="w-5 h-5 mr-3"></i> Popular Routes
+</a>
+
 <a href="{{ route(auth()->user()->getRolePrefix().'.locations') }}" class="flex items-center px-4 py-3 {{ request()->routeIs(auth()->user()->getRolePrefix().'.locations') ? 'bg-primary-maroon text-white font-bold' : 'text-gray-300 hover:text-white hover:bg-white/10 transition font-medium' }} rounded-xl mb-2">
     <i data-lucide="map-pin" class="w-5 h-5 mr-3"></i> Destinations
 </a>

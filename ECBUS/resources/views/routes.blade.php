@@ -8,34 +8,34 @@
     <!-- Search Summary Header -->
     <div class="bg-dark-maroon text-white pt-24 pb-8 shadow-md">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-wrap justify-between md:justify-around items-center bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/20 gap-4 md:gap-0">
-                <div class="text-center md:text-left flex-shrink-0">
+            <div class="grid grid-cols-2 md:flex md:flex-wrap justify-between md:justify-around items-center bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/20 gap-4 md:gap-0">
+                <div class="text-left flex-shrink-0">
                     <p class="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-1">From</p>
-                    <h2 class="text-xl md:text-2xl font-bold" x-text="params.from || 'Colombo'"></h2>
+                    <h2 class="text-xl md:text-2xl font-bold truncate" x-text="params.from || 'Any Origin'"></h2>
                 </div>
                 
-                <div class="bg-primary-gold/20 p-2 md:p-3 rounded-full text-primary-gold flex-shrink-0">
+                <div class="hidden md:flex bg-primary-gold/20 p-2 md:p-3 rounded-full text-primary-gold flex-shrink-0">
                     <i data-lucide="arrow-right-left" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </div>
                 
-                <div class="text-center md:text-left flex-shrink-0">
+                <div class="text-right md:text-left flex-shrink-0">
                     <p class="text-xs uppercase tracking-wider text-gray-300 font-semibold mb-1">To</p>
-                    <h2 class="text-xl md:text-2xl font-bold" x-text="params.to || 'Kandy'"></h2>
+                    <h2 class="text-xl md:text-2xl font-bold truncate" x-text="params.to || 'Any Destination'"></h2>
                 </div>
                 
                 <div class="hidden md:block w-px h-12 bg-white/20 mx-2"></div>
                 
-                <div class="flex items-center flex-shrink-0">
+                <div class="flex items-center flex-shrink-0 col-span-1">
                     <i data-lucide="calendar" class="w-5 h-5 text-primary-gold mr-2 md:mr-3"></i>
-                    <span class="font-medium text-sm md:text-base" x-text="formatDate(params.date) || '24 July 2026'"></span>
+                    <span class="font-medium text-sm md:text-base" x-text="formatDate(params.date) || 'Any Date'"></span>
                 </div>
                 
-                <div class="flex items-center flex-shrink-0">
+                <div class="flex items-center justify-end md:justify-start flex-shrink-0 col-span-1">
                     <i data-lucide="users" class="w-5 h-5 text-primary-gold mr-2 md:mr-3"></i>
                     <span class="font-medium text-sm md:text-base" x-text="(params.passengers || '1') + ' Passenger(s)'"></span>
                 </div>
                 
-                <a href="{{ route('home') }}" class="bg-white text-dark-maroon px-5 py-2.5 rounded-lg font-bold hover:bg-primary-gold hover:text-white transition shadow-sm text-sm flex-shrink-0 mt-4 md:mt-0 w-full md:w-auto text-center">
+                <a href="{{ route('home') }}" class="col-span-2 md:col-span-1 bg-white text-dark-maroon px-5 py-2.5 rounded-lg font-bold hover:bg-primary-gold hover:text-white transition shadow-sm text-sm flex-shrink-0 mt-2 md:mt-0 w-full md:w-auto text-center">
                     MODIFY SEARCH
                 </a>
             </div>
@@ -47,13 +47,17 @@
         <div class="flex flex-col lg:flex-row gap-8">
             
             <!-- Sidebar Filters -->
-            <div class="w-full lg:w-1/4">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+            <div x-data="{ showFilters: false }" class="w-full lg:w-1/4">
+                <button @click="showFilters = !showFilters" class="lg:hidden w-full bg-white border border-gray-100 shadow-sm text-dark-text font-bold py-3 px-4 rounded-xl flex justify-between items-center mb-6">
+                    <span class="flex items-center"><i data-lucide="sliders-horizontal" class="w-5 h-5 mr-2 text-primary-maroon"></i> Show Filters</span>
+                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300" :class="showFilters ? 'rotate-180' : ''"></i>
+                </button>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24" x-show="showFilters || window.innerWidth >= 1024" :class="showFilters ? 'block' : 'hidden lg:block'">
                     <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
                         <h3 class="font-extrabold text-lg text-dark-text flex items-center">
                             <i data-lucide="sliders-horizontal" class="w-5 h-5 mr-2 text-primary-maroon"></i> Filters
                         </h3>
-                        <button class="text-sm text-primary-maroon font-bold hover:text-dark-maroon">Clear All</button>
+                        <button type="button" @click="clearFilters()" class="text-sm text-primary-maroon font-bold hover:text-dark-maroon">Clear All</button>
                     </div>
 
                     <!-- Travel Date -->
@@ -70,7 +74,11 @@
                         <label class="block text-sm font-bold text-dark-text mb-2 uppercase tracking-wide">Passengers</label>
                         <div class="relative">
                             <i data-lucide="users" class="absolute left-3 top-3.5 w-5 h-5 text-gray-400"></i>
-                            <input type="number" name="passengers" value="{{ $passengers ?? 1 }}" min="1" max="4" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon font-medium text-gray-700 outline-none">
+                            <select name="passengers" style="color-scheme: light;" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon font-medium text-gray-700 outline-none">
+                                @for($i = 1; $i <= 10; $i++)
+                                    <option value="{{ $i }}" {{ ($passengers ?? 1) == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
                         </div>
                     </div>
 
@@ -79,19 +87,19 @@
                         <h4 class="font-bold text-dark-text mb-4 text-sm uppercase tracking-wide">Departure Time</h4>
                         <div class="space-y-3">
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
+                                <input type="checkbox" value="morning" x-model="filters.times" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
                                 <span class="ml-3 text-gray-600 group-hover:text-dark-text flex items-center">
                                     <i data-lucide="sunrise" class="w-4 h-4 mr-2 text-gray-400"></i> Morning (06:00 - 12:00)
                                 </span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
+                                <input type="checkbox" value="afternoon" x-model="filters.times" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
                                 <span class="ml-3 text-gray-600 group-hover:text-dark-text flex items-center">
                                     <i data-lucide="sun" class="w-4 h-4 mr-2 text-gray-400"></i> Afternoon (12:00 - 18:00)
                                 </span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
+                                <input type="checkbox" value="night" x-model="filters.times" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
                                 <span class="ml-3 text-gray-600 group-hover:text-dark-text flex items-center">
                                     <i data-lucide="moon" class="w-4 h-4 mr-2 text-gray-400"></i> Night (18:00 - 06:00)
                                 </span>
@@ -103,37 +111,25 @@
                     <div class="mb-8">
                         <h4 class="font-bold text-dark-text mb-4 text-sm uppercase tracking-wide">Bus Type</h4>
                         <div class="space-y-3">
+                            @foreach(\App\Models\BusType::orderBy('name')->get() as $type)
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
-                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">Super Luxury (A/C)</span>
+                                <input type="checkbox" value="{{ $type->name }}" x-model="filters.types" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
+                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">{{ $type->name }}</span>
                             </label>
-                            <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
-                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">Luxury (A/C)</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
-                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">Semi-Luxury (Non A/C)</span>
-                            </label>
+                            @endforeach
                         </div>
                     </div>
 
-                    <!-- Boarding Points -->
+                    <!-- Destinations -->
                     <div>
-                        <h4 class="font-bold text-dark-text mb-4 text-sm uppercase tracking-wide">Boarding Points</h4>
+                        <h4 class="font-bold text-dark-text mb-4 text-sm uppercase tracking-wide">Destinations</h4>
                         <div class="space-y-3">
+                            @foreach(\App\Models\Location::orderBy('name')->get() as $location)
                             <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
-                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">Pettah Bus Stand</span>
+                                <input type="checkbox" value="{{ $location->name }}" x-model="filters.destinations" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
+                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">{{ $location->name }}</span>
                             </label>
-                            <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
-                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">Bambalapitiya</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary-maroon focus:ring-primary-maroon">
-                                <span class="ml-3 text-gray-600 group-hover:text-dark-text">Wellawatte</span>
-                            </label>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -159,17 +155,35 @@
                 <!-- Bus Cards List -->
                 <div class="space-y-6">
                     @forelse ($schedules as $schedule)
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition duration-300">
+                        @php
+                            $locs = [];
+                            if($schedule->route->fromLocation) $locs[] = $schedule->route->fromLocation->name;
+                            if($schedule->route->stops) {
+                                foreach($schedule->route->stops as $stop) {
+                                    $locs[] = $stop->stop_name;
+                                }
+                            }
+                            if($schedule->route->toLocation) $locs[] = $schedule->route->toLocation->name;
+                        @endphp
+                        <div x-data="{
+                                departureTime: '{{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}',
+                                busType: '{{ addslashes($schedule->bus->busType->name ?? 'Unknown') }}',
+                                locs: {{ json_encode($locs) }}
+                             }"
+                             x-show="checkTimeMatch(departureTime) && 
+                                     (filters.types.length === 0 || filters.types.includes(busType)) && 
+                                     (filters.destinations.length === 0 || locs.some(l => filters.destinations.includes(l)))"
+                             class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition duration-300">
                             <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                                 
                                 <!-- Operator Info -->
                                 <div class="flex items-center mb-6 md:mb-0 w-full md:w-1/4">
                                     <div class="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mr-4 flex-shrink-0">
-                                        <i data-lucide="{{ $schedule->bus->busCompany->logo ?? 'bus-front' }}" class="w-8 h-8 text-primary-maroon"></i>
+                                        <i data-lucide="bus-front" class="w-8 h-8 text-primary-maroon"></i>
                                     </div>
                                     <div>
                                         <h4 class="font-extrabold text-lg text-dark-text">{{ $schedule->bus->busCompany->company_name }}</h4>
-                                        <span class="inline-block bg-primary-gold/20 text-dark-maroon text-xs px-2 py-0.5 rounded font-bold mt-1">{{ $schedule->bus->type }}</span>
+                                        <span class="inline-block bg-primary-gold/20 text-dark-maroon text-xs px-2 py-0.5 rounded font-bold mt-1">{{ $schedule->bus->busType->name ?? 'Unknown' }}</span>
                                     </div>
                                 </div>
                                 
@@ -178,6 +192,7 @@
                                     <div class="text-center">
                                         <h5 class="text-xl font-extrabold text-dark-text">{{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}</h5>
                                         <p class="text-xs font-semibold text-gray-500">{{ $schedule->route->fromLocation->name ?? '?' }}</p>
+                                        <p class="text-[10px] uppercase font-bold text-primary-maroon mt-0.5">{{ \Carbon\Carbon::parse($schedule->date)->format('d M Y') }}</p>
                                     </div>
                                     <div class="flex-grow mx-4 relative flex flex-col items-center">
                                         @php
@@ -195,9 +210,11 @@
                                     <div class="text-center">
                                         <h5 class="text-xl font-extrabold text-dark-text">{{ \Carbon\Carbon::parse($schedule->arrival_time)->format('H:i') }}</h5>
                                         <p class="text-xs font-semibold text-gray-500">{{ $schedule->route->toLocation->name ?? '?' }}</p>
-                                        @if($arrival > $departure->copy()->endOfDay())
-                                            <p class="text-xs font-semibold text-gray-500 text-red-500">Next Day</p>
-                                        @endif
+                                        @php
+                                            $arrDate = \Carbon\Carbon::parse($schedule->date);
+                                            if($arrival < $departure) $arrDate->addDay();
+                                        @endphp
+                                        <p class="text-[10px] uppercase font-bold text-primary-maroon mt-0.5">{{ $arrDate->format('d M Y') }}</p>
                                     </div>
                                 </div>
                                 
@@ -213,14 +230,6 @@
                                         <h4 class="text-2xl font-extrabold text-dark-maroon">LKR {{ number_format($schedule->price, 0) }}</h4>
                                         @php
                                             $availableSeats = max(0, $schedule->bus->total_seats - ($schedule->booked_seats ?? 0));
-                                            $locs = [];
-                                            if($schedule->route->fromLocation) $locs[] = $schedule->route->fromLocation->name;
-                                            if($schedule->route->stops) {
-                                                foreach($schedule->route->stops as $stop) {
-                                                    $locs[] = $stop->stop_name;
-                                                }
-                                            }
-                                            if($schedule->route->toLocation) $locs[] = $schedule->route->toLocation->name;
                                         @endphp
                                         <p class="text-xs font-semibold {{ $availableSeats > 5 ? 'text-green-600' : 'text-red-600' }} mt-1">{{ $availableSeats }} Seats Available</p>
                                     </div>
@@ -242,19 +251,11 @@
                 </div>
                 
                 <!-- Pagination -->
-                <div class="flex justify-center mt-10">
-                    <div class="flex space-x-2">
-                        <button class="w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 bg-white text-gray-500 hover:bg-gray-50">
-                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
-                        </button>
-                        <button class="w-10 h-10 rounded-lg flex items-center justify-center bg-primary-maroon text-white font-bold shadow-md">1</button>
-                        <button class="w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 bg-white text-dark-text font-bold hover:bg-gray-50">2</button>
-                        <button class="w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 bg-white text-dark-text font-bold hover:bg-gray-50">3</button>
-                        <button class="w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 bg-white text-gray-500 hover:bg-gray-50">
-                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                        </button>
-                    </div>
+                @if($schedules->hasPages())
+                <div class="mt-10">
+                    {{ $schedules->links() }}
                 </div>
+                @endif
 
             </div>
         </div>
@@ -325,7 +326,11 @@
                         </div>
                         <div class="w-1/3">
                             <label class="block text-sm font-bold text-dark-text mb-1">Passengers</label>
-                            <input type="number" x-model.number="booking.count" required min="1" max="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition text-center font-bold">
+                            <select x-model.number="booking.count" style="color-scheme: light;" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition text-center font-bold">
+                                @for($i = 1; $i <= 10; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
                         </div>
                     </div>
 
@@ -374,6 +379,26 @@
             locations: [],
             selectedBus: { name: '', price: 0 },
             booking: { name: '', phone: '', count: 1, boarding_point: '', dropping_point: '' },
+            filters: {
+                times: [],
+                types: [],
+                destinations: []
+            },
+            
+            checkTimeMatch(timeStr) {
+                if (this.filters.times.length === 0) return true;
+                const hour = parseInt(timeStr.split(':')[0]);
+                if (this.filters.times.includes('morning') && hour >= 6 && hour < 12) return true;
+                if (this.filters.times.includes('afternoon') && hour >= 12 && hour < 18) return true;
+                if (this.filters.times.includes('night') && (hour >= 18 || hour < 6)) return true;
+                return false;
+            },
+            
+            clearFilters() {
+                this.filters.times = [];
+                this.filters.types = [];
+                this.filters.destinations = [];
+            },
             
             init() {
                 const urlParams = new URLSearchParams(window.location.search);

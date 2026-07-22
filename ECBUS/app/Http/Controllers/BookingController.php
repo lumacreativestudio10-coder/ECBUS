@@ -61,10 +61,16 @@ class BookingController extends Controller
             'is_walkin' => 'nullable|boolean'
         ]);
 
-        $schedule = Schedule::findOrFail($request->schedule_id);
+        $schedule = Schedule::with('bus')->findOrFail($request->schedule_id);
         $seats = $request->seats ?? [];
 
-        if ($schedule->available_seats < $request->passenger_count) {
+        // Dynamically calculate available seats to prevent out-of-sync database errors
+        $bookedSeatsCount = Booking::where('schedule_id', $schedule->id)
+            ->where('booking_status', '!=', 'cancelled')
+            ->sum('passenger_count');
+        $actualAvailableSeats = $schedule->bus->total_seats - $bookedSeatsCount;
+
+        if ($actualAvailableSeats < $request->passenger_count) {
             return response()->json([
                 'success' => false,
                 'message' => 'Not enough seats available.'

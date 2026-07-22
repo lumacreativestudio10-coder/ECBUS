@@ -15,7 +15,7 @@ class SearchController extends Controller
         $dateStr = $request->get('date');
         $passengers = $request->get('passengers', 1);
 
-        $query = Schedule::with(['bus.busCompany', 'route.fromLocation', 'route.toLocation', 'route.stops'])
+        $query = Schedule::with(['bus.busCompany', 'bus.busType', 'route.fromLocation', 'route.toLocation', 'route.stops'])
                          ->withSum(['bookings as booked_seats' => function($query) {
                              $query->where('booking_status', '!=', 'cancelled');
                          }], 'passenger_count');
@@ -38,7 +38,7 @@ class SearchController extends Controller
             $query->whereDate('date', '>=', now()->toDateString());
         }
 
-        $schedules = $query->orderBy('date', 'asc')->orderBy('departure_time', 'asc')->get();
+        $schedules = $query->orderBy('date', 'asc')->orderBy('departure_time', 'asc')->paginate(10)->withQueryString();
 
         return view('routes', compact('schedules'));
     }

@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $locations = \App\Models\Location::orderBy('name')->get();
     $reviews = \App\Models\Review::where('status', 'published')->latest()->take(6)->get();
-    return view('welcome', compact('locations', 'reviews'));
+    $popularRoutes = \App\Models\PopularRoute::with(['fromLocation', 'toLocation'])->where('status', 1)->get();
+    return view('welcome', compact('locations', 'reviews', 'popularRoutes'));
 })->name('home');
 
 use App\Http\Controllers\SearchController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminBusCompanyController;
 use App\Http\Controllers\AdminRouteController;
+use App\Http\Controllers\AdminPopularRouteController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\AdminContactMessageController;
@@ -93,6 +95,11 @@ $sharedRoutes = function () {
     Route::post('/routes', [AdminRouteController::class, 'store'])->name('routes.store');
     Route::put('/routes/{route}', [AdminRouteController::class, 'update'])->name('routes.update');
     Route::delete('/routes/{route}', [AdminRouteController::class, 'destroy'])->name('routes.destroy');
+
+    Route::get('/popular-routes', [AdminPopularRouteController::class, 'index'])->name('popular_routes');
+    Route::post('/popular-routes', [AdminPopularRouteController::class, 'store'])->name('popular_routes.store');
+    Route::put('/popular-routes/{popularRoute}', [AdminPopularRouteController::class, 'update'])->name('popular_routes.update');
+    Route::delete('/popular-routes/{popularRoute}', [AdminPopularRouteController::class, 'destroy'])->name('popular_routes.destroy');
 
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews');
     Route::post('/reviews', [AdminReviewController::class, 'store'])->name('reviews.store');
