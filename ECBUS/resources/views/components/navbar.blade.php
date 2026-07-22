@@ -17,7 +17,7 @@
 
         <!-- Book Now Button (Desktop) -->
         <div class="hidden lg:block">
-            <a href="{{ route('routes') }}" class="bg-primary-gold text-dark-text px-6 py-2.5 rounded-full font-bold shadow-md hover:bg-yellow-500 hover:shadow-lg transition duration-300">
+            <a href="{{ url('/#booking-search') }}" class="bg-primary-gold text-dark-text px-6 py-2.5 rounded-full font-bold shadow-md hover:bg-yellow-500 hover:shadow-lg transition duration-300">
                 BOOK NOW
             </a>
         </div>
@@ -45,7 +45,7 @@
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'text-primary-maroon font-bold' : 'text-dark-text hover:text-primary-maroon font-medium' }}">About Us</a>
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'text-primary-maroon font-bold' : 'text-dark-text hover:text-primary-maroon font-medium' }}">Contact Us</a>
             <a href="{{ route('booking') }}" class="{{ request()->routeIs('booking') ? 'text-primary-maroon font-bold' : 'text-dark-text hover:text-primary-maroon font-medium' }}">My Booking</a>
-            <a href="{{ route('routes') }}" class="bg-primary-gold text-dark-text text-center px-6 py-3 rounded-xl font-bold shadow-md mt-2">
+            <a href="{{ url('/#booking-search') }}" class="bg-primary-gold text-dark-text text-center px-6 py-3 rounded-xl font-bold shadow-md mt-2" @click="mobileMenuOpen = false">
                 BOOK NOW
             </a>
         </div>

@@ -12,7 +12,16 @@ Route::get('/', function () {
     $locations = \App\Models\Location::orderBy('name')->get();
     $reviews = \App\Models\Review::where('status', 'published')->latest()->take(6)->get();
     $popularRoutes = \App\Models\PopularRoute::with(['fromLocation', 'toLocation'])->where('status', 1)->get();
-    return view('welcome', compact('locations', 'reviews', 'popularRoutes'));
+    
+    $featuredSchedules = \App\Models\Schedule::with(['bus.busType', 'bus.busCompany', 'route.fromLocation', 'route.toLocation'])
+        ->where('date', '>=', now()->toDateString())
+        ->where('status', 'scheduled')
+        ->orderBy('date')
+        ->orderBy('departure_time')
+        ->take(3)
+        ->get();
+        
+    return view('welcome', compact('locations', 'reviews', 'popularRoutes', 'featuredSchedules'));
 })->name('home');
 
 use App\Http\Controllers\SearchController;

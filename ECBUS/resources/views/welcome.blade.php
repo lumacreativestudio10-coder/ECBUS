@@ -25,7 +25,7 @@
 </section>
 
 <!-- Floating Search Form -->
-<section class="relative z-20 -mt-32 max-w-6xl mx-auto px-6 mb-20">
+<section id="booking-search" class="relative z-20 -mt-32 max-w-6xl mx-auto px-6 mb-20">
     <div class="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 animate-fade-in-up" style="animation: fadeInUp 1.2s ease-out;">
         <form x-data="bookingForm" @submit.prevent="validate" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
             
@@ -233,137 +233,56 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Bus 1 -->
+            @forelse($featuredSchedules as $schedule)
+            <!-- Bus -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                     <div>
-                        <h3 class="text-xl font-extrabold text-dark-text">EC Express</h3>
-                        <p class="text-sm text-gray-500">Luxury AC</p>
+                        <h3 class="text-xl font-extrabold text-dark-text">{{ $schedule->bus->name ?? 'Unknown Bus' }}</h3>
+                        <p class="text-sm text-gray-500">{{ optional($schedule->bus->busType)->name ?? 'Standard' }}</p>
                     </div>
                     <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center">
-                        <i data-lucide="users" class="w-3 h-3 mr-1"></i> 12 Seats Available
+                        <i data-lucide="users" class="w-3 h-3 mr-1"></i> {{ $schedule->available_seats }} Seats Available
                     </div>
                 </div>
                 <div class="p-6 flex-grow">
                     <div class="flex justify-between items-center font-bold text-lg text-dark-text mb-6">
-                        <span>Kalmune</span>
+                        <span>{{ optional($schedule->route->fromLocation)->name ?? 'Unknown' }}</span>
                         <div class="flex-grow mx-4 relative flex items-center justify-center">
                             <div class="w-full h-px bg-gray-300"></div>
                             <i data-lucide="bus" class="absolute w-6 h-6 text-primary-gold bg-white px-1"></i>
                         </div>
-                        <span>Colombo</span>
+                        <span>{{ optional($schedule->route->toLocation)->name ?? 'Unknown' }}</span>
                     </div>
                     <div class="grid grid-cols-3 gap-4 text-center mb-6">
                         <div>
                             <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Departure</p>
-                            <p class="font-bold text-dark-text">08:00 PM</p>
+                            <p class="font-bold text-dark-text">{{ \Carbon\Carbon::parse($schedule->departure_time)->format('h:i A') }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Duration</p>
-                            <p class="font-bold text-primary-maroon">9 Hours</p>
+                            <p class="font-bold text-primary-maroon">{{ $schedule->route->duration_string ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Arrival</p>
-                            <p class="font-bold text-dark-text">05:00 AM</p>
+                            <p class="font-bold text-dark-text">{{ \Carbon\Carbon::parse($schedule->arrival_time)->format('h:i A') }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 p-6 flex justify-between items-center">
                     <div>
                         <p class="text-xs text-gray-500 font-semibold uppercase">Price</p>
-                        <p class="text-2xl font-extrabold text-dark-maroon">LKR 2,500</p>
+                        <p class="text-2xl font-extrabold text-dark-maroon">LKR {{ number_format($schedule->price, 2) }}</p>
                     </div>
                     <a href="{{ route('routes') }}" class="inline-block bg-primary-gold text-dark-text px-6 py-2.5 rounded-lg font-bold hover:bg-yellow-500 transition shadow-md">VIEW SEATS</a>
                 </div>
             </div>
-
-            <!-- Bus 2 -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-dark-text">Royal Line</h3>
-                        <p class="text-sm text-gray-500">Super Luxury</p>
-                    </div>
-                    <div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold flex items-center">
-                        <i data-lucide="users" class="w-3 h-3 mr-1"></i> 8 Seats Available
-                    </div>
+            @empty
+                <div class="col-span-full text-center text-gray-500 py-10">
+                    <i data-lucide="bus" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+                    No featured schedules available right now.
                 </div>
-                <div class="p-6 flex-grow">
-                    <div class="flex justify-between items-center font-bold text-lg text-dark-text mb-6">
-                        <span>Jaffna</span>
-                        <div class="flex-grow mx-4 relative flex items-center justify-center">
-                            <div class="w-full h-px bg-gray-300"></div>
-                            <i data-lucide="bus" class="absolute w-6 h-6 text-primary-gold bg-white px-1"></i>
-                        </div>
-                        <span>Colombo</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4 text-center mb-6">
-                        <div>
-                            <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Departure</p>
-                            <p class="font-bold text-dark-text">07:30 PM</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Duration</p>
-                            <p class="font-bold text-primary-maroon">9 Hours</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Arrival</p>
-                            <p class="font-bold text-dark-text">04:30 AM</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 p-6 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-gray-500 font-semibold uppercase">Price</p>
-                        <p class="text-2xl font-extrabold text-dark-maroon">LKR 2,800</p>
-                    </div>
-                    <a href="{{ route('routes') }}" class="inline-block bg-primary-gold text-dark-text px-6 py-2.5 rounded-lg font-bold hover:bg-yellow-500 transition shadow-md">VIEW SEATS</a>
-                </div>
-            </div>
-
-            <!-- Bus 3 -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300 overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <div>
-                        <h3 class="text-xl font-extrabold text-dark-text">Super Line</h3>
-                        <p class="text-sm text-gray-500">Luxury Non AC</p>
-                    </div>
-                    <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center">
-                        <i data-lucide="users" class="w-3 h-3 mr-1"></i> 15 Seats Available
-                    </div>
-                </div>
-                <div class="p-6 flex-grow">
-                    <div class="flex justify-between items-center font-bold text-lg text-dark-text mb-6">
-                        <span>Batticaloa</span>
-                        <div class="flex-grow mx-4 relative flex items-center justify-center">
-                            <div class="w-full h-px bg-gray-300"></div>
-                            <i data-lucide="bus" class="absolute w-6 h-6 text-primary-gold bg-white px-1"></i>
-                        </div>
-                        <span>Colombo</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4 text-center mb-6">
-                        <div>
-                            <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Departure</p>
-                            <p class="font-bold text-dark-text">06:30 PM</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Duration</p>
-                            <p class="font-bold text-primary-maroon">9 Hours</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-semibold mb-1 uppercase">Arrival</p>
-                            <p class="font-bold text-dark-text">03:30 AM</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 p-6 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-gray-500 font-semibold uppercase">Price</p>
-                        <p class="text-2xl font-extrabold text-dark-maroon">LKR 2,400</p>
-                    </div>
-                    <a href="{{ route('routes') }}" class="inline-block bg-primary-gold text-dark-text px-6 py-2.5 rounded-lg font-bold hover:bg-yellow-500 transition shadow-md">VIEW SEATS</a>
-                </div>
-            </div>
+            @endforelse
         </div>
         
         <div class="mt-8 text-center md:hidden">
