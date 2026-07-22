@@ -57,11 +57,30 @@ class AdminController extends Controller
             'email' => 'nullable|email|max:255',
             'boarding_point' => 'nullable|string|max:255',
             'dropping_point' => 'nullable|string|max:255',
+            'seat_numbers' => 'nullable|string|max:255',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'payment_receipt' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120',
         ]);
+
+        if (isset($validated['seat_numbers']) && trim($validated['seat_numbers']) !== '') {
+            $seats = array_map('trim', explode(',', $validated['seat_numbers']));
+            $validated['seat_numbers'] = $seats;
+        } else {
+            $validated['seat_numbers'] = [];
+        }
+
+        if ($request->hasFile('payment_receipt')) {
+            $path = $request->file('payment_receipt')->store('receipts', 'public');
+            $validated['payment_receipt_path'] = $path;
+        }
+
+        if (!isset($validated['paid_amount'])) {
+            $validated['paid_amount'] = 0;
+        }
 
         $booking->update($validated);
 
-        return redirect()->route('admin.bookings.show', $booking)->with('success', 'Booking details updated successfully!');
+        return redirect()->route(auth()->user()->getRolePrefix().'.bookings.show', $booking)->with('success', 'Booking details updated successfully!');
     }
 
     public function schedules()

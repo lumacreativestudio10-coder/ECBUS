@@ -143,7 +143,7 @@
 
     <div class="ticket-container">
         <div class="header">
-            <h1>E-TICKET</h1>
+            <h1>{{ $booking->booking_status === 'pending' ? 'PROFORMA INVOICE' : 'E-TICKET' }}</h1>
             <p>{{ $booking->schedule->bus->busCompany->company_name ?? 'ECBUS' }}</p>
         </div>
 
@@ -224,8 +224,13 @@
         </div>
 
         <div class="footer">
-            Generated on {{ now()->format('d M Y, h:i A') }} | ECBUS E-Ticket<br>
-            Please show this ticket to the conductor while boarding.
+            Generated on {{ now()->format('d M Y, h:i A') }} | ECBUS {{ $booking->booking_status === 'pending' ? 'Invoice' : 'E-Ticket' }}<br>
+            @if($booking->booking_status === 'pending')
+                <strong style="color: #EF4444; font-size: 14px;">PAYMENT PENDING - NOT VALID FOR TRAVEL YET</strong><br>
+                Please contact admin to pay and confirm your booking.
+            @else
+                Please show this ticket to the conductor while boarding.
+            @endif
         </div>
     </div>
 

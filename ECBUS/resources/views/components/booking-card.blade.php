@@ -49,17 +49,27 @@
     <!-- Right section (Action/QR) -->
     <div class="p-8 md:p-10 w-full md:w-1/4 bg-gray-50 flex flex-col items-center justify-center relative md:border-l border-dashed border-gray-200">
         <div class="text-center mb-6 w-full border-b border-gray-200 pb-6 md:border-none md:pb-0">
-            <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-1">Total Paid</p>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-1">{{ $booking->booking_status === 'confirmed' ? 'Total Paid' : 'Amount to Pay' }}</p>
             <h4 class="text-3xl font-extrabold text-dark-maroon">LKR {{ number_format($booking->total_amount, 0) }}</h4>
         </div>
         
-        <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="w-full bg-primary-gold text-dark-maroon py-3 px-4 rounded-xl font-bold shadow-md hover:bg-yellow-500 transition flex items-center justify-center mb-3">
-            <i data-lucide="download" class="w-5 h-5 mr-2"></i> E-Ticket
-        </a>
-        @if($booking->status === 'Confirmed')
+        @if($booking->booking_status === 'pending')
+            <a href="https://wa.me/94771234567?text={{ urlencode('Hi, I want to pay for Booking ID: ECB-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT)) }}" target="_blank" class="w-full bg-[#25D366] text-white py-3 px-4 rounded-xl font-bold shadow-md hover:bg-green-600 transition flex items-center justify-center mb-3">
+                <i data-lucide="message-circle" class="w-5 h-5 mr-2"></i> WhatsApp Pay
+            </a>
+            <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="w-full bg-gray-200 text-gray-700 py-2.5 px-4 rounded-xl font-bold hover:bg-gray-300 transition flex items-center justify-center mb-3 text-sm border border-gray-300">
+                <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> View Invoice
+            </a>
+        @else
+            <a href="{{ route('booking.ticket', $booking->id) }}" target="_blank" class="w-full bg-primary-gold text-dark-maroon py-3 px-4 rounded-xl font-bold shadow-md hover:bg-yellow-500 transition flex items-center justify-center mb-3">
+                <i data-lucide="download" class="w-5 h-5 mr-2"></i> E-Ticket
+            </a>
+        @endif
+        
+        @if($booking->booking_status === 'confirmed')
         <form action="#" method="POST" class="w-full" onsubmit="return confirm('Contact admin to cancel ticket?');">
             @csrf
-            <button class="w-full text-red-500 hover:text-red-700 py-2 px-4 rounded-xl font-bold text-sm transition flex items-center justify-center border border-transparent hover:border-red-200">
+            <button class="w-full text-red-500 hover:text-red-700 py-2 px-4 rounded-xl font-bold text-sm transition flex items-center justify-center border border-transparent hover:border-red-200 mt-2">
                 <i data-lucide="x-circle" class="w-4 h-4 mr-2"></i> Cancel Ticket
             </button>
         </form>

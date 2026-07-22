@@ -37,12 +37,19 @@
         <!-- Column 3 -->
         <div>
             <h4 class="text-lg font-bold text-primary-gold mb-6 uppercase tracking-wider">Popular Routes</h4>
+            @php
+                $footerPopularRoutes = \App\Models\PopularRoute::with(['fromLocation', 'toLocation'])->where('status', 1)->take(5)->get();
+            @endphp
             <ul class="space-y-3 opacity-80">
-                <li><a href="#" class="hover:text-primary-gold transition flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2 opacity-50"></i> Kalmune → Colombo</a></li>
-                <li><a href="#" class="hover:text-primary-gold transition flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2 opacity-50"></i> Jaffna → Colombo</a></li>
-                <li><a href="#" class="hover:text-primary-gold transition flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2 opacity-50"></i> Colombo → Jaffna</a></li>
-                <li><a href="#" class="hover:text-primary-gold transition flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2 opacity-50"></i> Batticaloa → Colombo</a></li>
-                <li><a href="#" class="hover:text-primary-gold transition flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2 opacity-50"></i> Trincomalee → Colombo</a></li>
+                @forelse($footerPopularRoutes as $route)
+                    <li>
+                        <a href="{{ route('routes') }}?from={{ urlencode($route->fromLocation->name ?? '') }}&to={{ urlencode($route->toLocation->name ?? '') }}" class="hover:text-primary-gold transition flex items-center">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-2 opacity-50"></i> {{ $route->fromLocation->name ?? 'Unknown' }} &rarr; {{ $route->toLocation->name ?? 'Unknown' }}
+                        </a>
+                    </li>
+                @empty
+                    <li><span class="opacity-50 flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2"></i> No Routes Available</span></li>
+                @endforelse
             </ul>
         </div>
 
@@ -68,14 +75,14 @@
             </ul>
             
             <!-- Payment Methods -->
-            <div class="mt-8">
+            {{-- <div class="mt-8">
                 <h4 class="text-sm font-bold text-primary-gold mb-3 uppercase tracking-wider">Payment Methods</h4>
                 <div class="flex space-x-3">
                     <div class="bg-white px-2 py-1 rounded flex items-center justify-center h-8 w-12"><span class="text-dark-text font-bold text-xs">VISA</span></div>
                     <div class="bg-white px-2 py-1 rounded flex items-center justify-center h-8 w-12"><span class="text-dark-text font-bold text-xs">MC</span></div>
                     <div class="bg-white px-2 py-1 rounded flex items-center justify-center h-8 w-12"><span class="text-dark-text font-bold text-xs">BANK</span></div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 
@@ -84,6 +91,7 @@
         <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center opacity-60 text-sm">
             <p>&copy; {{ date('Y') }} ECBUS. All Rights Reserved.</p>
             <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="{{ route('admin.login') }}" class="hover:text-primary-gold transition font-bold"><i data-lucide="lock" class="w-3 h-3 inline mr-1"></i>Staff Login</a>
                 <a href="#" class="hover:text-primary-gold transition">Terms & Conditions</a>
                 <a href="#" class="hover:text-primary-gold transition">Privacy Policy</a>
             </div>

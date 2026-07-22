@@ -72,6 +72,17 @@
                 </div>
             </div>
 
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Paid Amount</span>
+                    <span class="font-extrabold text-green-600 text-lg">LKR {{ number_format($booking->paid_amount, 2) }}</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Balance</span>
+                    <span class="font-extrabold text-red-600 text-lg">LKR {{ number_format(max(0, $booking->total_amount - $booking->paid_amount), 2) }}</span>
+                </div>
+            </div>
+
             <div>
                 <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Payment Method</span>
                 <span class="font-bold text-gray-800">{{ ucfirst($booking->payment_method ?? 'Unknown') }}</span>
