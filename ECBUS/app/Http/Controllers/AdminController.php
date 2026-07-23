@@ -63,10 +63,39 @@ class AdminController extends Controller
             'booking_status' => 'required|in:pending,confirmed,cancelled,completed'
         ]);
 
-        $booking->update(['booking_status' => $request->booking_status]);
+        $oldStatus = $booking->booking_status;
+        $newStatus = $request->booking_status;
+
+        $booking->update(['booking_status' => $newStatus]);
+
+        if ($newStatus === 'confirmed' && $oldStatus !== 'confirmed') {
+            $booking->load(['schedule.route.fromLocation', 'schedule.route.toLocation']);
+            
+            // Send Email to customer
+            if ($booking->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($booking->email)->send(new \App\Mail\CustomerTicketMail($booking, true));
+                } catch (\Exception $e) {
+                    \Log::error("Failed sending confirmation email to customer {$booking->email}: " . $e->getMessage());
+                }
+            }
+            
+            // Send SMS to customer
+            if ($booking->phone) {
+                $schedule = $booking->schedule;
+                $fromLoc = $schedule->route->fromLocation->name ?? 'N/A';
+                $toLoc = $schedule->route->toLocation->name ?? 'N/A';
+                $seatsStr = is_array($booking->seat_numbers) ? implode(', ', $booking->seat_numbers) : $booking->seat_numbers;
+                $dlUrl = route('booking.ticket', $booking->id);
+                
+                $custMsg = "ECBUS: Your booking {$booking->ticket_number} is now CONFIRMED (Seats: {$seatsStr}) on Route: {$fromLoc} to {$toLoc}. Download ticket: {$dlUrl}";
+                \App\Services\SmsService::send($booking->phone, $custMsg);
+            }
+        }
 
         return redirect()->back()->with('success', 'Booking status updated successfully!');
     }
+
 
     public function showBooking(Booking $booking)
     {

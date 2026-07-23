@@ -160,8 +160,30 @@ class BookingController extends Controller
             }
         }
 
+        // Send Notification to Customer
+        if ($booking->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($booking->email)->send(new \App\Mail\CustomerTicketMail($booking, $booking->booking_status === 'confirmed'));
+            } catch (\Exception $e) {
+                \Log::error("Failed sending ticket email to customer {$booking->email}: " . $e->getMessage());
+            }
+        }
+        if ($booking->phone) {
+            $fromLoc = $schedule->route->fromLocation->name ?? 'N/A';
+            $toLoc = $schedule->route->toLocation->name ?? 'N/A';
+            $seatsStr = is_array($booking->seat_numbers) ? implode(', ', $booking->seat_numbers) : $booking->seat_numbers;
+            $dlUrl = route('booking.ticket', $booking->id);
+            
+            if ($booking->booking_status === 'confirmed') {
+                $custMsg = "ECBUS: Your booking {$booking->ticket_number} is CONFIRMED (Seats: {$seatsStr}) on Route: {$fromLoc} to {$toLoc}. Download ticket: {$dlUrl}";
+            } else {
+                $custMsg = "ECBUS: Your booking {$booking->ticket_number} is received (Status: PENDING) on Route: {$fromLoc} to {$toLoc}. Download receipt: {$dlUrl}";
+            }
+            \App\Services\SmsService::send($booking->phone, $custMsg);
+        }
 
         return response()->json([
+
             'success' => true,
             'message' => 'Booking submitted successfully!',
             'booking_id' => $booking->id
