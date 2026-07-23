@@ -73,16 +73,6 @@
                     <p>Colombo, Sri Lanka</p>
                 </li>
             </ul>
-            
-            <!-- Payment Methods -->
-            {{-- <div class="mt-8">
-                <h4 class="text-sm font-bold text-primary-gold mb-3 uppercase tracking-wider">Payment Methods</h4>
-                <div class="flex space-x-3">
-                    <div class="bg-white px-2 py-1 rounded flex items-center justify-center h-8 w-12"><span class="text-dark-text font-bold text-xs">VISA</span></div>
-                    <div class="bg-white px-2 py-1 rounded flex items-center justify-center h-8 w-12"><span class="text-dark-text font-bold text-xs">MC</span></div>
-                    <div class="bg-white px-2 py-1 rounded flex items-center justify-center h-8 w-12"><span class="text-dark-text font-bold text-xs">BANK</span></div>
-                </div>
-            </div> --}}
         </div>
     </div>
 

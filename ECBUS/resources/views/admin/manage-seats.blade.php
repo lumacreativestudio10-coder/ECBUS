@@ -224,13 +224,15 @@
                         <label class="block text-xs font-bold text-gray-700 mb-1">Boarding Point (Optional)</label>
                         <select name="boarding_point" {{ isset($targetBooking) ? 'disabled' : '' }} class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                             <option value="">Select boarding point</option>
-                            @if($schedule->route->fromLocation)
+                            @if($schedule->route?->fromLocation)
                                 <option value="{{ $schedule->route->fromLocation->name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $schedule->route->fromLocation->name) ? 'selected' : '' }}>{{ $schedule->route->fromLocation->name }}</option>
                             @endif
-                            @foreach($schedule->route->stops as $stop)
-                                <option value="{{ $stop->stop_name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $stop->stop_name) ? 'selected' : '' }}>{{ $stop->stop_name }}</option>
-                            @endforeach
-                            @if($schedule->route->toLocation)
+                            @if($schedule->route?->stops)
+                                @foreach($schedule->route->stops as $stop)
+                                    <option value="{{ $stop->stop_name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $stop->stop_name) ? 'selected' : '' }}>{{ $stop->stop_name }}</option>
+                                @endforeach
+                            @endif
+                            @if($schedule->route?->toLocation)
                                 <option value="{{ $schedule->route->toLocation->name }}" {{ (isset($targetBooking) && $targetBooking->boarding_point == $schedule->route->toLocation->name) ? 'selected' : '' }}>{{ $schedule->route->toLocation->name }}</option>
                             @endif
                         </select>
@@ -240,13 +242,15 @@
                         <label class="block text-xs font-bold text-gray-700 mb-1">Dropping Point (Optional)</label>
                         <select name="dropping_point" {{ isset($targetBooking) ? 'disabled' : '' }} class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                             <option value="">Select dropping point</option>
-                            @if($schedule->route->fromLocation)
+                            @if($schedule->route?->fromLocation)
                                 <option value="{{ $schedule->route->fromLocation->name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $schedule->route->fromLocation->name) ? 'selected' : '' }}>{{ $schedule->route->fromLocation->name }}</option>
                             @endif
-                            @foreach($schedule->route->stops as $stop)
-                                <option value="{{ $stop->stop_name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $stop->stop_name) ? 'selected' : '' }}>{{ $stop->stop_name }}</option>
-                            @endforeach
-                            @if($schedule->route->toLocation)
+                            @if($schedule->route?->stops)
+                                @foreach($schedule->route->stops as $stop)
+                                    <option value="{{ $stop->stop_name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $stop->stop_name) ? 'selected' : '' }}>{{ $stop->stop_name }}</option>
+                                @endforeach
+                            @endif
+                            @if($schedule->route?->toLocation)
                                 <option value="{{ $schedule->route->toLocation->name }}" {{ (isset($targetBooking) && $targetBooking->dropping_point == $schedule->route->toLocation->name) ? 'selected' : '' }}>{{ $schedule->route->toLocation->name }}</option>
                             @endif
                         </select>

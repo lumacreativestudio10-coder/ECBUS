@@ -55,6 +55,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\AdminContactMessageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminSettlementController;
 
 Route::post('/booking/lock-seats', [BookingController::class, 'lockSeats'])->name('booking.lock');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
@@ -89,6 +90,7 @@ $sharedRoutes = function () {
     Route::get('/schedules/{schedule}/seats', [AdminController::class, 'manageSeats'])->name('schedules.seats');
     Route::post('/schedules/{schedule}/seats', [AdminController::class, 'updateSeats'])->name('schedules.seats.update');
     Route::get('/schedules/{schedule}/manifest', [AdminController::class, 'printManifest'])->name('schedules.manifest');
+    Route::get('/schedules/{schedule}/financials', [AdminSettlementController::class, 'tripFinancials'])->name('schedules.financials');
 
     Route::get('/locations', [AdminController::class, 'locations'])->name('locations');
     Route::post('/locations', [AdminController::class, 'storeLocation'])->name('locations.store');
@@ -136,7 +138,6 @@ $sharedRoutes = function () {
 // ROLE-BASED ROUTE GROUPS
 // ==========================================
 
-use App\Http\Controllers\AdminSettlementController;
 use App\Http\Controllers\CompanySettlementController;
 
 // 1. Super Admin
@@ -150,6 +151,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
     Route::post('commission-rules/{rule}/toggle', [AdminSettlementController::class, 'toggleRule'])->name('commission_rules.toggle');
     
     Route::get('settlements', [AdminSettlementController::class, 'settlements'])->name('settlements');
+    Route::post('settlements/generate', [AdminSettlementController::class, 'generateSettlement'])->name('settlements.generate');
     Route::post('settlements/{settlement}/pay', [AdminSettlementController::class, 'paySettlement'])->name('settlements.pay');
 
     $sharedRoutes();
@@ -160,6 +162,7 @@ Route::prefix('company')->name('company.')->middleware(['auth', 'role:2'])->grou
     Route::get('/dashboard', [App\Http\Controllers\Dashboards\CompanyDashboardController::class, 'index'])->name('dashboard');
     
     Route::get('settlements', [CompanySettlementController::class, 'index'])->name('settlements');
+    Route::post('settlements/{settlement}/pay', [CompanySettlementController::class, 'submitPayment'])->name('settlements.pay');
     Route::get('commission-rules', [CompanySettlementController::class, 'rules'])->name('commission_rules');
 
     $sharedRoutes();
@@ -168,8 +171,14 @@ Route::prefix('company')->name('company.')->middleware(['auth', 'role:2'])->grou
 // 3. Staff
 Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:3'])->group(function() use ($sharedRoutes) {
     Route::get('/dashboard', [App\Http\Controllers\Dashboards\StaffDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('settlements', [CompanySettlementController::class, 'index'])->name('settlements');
+    Route::post('settlements/{settlement}/pay', [CompanySettlementController::class, 'submitPayment'])->name('settlements.pay');
+    Route::get('commission-rules', [CompanySettlementController::class, 'rules'])->name('commission_rules');
+
     $sharedRoutes();
 });
+
 
 // 4. Driver
 Route::prefix('driver')->name('driver.')->middleware(['auth', 'role:4'])->group(function() use ($sharedRoutes) {

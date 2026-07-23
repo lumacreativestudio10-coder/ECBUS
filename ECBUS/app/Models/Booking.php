@@ -32,9 +32,11 @@ class Booking extends Model
 
         static::creating(function ($model) {
             if (empty($model->booking_reference)) {
-                $latest = static::orderBy('id', 'desc')->first();
-                $nextId = $latest ? $latest->id + 1 : 1;
-                $model->booking_reference = 'ECB' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
+                $maxId = \Illuminate\Support\Facades\DB::table('bookings')->max('id');
+                $nextId = $maxId ? $maxId + 1 : 1;
+                // Add a small random string or timestamp to prevent race conditions during concurrent requests
+                $randomSuffix = strtoupper(\Illuminate\Support\Str::random(3));
+                $model->booking_reference = 'ECB' . str_pad($nextId, 5, '0', STR_PAD_LEFT) . $randomSuffix;
             }
         });
 

@@ -12,17 +12,48 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
+        $user = auth()->user();
         $totalBookings = Booking::count();
         $totalRevenue = Booking::where('booking_status', 'confirmed')->sum('total_amount');
         $activeSchedules = Schedule::whereDate('date', '>=', now())->count();
         $recentBookings = Booking::with('schedule.bus.busCompany')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('totalBookings', 'totalRevenue', 'activeSchedules', 'recentBookings'));
+        // For Drivers & Conductors: show their assigned schedules
+        $mySchedules = collect();
+        if ($user->isDriver()) {
+            $mySchedules = Schedule::with('bus.busCompany', 'route.fromLocation', 'route.toLocation')
+                ->where('driver_id', $user->id)
+                ->whereDate('date', '>=', now())
+                ->orderBy('date')
+                ->orderBy('departure_time')
+                ->get();
+        } elseif ($user->isConductor()) {
+            $mySchedules = Schedule::with('bus.busCompany', 'route.fromLocation', 'route.toLocation')
+                ->where('conductor_id', $user->id)
+                ->whereDate('date', '>=', now())
+                ->orderBy('date')
+                ->orderBy('departure_time')
+                ->get();
+        }
+
+        return view('admin.dashboard', compact('totalBookings', 'totalRevenue', 'activeSchedules', 'recentBookings', 'mySchedules'));
     }
 
-    public function bookings()
+    public function bookings(\Illuminate\Http\Request $request)
     {
-        $bookings = Booking::with('schedule.bus.busCompany', 'schedule.route.fromLocation', 'schedule.route.toLocation')->latest()->get();
+        $query = Booking::with('schedule.bus.busCompany', 'schedule.route.fromLocation', 'schedule.route.toLocation')->latest();
+        
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('booking_reference', 'like', "%{$searchTerm}%")
+                  ->orWhere('customer_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('phone', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $bookings = $query->get();
         return view('admin.bookings', compact('bookings'));
     }
 
@@ -85,7 +116,28 @@ class AdminController extends Controller
 
     public function schedules()
     {
-        $schedules = Schedule::with('bus.busCompany', 'route.fromLocation', 'route.toLocation')->orderBy('date', 'desc')->get();
+        $today = now()->toDateString();
+        
+        // Active / Upcoming schedules
+        $schedules = Schedule::with('bus.busCompany', 'route.fromLocation', 'route.toLocation')
+            ->where(function($q) use ($today) {
+                $q->whereDate('date', '>=', $today)
+                  ->where('status', '!=', 'completed');
+            })
+            ->orderBy('date', 'asc')
+            ->orderBy('departure_time', 'asc')
+            ->get();
+
+        // Past / Finished schedules (History)
+        $pastSchedules = Schedule::with('bus.busCompany', 'route.fromLocation', 'route.toLocation')
+            ->where(function($q) use ($today) {
+                $q->whereDate('date', '<', $today)
+                  ->orWhere('status', '=', 'completed');
+            })
+            ->orderBy('date', 'desc')
+            ->orderBy('departure_time', 'desc')
+            ->get();
+
         $buses = Bus::with('busCompany', 'busType')->get();
         $routes = \App\Models\Route::with('fromLocation', 'toLocation')->where('status', 1)->get();
         $busCompanies = \App\Models\BusCompany::orderBy('company_name')->get();
@@ -100,7 +152,7 @@ class AdminController extends Controller
         $drivers = $driversQuery->get();
         $conductors = $conductorsQuery->get();
         
-        return view('admin.schedules', compact('schedules', 'buses', 'routes', 'busCompanies', 'drivers', 'conductors'));
+        return view('admin.schedules', compact('schedules', 'pastSchedules', 'buses', 'routes', 'busCompanies', 'drivers', 'conductors'));
     }
 
     public function storeSchedule(Request $request)
@@ -131,7 +183,28 @@ class AdminController extends Controller
         $bus = Bus::findOrFail($request->bus_id);
         $data['available_seats'] = $bus->total_seats;
 
-        Schedule::create($data);
+        $newSchedule = Schedule::create($data);
+
+        // Notify Driver & Conductor
+        $newSchedule->load(['route.fromLocation', 'route.toLocation', 'bus']);
+        $from = $newSchedule->route->fromLocation->name ?? 'N/A';
+        $to = $newSchedule->route->toLocation->name ?? 'N/A';
+        $busNo = $newSchedule->bus->plate_number ?? 'N/A';
+
+        if ($newSchedule->driver_id) {
+            $driver = \App\Models\User::find($newSchedule->driver_id);
+            if ($driver && $driver->phone_number) {
+                $msg = "ECBUS Assignment: You are the DRIVER for trip {$from} to {$to} on {$newSchedule->date} @ {$newSchedule->departure_time}. Bus: {$busNo}.";
+                \App\Services\SmsService::send($driver->phone_number, $msg);
+            }
+        }
+        if ($newSchedule->conductor_id) {
+            $conductor = \App\Models\User::find($newSchedule->conductor_id);
+            if ($conductor && $conductor->phone_number) {
+                $msg = "ECBUS Assignment: You are the CONDUCTOR for trip {$from} to {$to} on {$newSchedule->date} @ {$newSchedule->departure_time}. Bus: {$busNo}.";
+                \App\Services\SmsService::send($conductor->phone_number, $msg);
+            }
+        }
 
         return redirect()->back()->with('success', 'Schedule added successfully!');
     }
@@ -160,6 +233,9 @@ class AdminController extends Controller
             if ($overlap) return redirect()->back()->withErrors(['conductor_id' => 'Conductor is already assigned on this date.']);
         }
 
+        $oldDriverId = $schedule->driver_id;
+        $oldConductorId = $schedule->conductor_id;
+
         $data = $request->all();
         if ($request->bus_id != $schedule->bus_id) {
             $bus = Bus::findOrFail($request->bus_id);
@@ -169,8 +245,30 @@ class AdminController extends Controller
 
         $schedule->update($data);
 
+        // Notify Driver & Conductor if assignment changed
+        $schedule->load(['route.fromLocation', 'route.toLocation', 'bus']);
+        $from = $schedule->route->fromLocation->name ?? 'N/A';
+        $to = $schedule->route->toLocation->name ?? 'N/A';
+        $busNo = $schedule->bus->plate_number ?? 'N/A';
+
+        if ($schedule->driver_id && $schedule->driver_id != $oldDriverId) {
+            $driver = \App\Models\User::find($schedule->driver_id);
+            if ($driver && $driver->phone_number) {
+                $msg = "ECBUS Assignment Update: You are assigned as DRIVER for trip {$from} to {$to} on {$schedule->date} @ {$schedule->departure_time}. Bus: {$busNo}.";
+                \App\Services\SmsService::send($driver->phone_number, $msg);
+            }
+        }
+        if ($schedule->conductor_id && $schedule->conductor_id != $oldConductorId) {
+            $conductor = \App\Models\User::find($schedule->conductor_id);
+            if ($conductor && $conductor->phone_number) {
+                $msg = "ECBUS Assignment Update: You are assigned as CONDUCTOR for trip {$from} to {$to} on {$schedule->date} @ {$schedule->departure_time}. Bus: {$busNo}.";
+                \App\Services\SmsService::send($conductor->phone_number, $msg);
+            }
+        }
+
         return redirect()->back()->with('success', 'Schedule updated successfully!');
     }
+
 
     public function destroySchedule(Schedule $schedule)
     {
@@ -241,9 +339,22 @@ class AdminController extends Controller
                 'seat_numbers' => $request->seat_numbers,
                 'booking_status' => 'confirmed'
             ]);
-            return redirect()->route('admin.bookings')->with('success', 'Seats successfully assigned to booking!');
+            return redirect()->route(auth()->user()->getRolePrefix() . '.bookings')->with('success', 'Seats successfully assigned to booking!');
         } else {
-            Booking::create([
+            // Determine booking source based on logged-in user role
+            $user = auth()->user();
+            $bookingSource = 'counter';
+            if ($user->isSuperAdmin()) {
+                $bookingSource = 'admin';
+            } elseif ($user->isCompanyAdmin()) {
+                $bookingSource = 'admin';
+            } elseif ($user->isStaff()) {
+                $bookingSource = 'staff';
+            } elseif ($user->isDriver() || $user->isConductor()) {
+                $bookingSource = 'staff';
+            }
+
+            $newBooking = Booking::create([
                 'schedule_id' => $schedule->id,
                 'customer_name' => $request->customer_name,
                 'phone' => $request->phone_number,
@@ -252,8 +363,10 @@ class AdminController extends Controller
                 'boarding_point' => $request->boarding_point,
                 'dropping_point' => $request->dropping_point,
                 'total_amount' => $schedule->price * count($request->seat_numbers),
-                'booking_status' => 'confirmed'
+                'booking_status' => 'confirmed',
+                'booking_source' => $bookingSource,
             ]);
+
             return redirect()->back()->with('success', 'Seats manually booked successfully!');
         }
     }
@@ -264,29 +377,10 @@ class AdminController extends Controller
         
         $bookings = Booking::where('schedule_id', $schedule->id)
                            ->where('booking_status', '!=', 'cancelled')
+                           ->orderBy('customer_name')
                            ->get();
-                           
-        // Prepare passenger list
-        $passengers = [];
-        foreach ($bookings as $booking) {
-            if ($booking->seat_numbers && is_array($booking->seat_numbers)) {
-                foreach ($booking->seat_numbers as $seat) {
-                    $passengers[] = [
-                        'seat' => $seat,
-                        'name' => $booking->customer_name,
-                        'phone' => $booking->phone,
-                        'ref' => $booking->booking_reference
-                    ];
-                }
-            }
-        }
-        
-        // Sort by seat number if possible (e.g., 1A, 1B, 2A)
-        usort($passengers, function($a, $b) {
-            return strcmp($a['seat'], $b['seat']);
-        });
 
-        return view('admin.manifest_print', compact('schedule', 'passengers'));
+        return view('admin.manifest_print', compact('schedule', 'bookings'));
     }
 
     // Locations Management

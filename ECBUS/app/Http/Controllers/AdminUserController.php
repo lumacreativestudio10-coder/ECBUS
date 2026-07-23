@@ -87,7 +87,7 @@ class AdminUserController extends Controller
             if (!in_array($role_id, [4, 5])) $role_id = 4;
         }
         
-        $password = \Illuminate\Support\Str::random(8);
+        $password = $request->password ?: \Illuminate\Support\Str::random(8);
 
         $user = User::create([
             'company_id' => $companyId,
@@ -102,9 +102,17 @@ class AdminUserController extends Controller
         // Send Credentials Email
         \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $password));
 
+        // Send SMS with credentials
+        if ($user->phone_number) {
+            $roleName = $user->role->name ?? 'User';
+            $message = "Welcome to ECBUS! Your {$roleName} account has been created. Username: {$user->email}, Password: {$password}. Log in here: " . route('admin.login');
+            \App\Services\SmsService::send($user->phone_number, $message);
+        }
+
         \App\Services\ActivityLogger::log('User Created', "Created new user: {$user->name} ({$user->email})");
 
-        return redirect()->back()->with('success', 'User added successfully and credentials sent via email.');
+        return redirect()->back()->with('success', 'User added successfully. Credentials sent via email and SMS.');
+
     }
 
     public function update(Request $request, User $user)

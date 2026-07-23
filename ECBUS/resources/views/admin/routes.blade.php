@@ -67,8 +67,6 @@
                                     <button @click='openEdit({{ json_encode($route) }})' type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                     </button>
-                                @endif
-                                @if(auth()->user()->isSuperAdmin())
                                     <form action="{{ route(auth()->user()->getRolePrefix().'.routes.destroy', $route) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this route?');">
                                         @csrf
                                         @method('DELETE')

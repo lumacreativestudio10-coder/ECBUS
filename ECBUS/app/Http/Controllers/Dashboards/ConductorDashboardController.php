@@ -147,8 +147,20 @@ class ConductorDashboardController extends Controller
 
     public function globalPassengerList()
     {
-        $trip = Schedule::where('conductor_id', auth()->id())->whereDate('date', today())->first();
-        if (!$trip) return redirect()->route('conductor.today_trips')->with('error', 'No trips today.');
+        // Try today's trip first, then fall back to nearest upcoming trip
+        $trip = Schedule::where('conductor_id', auth()->id())
+            ->whereDate('date', today())
+            ->first();
+        
+        if (!$trip) {
+            $trip = Schedule::where('conductor_id', auth()->id())
+                ->whereDate('date', '>=', today())
+                ->orderBy('date')
+                ->orderBy('departure_time')
+                ->first();
+        }
+
+        if (!$trip) return redirect()->route('conductor.today_trips')->with('error', 'No assigned trips found.');
         return redirect()->route('conductor.passenger_list', $trip->id);
     }
 }

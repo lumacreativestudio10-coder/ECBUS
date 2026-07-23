@@ -157,13 +157,13 @@
                     @forelse ($schedules as $schedule)
                         @php
                             $locs = [];
-                            if($schedule->route->fromLocation) $locs[] = $schedule->route->fromLocation->name;
-                            if($schedule->route->stops) {
+                            if($schedule->route?->fromLocation) $locs[] = $schedule->route->fromLocation->name;
+                            if($schedule->route?->stops) {
                                 foreach($schedule->route->stops as $stop) {
                                     $locs[] = $stop->stop_name;
                                 }
                             }
-                            if($schedule->route->toLocation) $locs[] = $schedule->route->toLocation->name;
+                            if($schedule->route?->toLocation) $locs[] = $schedule->route->toLocation->name;
                         @endphp
                         <div x-data="{
                                 departureTime: '{{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}',
@@ -191,7 +191,7 @@
                                 <div class="flex items-center justify-between w-full md:w-2/5 px-2 mb-6 md:mb-0">
                                     <div class="text-center">
                                         <h5 class="text-xl font-extrabold text-dark-text">{{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }}</h5>
-                                        <p class="text-xs font-semibold text-gray-500">{{ $schedule->route->fromLocation->name ?? '?' }}</p>
+                                        <p class="text-xs font-semibold text-gray-500">{{ $schedule->route?->fromLocation?->name ?? '?' }}</p>
                                         <p class="text-[10px] uppercase font-bold text-primary-maroon mt-0.5">{{ \Carbon\Carbon::parse($schedule->date)->format('d M Y') }}</p>
                                     </div>
                                     <div class="flex-grow mx-4 relative flex flex-col items-center">
@@ -209,7 +209,7 @@
                                     </div>
                                     <div class="text-center">
                                         <h5 class="text-xl font-extrabold text-dark-text">{{ \Carbon\Carbon::parse($schedule->arrival_time)->format('H:i') }}</h5>
-                                        <p class="text-xs font-semibold text-gray-500">{{ $schedule->route->toLocation->name ?? '?' }}</p>
+                                        <p class="text-xs font-semibold text-gray-500">{{ $schedule->route?->toLocation?->name ?? '?' }}</p>
                                         @php
                                             $arrDate = \Carbon\Carbon::parse($schedule->date);
                                             if($arrival < $departure) $arrDate->addDay();
@@ -322,15 +322,11 @@
                     <div class="flex gap-4">
                         <div class="w-2/3">
                             <label class="block text-sm font-bold text-dark-text mb-1">Phone Number</label>
-                            <input type="tel" x-model="booking.phone" required placeholder="077 123 4567" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
+                            <input type="tel" x-model="booking.phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required placeholder="0771234567" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
                         </div>
                         <div class="w-1/3">
                             <label class="block text-sm font-bold text-dark-text mb-1">Passengers</label>
-                            <select x-model.number="booking.count" style="color-scheme: light;" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition text-center font-bold">
-                                @for($i = 1; $i <= 10; $i++)
-                                    <option value="{{ $i }}">{{ $i }}</option>
-                                @endfor
-                            </select>
+                            <input type="number" x-model.number="booking.count" min="1" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition text-center font-bold">
                         </div>
                     </div>
 

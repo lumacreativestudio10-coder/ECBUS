@@ -89,8 +89,10 @@ class AdminRouteController extends Controller
 
     public function destroy(Route $route)
     {
-        if (!auth()->user()->isSuperAdmin()) {
-            abort(403, 'Unauthorized action.');
+        $user = auth()->user();
+        // Super Admin can delete any route; others can only delete routes they created
+        if (!$user->isSuperAdmin() && $route->created_by !== $user->id) {
+            abort(403, 'Unauthorized action. You can only delete routes you created.');
         }
         $route->delete(); // Soft delete
         return redirect()->back()->with('success', 'Route deleted successfully!');

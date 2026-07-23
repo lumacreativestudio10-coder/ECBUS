@@ -14,6 +14,16 @@
 
 <div x-data="scheduleManager()">
 
+    <!-- Tabs switcher -->
+    <div class="flex border-b border-gray-200 mb-6 bg-white rounded-xl p-1 shadow-sm max-w-md">
+        <button @click="activeTab = 'active'" :class="activeTab === 'active' ? 'bg-primary-maroon text-white font-bold' : 'text-gray-500 hover:text-dark-text'" class="flex-1 text-center py-2.5 text-xs rounded-lg transition duration-200">
+            Active Schedules
+        </button>
+        <button @click="activeTab = 'past'" :class="activeTab === 'past' ? 'bg-primary-maroon text-white font-bold' : 'text-gray-500 hover:text-dark-text'" class="flex-1 text-center py-2.5 text-xs rounded-lg transition duration-200">
+            Schedule History (Past Trips)
+        </button>
+    </div>
+
     <!-- Header Actions & Search -->
     <div class="flex justify-between items-center mb-6 gap-4">
         <div class="relative w-full max-w-md">
@@ -40,7 +50,7 @@
                         <th class="px-6 py-4 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm">
+                <tbody class="text-sm" x-show="activeTab === 'active'">
                     @forelse($schedules as $schedule)
                     <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition" 
                         x-show="matchesSearch('{{ addslashes($schedule->bus?->busCompany?->company_name) }}', '{{ addslashes($schedule->bus?->name) }}', '{{ addslashes($schedule->route?->name) }}')">
@@ -68,6 +78,9 @@
                                 <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.seats', $schedule) }}" class="inline-flex items-center text-primary-maroon hover:text-dark-maroon bg-primary-gold/20 hover:bg-primary-gold/40 transition px-3 py-1.5 rounded-lg font-bold text-xs">
                                     <i data-lucide="armchair" class="w-3.5 h-3.5 mr-1"></i> Seats
                                 </a>
+                                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.financials', $schedule) }}" class="inline-flex items-center text-green-700 hover:text-white bg-green-50 hover:bg-green-700 transition px-3 py-1.5 rounded-lg font-bold text-xs" title="Financials">
+                                    <i data-lucide="dollar-sign" class="w-3.5 h-3.5 mr-0.5"></i> Finance
+                                </a>
                                 <button @click="openEdit({{ json_encode($schedule) }})" type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                 </button>
@@ -83,7 +96,57 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">No schedules found.</td>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">No active schedules found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                <tbody class="text-sm" x-show="activeTab === 'past'" style="display: none;">
+                    @forelse($pastSchedules as $schedule)
+                    <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition bg-gray-50/20" 
+                        x-show="matchesSearch('{{ addslashes($schedule->bus?->busCompany?->company_name) }}', '{{ addslashes($schedule->bus?->name) }}', '{{ addslashes($schedule->route?->name) }}')">
+                        <td class="px-6 py-4">
+                            <p class="font-bold text-gray-500">{{ $schedule->bus?->busCompany?->company_name ?? 'N/A' }}</p>
+                            <span class="inline-block bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded font-bold mt-1 uppercase">{{ $schedule->bus?->name ?? 'Unknown Bus' }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-500">{{ $schedule->route?->name ?? 'Unknown Route' }}</div>
+                            <div class="text-xs text-gray-400">
+                                {{ $schedule->route?->fromLocation?->name ?? '?' }} → {{ $schedule->route?->toLocation?->name ?? '?' }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-400">
+                            <p class="text-xs mt-1">{{ $schedule->date }} | {{ \Carbon\Carbon::parse($schedule->departure_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->arrival_time)->format('H:i') }}</p>
+                            <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded {{ $schedule->status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }} uppercase mt-1">
+                                {{ $schedule->status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-extrabold text-gray-500">LKR {{ number_format($schedule->price, 2) }}</p>
+                        </td>
+                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.manifest', $schedule) }}" target="_blank" class="inline-flex items-center text-gray-600 hover:text-white bg-gray-100 hover:bg-gray-700 transition px-3 py-1.5 rounded-lg font-bold text-xs">
+                                    <i data-lucide="printer" class="w-3.5 h-3.5 mr-1"></i> CMS
+                                </a>
+                                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.financials', $schedule) }}" class="inline-flex items-center text-green-700 hover:text-white bg-green-50 hover:bg-green-700 transition px-3 py-1.5 rounded-lg font-bold text-xs" title="Financials">
+                                    <i data-lucide="dollar-sign" class="w-3.5 h-3.5 mr-0.5"></i> Finance
+                                </a>
+                                <button @click="openEdit({{ json_encode($schedule) }})" type="button" class="text-gray-400 hover:text-gray-600 transition p-2 rounded-lg hover:bg-gray-100" title="Edit">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <form action="{{ route(auth()->user()->getRolePrefix().'.schedules.destroy', $schedule) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">No past schedules found.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -326,6 +389,7 @@ document.addEventListener('alpine:init', () => {
         isEditOpen: false, 
         editData: {}, 
         searchQuery: '',
+        activeTab: 'active',
         buses: @json($buses),
         drivers: @json($drivers),
         conductors: @json($conductors),

@@ -15,10 +15,10 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <h3 class="font-extrabold text-lg text-dark-text">All Bookings</h3>
-        <div class="relative">
+        <form method="GET" action="{{ route(auth()->user()->getRolePrefix().'.bookings') }}" class="relative">
             <i data-lucide="search" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400"></i>
-            <input type="text" placeholder="Search bookings..." class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-primary-maroon focus:border-primary-maroon text-sm outline-none">
-        </div>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Name, Phone..." class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-primary-maroon focus:border-primary-maroon text-sm outline-none">
+        </form>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[800px]">

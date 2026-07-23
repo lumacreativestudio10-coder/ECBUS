@@ -247,12 +247,12 @@
                 </div>
                 <div class="p-6 flex-grow">
                     <div class="flex justify-between items-center font-bold text-lg text-dark-text mb-6">
-                        <span>{{ optional($schedule->route->fromLocation)->name ?? 'Unknown' }}</span>
+                        <span>{{ $schedule->route?->fromLocation?->name ?? 'Unknown' }}</span>
                         <div class="flex-grow mx-4 relative flex items-center justify-center">
                             <div class="w-full h-px bg-gray-300"></div>
                             <i data-lucide="bus" class="absolute w-6 h-6 text-primary-gold bg-white px-1"></i>
                         </div>
-                        <span>{{ optional($schedule->route->toLocation)->name ?? 'Unknown' }}</span>
+                        <span>{{ $schedule->route?->toLocation?->name ?? 'Unknown' }}</span>
                     </div>
                     <div class="grid grid-cols-3 gap-4 text-center mb-6">
                         <div>

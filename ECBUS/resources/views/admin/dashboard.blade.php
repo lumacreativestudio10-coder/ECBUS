@@ -39,6 +39,62 @@
     </div>
 </div>
 
+<!-- My Assigned Schedules (Drivers & Conductors) -->
+@if(isset($mySchedules) && $mySchedules->count() > 0)
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-primary-maroon/5 to-primary-gold/5">
+        <h3 class="font-extrabold text-lg text-dark-text flex items-center">
+            <i data-lucide="bus-front" class="w-5 h-5 mr-2 text-primary-maroon"></i>
+            My Assigned Schedules
+        </h3>
+        <span class="bg-primary-maroon text-white px-3 py-1 rounded-full text-xs font-bold">{{ $mySchedules->count() }} Trips</span>
+    </div>
+    <div class="divide-y divide-gray-50">
+        @foreach($mySchedules as $schedule)
+        <div class="px-6 py-4 hover:bg-gray-50/50 transition flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <!-- Route & Date -->
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-primary-gold/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="map-pin" class="w-6 h-6 text-dark-maroon"></i>
+                </div>
+                <div>
+                    <p class="font-extrabold text-dark-text text-base">
+                        {{ $schedule->route?->fromLocation?->name ?? '?' }} &rarr; {{ $schedule->route?->toLocation?->name ?? '?' }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        <i data-lucide="calendar" class="w-3 h-3 inline"></i>
+                        {{ \Carbon\Carbon::parse($schedule->date)->format('d M Y') }}
+                        &bull;
+                        <i data-lucide="clock" class="w-3 h-3 inline"></i>
+                        {{ \Carbon\Carbon::parse($schedule->departure_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($schedule->arrival_time)->format('h:i A') }}
+                    </p>
+                </div>
+            </div>
+            <!-- Bus Info -->
+            <div class="flex items-center gap-3">
+                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs font-bold">
+                    <i data-lucide="bus" class="w-3 h-3 inline mr-1"></i>
+                    {{ $schedule->bus->name ?? 'N/A' }} ({{ $schedule->bus->bus_number }})
+                </span>
+                <span class="bg-green-50 text-green-700 px-3 py-1 rounded-lg text-xs font-bold">
+                    {{ $schedule->available_seats ?? $schedule->bus->total_seats }} Seats
+                </span>
+            </div>
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.seats', $schedule) }}" class="bg-primary-maroon text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-dark-maroon transition flex items-center">
+                    <i data-lucide="armchair" class="w-4 h-4 mr-1"></i> Manage Seats
+                </a>
+                <a href="{{ route(auth()->user()->getRolePrefix().'.schedules.manifest', $schedule) }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-200 transition flex items-center">
+                    <i data-lucide="printer" class="w-4 h-4 mr-1"></i> Manifest
+                </a>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
 <!-- Recent Bookings Table -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
@@ -90,3 +146,4 @@
     </div>
 </div>
 @endsection
+

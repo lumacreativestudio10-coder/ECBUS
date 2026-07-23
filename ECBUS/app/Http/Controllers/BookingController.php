@@ -102,19 +102,27 @@ class BookingController extends Controller
             'booking_source' => $bookingSource
         ]);
 
+        // Auto-calculate commission ONLY for website bookings using company-specific percentage rate
         if ($bookingSource === 'website') {
-            $rule = \App\Models\CommissionRule::where('booking_source', 'website')->where('is_active', true)->first();
-            if ($rule) {
-                $commissionAmount = 0;
-                if ($rule->type === 'percentage') {
-                    $commissionAmount = ($booking->total_amount * $rule->value) / 100;
-                } else {
-                    $commissionAmount = $rule->value * $booking->passenger_count;
+            $company = $schedule->bus?->busCompany;
+            if ($company) {
+                $commissionPercentage = $company->commission_per_seat ?? 0;
+                $commissionAmount = ($booking->total_amount * $commissionPercentage) / 100;
+                
+                // Find or create a commission rule to satisfy foreign key constraint
+                $rule = \App\Models\CommissionRule::where('booking_source', 'website')->first();
+                if (!$rule) {
+                    $rule = \App\Models\CommissionRule::create([
+                        'booking_source' => 'website',
+                        'type' => 'fixed',
+                        'value' => 0,
+                        'is_active' => true
+                    ]);
                 }
                 
                 \App\Models\BookingCommission::create([
                     'booking_id' => $booking->id,
-                    'company_id' => $schedule->bus->bus_company_id,
+                    'company_id' => $company->id,
                     'rule_id' => $rule->id,
                     'commission_amount' => $commissionAmount
                 ]);
@@ -126,6 +134,32 @@ class BookingController extends Controller
         }
 
         $schedule->decrement('available_seats', $request->passenger_count);
+
+        // Send Notifications to Company Admin (role_id 2) and Staff (role_id 3)
+        $company = $schedule->bus?->busCompany;
+        if ($company) {
+            $usersToNotify = \App\Models\User::where('company_id', $company->id)
+                ->whereIn('role_id', [2, 3])
+                ->where('status', 1)
+                ->get();
+
+            foreach ($usersToNotify as $recipient) {
+                if ($recipient->email) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($recipient->email)->send(new \App\Mail\BookingNotificationMail($booking));
+                    } catch (\Exception $e) {
+                        \Log::error("Failed sending booking email to {$recipient->email}: " . $e->getMessage());
+                    }
+                }
+                if ($recipient->phone_number) {
+                    $fromLoc = $schedule->route->fromLocation->name ?? 'N/A';
+                    $toLoc = $schedule->route->toLocation->name ?? 'N/A';
+                    $smsMsg = "ECBUS: New booking {$booking->ticket_number} (Seats: {$booking->passenger_count}) on Route: {$fromLoc} to {$toLoc} for {$schedule->date} {$schedule->departure_time}. Fares: LKR " . number_format($booking->total_amount, 2);
+                    \App\Services\SmsService::send($recipient->phone_number, $smsMsg);
+                }
+            }
+        }
+
 
         return response()->json([
             'success' => true,

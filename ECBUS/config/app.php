@@ -232,4 +232,12 @@ return [
 
     ],
 
+    'admin_bank' => [
+        'name' => env('ADMIN_BANK_NAME', 'Commercial Bank'),
+        'account_name' => env('ADMIN_BANK_ACC_NAME', 'ECBUS PVT LTD'),
+        'account_number' => env('ADMIN_BANK_ACC_NO', '1000203040'),
+        'branch' => env('ADMIN_BANK_BRANCH', 'Colombo Central'),
+    ],
+
 ];
+

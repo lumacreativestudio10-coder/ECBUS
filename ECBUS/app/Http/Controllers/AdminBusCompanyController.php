@@ -111,7 +111,13 @@ class AdminBusCompanyController extends Controller
             // Send Credentials Email
             \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserCredentialsMail($user, $password));
             
-            return redirect()->back()->with('success', 'Bus Company added successfully and Admin credentials sent to ' . $user->email . '!');
+            // Send SMS credentials
+            if ($user->phone_number) {
+                $message = "Welcome to ECBUS! Your Company Admin account has been created for {$company->company_name}. Username: {$user->email}, Password: {$password}. Log in: " . route('admin.login');
+                \App\Services\SmsService::send($user->phone_number, $message);
+            }
+
+            return redirect()->back()->with('success', 'Bus Company added successfully. Admin credentials sent via email and SMS!');
         }
 
         return redirect()->back()->with('success', 'Bus Company added successfully!');

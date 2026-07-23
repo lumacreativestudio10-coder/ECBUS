@@ -99,15 +99,39 @@ class DriverDashboardController extends Controller
 
     public function globalPassengerList()
     {
-        $trip = Schedule::where('driver_id', auth()->id())->whereDate('date', today())->first();
-        if (!$trip) return redirect()->route('driver.my_trips')->with('error', 'No trips today.');
+        // Try today's trip first, then fall back to nearest upcoming trip
+        $trip = Schedule::where('driver_id', auth()->id())
+            ->whereDate('date', today())
+            ->first();
+        
+        if (!$trip) {
+            $trip = Schedule::where('driver_id', auth()->id())
+                ->whereDate('date', '>=', today())
+                ->orderBy('date')
+                ->orderBy('departure_time')
+                ->first();
+        }
+
+        if (!$trip) return redirect()->route('driver.my_trips')->with('error', 'No assigned trips found.');
         return redirect()->route('driver.passenger_list', $trip->id);
     }
 
     public function globalRouteDetails()
     {
-        $trip = Schedule::where('driver_id', auth()->id())->whereDate('date', today())->first();
-        if (!$trip) return redirect()->route('driver.my_trips')->with('error', 'No trips today.');
+        // Try today's trip first, then fall back to nearest upcoming trip
+        $trip = Schedule::where('driver_id', auth()->id())
+            ->whereDate('date', today())
+            ->first();
+        
+        if (!$trip) {
+            $trip = Schedule::where('driver_id', auth()->id())
+                ->whereDate('date', '>=', today())
+                ->orderBy('date')
+                ->orderBy('departure_time')
+                ->first();
+        }
+
+        if (!$trip) return redirect()->route('driver.my_trips')->with('error', 'No assigned trips found.');
         return redirect()->route('driver.route_details', $trip->id);
     }
 
