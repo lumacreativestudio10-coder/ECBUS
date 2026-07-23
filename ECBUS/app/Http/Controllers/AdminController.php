@@ -340,7 +340,8 @@ class AdminController extends Controller
         $request->validate([
             'seat_numbers' => 'required|array',
             'customer_name' => 'required|string',
-            'phone_number' => 'required|string'
+            'phone_number' => 'required|string',
+            'email' => 'nullable|email|max:255'
         ]);
 
         $existingBookings = Booking::where('schedule_id', $schedule->id)
@@ -368,6 +369,25 @@ class AdminController extends Controller
                 'seat_numbers' => $request->seat_numbers,
                 'booking_status' => 'confirmed'
             ]);
+            
+            // Send notifications for confirmed target booking
+            $booking->load(['schedule.route.fromLocation', 'schedule.route.toLocation']);
+            if ($booking->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($booking->email)->send(new \App\Mail\CustomerTicketMail($booking, true));
+                } catch (\Exception $e) {
+                    \Log::error("Failed sending confirmation email to customer: " . $e->getMessage());
+                }
+            }
+            if ($booking->phone) {
+                $fromLoc = $booking->schedule->route->fromLocation->name ?? 'N/A';
+                $toLoc = $booking->schedule->route->toLocation->name ?? 'N/A';
+                $seatsStr = is_array($booking->seat_numbers) ? implode(', ', $booking->seat_numbers) : $booking->seat_numbers;
+                $dlUrl = route('booking.ticket', $booking->id);
+                $custMsg = "ECBUS: Your booking {$booking->ticket_number} is now CONFIRMED (Seats: {$seatsStr}) on Route: {$fromLoc} to {$toLoc}. Download ticket: {$dlUrl}";
+                \App\Services\SmsService::send($booking->phone, $custMsg);
+            }
+
             return redirect()->route(auth()->user()->getRolePrefix() . '.bookings')->with('success', 'Seats successfully assigned to booking!');
         } else {
             // Determine booking source based on logged-in user role
@@ -387,6 +407,7 @@ class AdminController extends Controller
                 'schedule_id' => $schedule->id,
                 'customer_name' => $request->customer_name,
                 'phone' => $request->phone_number,
+                'email' => $request->email,
                 'passenger_count' => count($request->seat_numbers),
                 'seat_numbers' => $request->seat_numbers,
                 'boarding_point' => $request->boarding_point,
@@ -395,6 +416,24 @@ class AdminController extends Controller
                 'booking_status' => 'confirmed',
                 'booking_source' => $bookingSource,
             ]);
+
+            // Trigger notifications for new manual booking (confirmed immediately)
+            $newBooking->load(['schedule.route.fromLocation', 'schedule.route.toLocation']);
+            if ($newBooking->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($newBooking->email)->send(new \App\Mail\CustomerTicketMail($newBooking, true));
+                } catch (\Exception $e) {
+                    \Log::error("Failed sending manual confirmation email to customer: " . $e->getMessage());
+                }
+            }
+            if ($newBooking->phone) {
+                $fromLoc = $newBooking->schedule->route->fromLocation->name ?? 'N/A';
+                $toLoc = $newBooking->schedule->route->toLocation->name ?? 'N/A';
+                $seatsStr = is_array($newBooking->seat_numbers) ? implode(', ', $newBooking->seat_numbers) : $newBooking->seat_numbers;
+                $dlUrl = route('booking.ticket', $newBooking->id);
+                $custMsg = "ECBUS: Your booking {$newBooking->ticket_number} is CONFIRMED (Seats: {$seatsStr}) on Route: {$fromLoc} to {$toLoc}. Download ticket: {$dlUrl}";
+                \App\Services\SmsService::send($newBooking->phone, $custMsg);
+            }
 
             return redirect()->back()->with('success', 'Seats manually booked successfully!');
         }

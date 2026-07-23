@@ -52,7 +52,7 @@ class BookingController extends Controller
         $request->validate([
             'schedule_id' => 'required|exists:schedules,id',
             'customer_name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
+            'email' => $request->is_walkin ? 'nullable|email|max:255' : 'required|email|max:255',
             'phone' => 'required|string|max:20',
             'passenger_count' => 'required|integer|min:1',
             'boarding_point' => 'nullable|string|max:255',

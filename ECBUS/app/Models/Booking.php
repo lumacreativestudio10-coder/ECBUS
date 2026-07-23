@@ -58,4 +58,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Schedule::class);
     }
+
+    public function getTicketNumberAttribute()
+    {
+        return $this->booking_reference;
+    }
 }

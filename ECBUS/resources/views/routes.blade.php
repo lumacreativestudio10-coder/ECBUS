@@ -319,6 +319,12 @@
                         <input type="text" x-model="booking.name" required placeholder="John Doe" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
                     </div>
                     
+                    <div>
+                        <label class="block text-sm font-bold text-dark-text mb-1">Email Address</label>
+                        <input type="email" x-model="booking.email" required placeholder="john@example.com" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-maroon outline-none transition">
+                    </div>
+
+                    
                     <div class="flex gap-4">
                         <div class="w-2/3">
                             <label class="block text-sm font-bold text-dark-text mb-1">Phone Number</label>
@@ -374,7 +380,7 @@
             isSuccess: false,
             locations: [],
             selectedBus: { name: '', price: 0 },
-            booking: { name: '', phone: '', count: 1, boarding_point: '', dropping_point: '' },
+            booking: { name: '', email: '', phone: '', count: 1, boarding_point: '', dropping_point: '' },
             filters: {
                 times: [],
                 types: [],
@@ -418,6 +424,7 @@
                 this.locations = locsArray || [];
                 this.booking.count = {{ $passengers ?? 1 }};
                 this.booking.name = '';
+                this.booking.email = '';
                 this.booking.phone = '';
                 this.booking.boarding_point = '';
                 this.booking.dropping_point = '';
@@ -431,7 +438,7 @@
                 setTimeout(() => {
                     this.isSubmitting = false;
                     this.isSuccess = false;
-                    this.booking = { name: '', phone: '', count: this.params.passengers, boarding_point: '', dropping_point: '' };
+                    this.booking = { name: '', email: '', phone: '', count: this.params.passengers, boarding_point: '', dropping_point: '' };
                 }, 300);
             },
 
@@ -448,6 +455,7 @@
                         body: JSON.stringify({
                             schedule_id: this.selectedBus.schedule_id,
                             customer_name: this.booking.name,
+                            email: this.booking.email,
                             phone: this.booking.phone,
                             passenger_count: this.booking.count,
                             boarding_point: this.booking.boarding_point,

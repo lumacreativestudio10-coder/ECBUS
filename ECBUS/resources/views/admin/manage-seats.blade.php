@@ -221,6 +221,12 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Email Address (Optional)</label>
+                        <input type="email" name="email" {{ isset($targetBooking) ? 'readonly' : '' }} value="{{ $targetBooking->email ?? '' }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
+                    </div>
+
+
+                    <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Boarding Point (Optional)</label>
                         <select name="boarding_point" {{ isset($targetBooking) ? 'disabled' : '' }} class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition {{ isset($targetBooking) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}">
                             <option value="">Select boarding point</option>
