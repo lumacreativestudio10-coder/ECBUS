@@ -30,7 +30,7 @@
     <!-- Routes List -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left border-collapse">
+            <table class="w-full text-sm text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr class="bg-gray-50 text-gray-500 text-xs uppercase font-bold border-b border-gray-100">
                         <th class="px-6 py-4">Route Name</th>
@@ -63,16 +63,20 @@
                         </td>
                         <td class="px-6 py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-2">
-                                <button @click='openEdit({{ json_encode($route) }})' type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
-                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                </button>
-                                <form action="{{ route(auth()->user()->getRolePrefix().'.routes.destroy', $route) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this route?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                @if(auth()->user()->isSuperAdmin() || $route->created_by === auth()->id())
+                                    <button @click='openEdit({{ json_encode($route) }})' type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
+                                        <i data-lucide="edit" class="w-4 h-4"></i>
                                     </button>
-                                </form>
+                                @endif
+                                @if(auth()->user()->isSuperAdmin())
+                                    <form action="{{ route(auth()->user()->getRolePrefix().'.routes.destroy', $route) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this route?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -129,7 +133,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Distance (km)</label>
                                             <input type="number" name="distance" value="{{ old('distance') }}" step="0.1" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
@@ -139,7 +143,7 @@
                                             <input type="number" name="estimated_duration_minutes" value="{{ old('estimated_duration_minutes') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Starting Price (LKR)</label>
                                             <input type="number" name="starting_price" value="{{ old('starting_price') }}" step="0.01" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -221,7 +225,7 @@
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Route Name</label>
                                         <input type="text" name="name" x-model="editData.name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">From</label>
                                             <select name="from_location_id" x-model="editData.from_location_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -239,7 +243,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Distance (km)</label>
                                             <input type="number" name="distance" x-model="editData.distance" step="0.1" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
@@ -249,7 +253,7 @@
                                             <input type="number" name="estimated_duration_minutes" x-model="editData.estimated_duration_minutes" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Starting Price (LKR)</label>
                                             <input type="number" name="starting_price" x-model="editData.starting_price" step="0.01" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>

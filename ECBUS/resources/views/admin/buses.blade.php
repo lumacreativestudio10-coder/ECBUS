@@ -40,6 +40,7 @@
                     <input type="hidden" name="total_seats" :value="countSeats()">
 
 
+                    @if(auth()->user()->isSuperAdmin())
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
                         <select name="bus_company_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -50,6 +51,7 @@
                         </select>
                         @error('bus_company_id') <p class="text-xs text-red-500 mt-1 font-bold">{{ $message }}</p> @enderror
                     </div>
+                    @endif
 
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Bus Type</label>
@@ -62,7 +64,7 @@
                         <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g. Royal Cruiser" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus Number</label>
                             <input type="text" name="bus_number" value="{{ old('bus_number') }}" placeholder="e.g. B-001" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -76,7 +78,7 @@
                     <div class="border-t border-gray-200 pt-6 mb-6">
                         <h4 class="font-extrabold text-sm text-dark-text mb-4"><i data-lucide="layout-grid" class="w-4 h-4 inline mr-1 text-primary-maroon"></i> Seat Layout Builder</h4>
                         
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Rows</label>
                                 <input type="number" x-model.number="rows" min="1" max="20" @change="generateMap()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary-maroon outline-none">
@@ -206,7 +208,7 @@
             <div class="p-6">
                 <!-- VIEW MODE -->
                 <div x-show="!isEditMode">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                             <p class="text-xs text-gray-500 font-bold uppercase mb-1">Company</p>
                             <p class="font-bold text-dark-text" x-text="viewingBus.company"></p>
@@ -263,6 +265,7 @@
                         <input type="hidden" name="seat_layout" id="edit_seat_layout_input">
                         <input type="hidden" name="total_seats" :value="countSeats()">
 
+                        @if(auth()->user()->isSuperAdmin())
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
                             <select name="bus_company_id" x-model="editForm.bus_company_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -272,6 +275,7 @@
                                 @endforeach
                             </select>
                         </div>
+                        @endif
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus Type</label>
                             <input type="text" name="bus_type_name" x-model="editForm.bus_type_name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required autocomplete="off">
@@ -280,7 +284,7 @@
                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus Name</label>
                             <input type="text" name="name" x-model="editForm.name" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Bus Number</label>
                                 <input type="text" name="bus_number" x-model="editForm.bus_number" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -295,7 +299,7 @@
                         <div class="border-t border-gray-200 pt-6 mb-6">
                             <h4 class="font-extrabold text-sm text-dark-text mb-4"><i data-lucide="layout-grid" class="w-4 h-4 inline mr-1 text-primary-maroon"></i> Edit Seat Layout</h4>
                             
-                            <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-700 mb-1">Rows</label>
                                     <input type="number" x-model.number="rows" min="1" max="20" @change="generateMap()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary-maroon outline-none">

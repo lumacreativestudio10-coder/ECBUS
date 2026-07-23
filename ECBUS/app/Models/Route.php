@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Route extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['company_id', 'name', 'from_location_id', 'to_location_id', 'distance', 'estimated_duration_minutes', 'description', 'image', 'starting_price', 'is_popular', 'status'];
+    protected $fillable = ['company_id', 'name', 'from_location_id', 'to_location_id', 'distance', 'estimated_duration_minutes', 'description', 'image', 'starting_price', 'is_popular', 'status', 'created_by'];
 
     protected static function booted()
     {

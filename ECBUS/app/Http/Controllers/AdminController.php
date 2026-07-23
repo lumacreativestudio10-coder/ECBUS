@@ -89,8 +89,16 @@ class AdminController extends Controller
         $buses = Bus::with('busCompany', 'busType')->get();
         $routes = \App\Models\Route::with('fromLocation', 'toLocation')->where('status', 1)->get();
         $busCompanies = \App\Models\BusCompany::orderBy('company_name')->get();
-        $drivers = \App\Models\User::where('role_id', 4)->where('status', 1)->get();
-        $conductors = \App\Models\User::where('role_id', 5)->where('status', 1)->get();
+        $driversQuery = \App\Models\User::where('role_id', 4)->where('status', 1);
+        $conductorsQuery = \App\Models\User::where('role_id', 5)->where('status', 1);
+        
+        if (!auth()->user()->isSuperAdmin() && auth()->user()->company_id) {
+            $driversQuery->where('company_id', auth()->user()->company_id);
+            $conductorsQuery->where('company_id', auth()->user()->company_id);
+        }
+        
+        $drivers = $driversQuery->get();
+        $conductors = $conductorsQuery->get();
         
         return view('admin.schedules', compact('schedules', 'buses', 'routes', 'busCompanies', 'drivers', 'conductors'));
     }
@@ -291,12 +299,17 @@ class AdminController extends Controller
     public function storeLocation(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255|unique:locations']);
-        Location::create($request->all());
+        $data = $request->all();
+        $data['created_by'] = auth()->id();
+        Location::create($data);
         return redirect()->back()->with('success', 'Location added successfully!');
     }
 
     public function updateLocation(Request $request, Location $location)
     {
+        if (!auth()->user()->isSuperAdmin() && $location->created_by !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
         $request->validate(['name' => 'required|string|max:255|unique:locations,name,' . $location->id]);
         $location->update($request->all());
         return redirect()->back()->with('success', 'Location updated successfully!');
@@ -304,6 +317,9 @@ class AdminController extends Controller
 
     public function destroyLocation(Location $location)
     {
+        if (!auth()->user()->isSuperAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
         $location->delete();
         return redirect()->back()->with('success', 'Location deleted successfully!');
     }
@@ -343,22 +359,27 @@ class AdminController extends Controller
 
     public function storeBus(Request $request)
     {
-        $request->validate([
-            'bus_company_id' => 'required|exists:bus_companies,id',
+        $rules = [
             'bus_type_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'bus_number' => 'required|string|max:255',
             'registration_number' => 'required|string|max:255',
             'total_seats' => 'required|integer|min:1',
             'seat_layout' => 'required|string'
-        ]);
+        ];
+        
+        if (auth()->user()->isSuperAdmin()) {
+            $rules['bus_company_id'] = 'required|exists:bus_companies,id';
+        }
+        
+        $request->validate($rules);
 
         $busType = \App\Models\BusType::firstOrCreate(
             ['name' => $request->bus_type_name]
         );
 
         Bus::create([
-            'bus_company_id' => $request->bus_company_id,
+            'bus_company_id' => auth()->user()->isSuperAdmin() ? $request->bus_company_id : auth()->user()->company_id,
             'bus_type_id' => $busType->id,
             'name' => $request->name,
             'bus_number' => $request->bus_number,
@@ -372,22 +393,27 @@ class AdminController extends Controller
 
     public function updateBus(Request $request, Bus $bus)
     {
-        $request->validate([
-            'bus_company_id' => 'required|exists:bus_companies,id',
+        $rules = [
             'bus_type_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'bus_number' => 'required|string|max:255',
             'registration_number' => 'required|string|max:255',
             'total_seats' => 'required|integer|min:1',
             'seat_layout' => 'required|string'
-        ]);
+        ];
+        
+        if (auth()->user()->isSuperAdmin()) {
+            $rules['bus_company_id'] = 'required|exists:bus_companies,id';
+        }
+        
+        $request->validate($rules);
 
         $busType = \App\Models\BusType::firstOrCreate(
             ['name' => $request->bus_type_name]
         );
 
         $bus->update([
-            'bus_company_id' => $request->bus_company_id,
+            'bus_company_id' => auth()->user()->isSuperAdmin() ? $request->bus_company_id : auth()->user()->company_id,
             'bus_type_id' => $busType->id,
             'name' => $request->name,
             'bus_number' => $request->bus_number,

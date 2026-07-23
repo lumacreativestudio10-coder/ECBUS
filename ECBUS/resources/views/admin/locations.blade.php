@@ -69,16 +69,20 @@
                             <td class="px-6 py-4 font-bold text-dark-text">{{ $location->name }}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button @click="openEdit({{ $location->id }}, '{{ addslashes($location->name) }}')" type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
-                                        <i data-lucide="edit" class="w-4 h-4"></i>
-                                    </button>
-                                    <form action="{{ route(auth()->user()->getRolePrefix().'.locations.destroy', $location) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this location?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    @if(auth()->user()->isSuperAdmin() || $location->created_by === auth()->id())
+                                        <button @click="openEdit({{ $location->id }}, '{{ addslashes($location->name) }}')" type="button" class="text-blue-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50" title="Edit">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
                                         </button>
-                                    </form>
+                                    @endif
+                                    @if(auth()->user()->isSuperAdmin())
+                                        <form action="{{ route(auth()->user()->getRolePrefix().'.locations.destroy', $location) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this location?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-gray-400 hover:text-red-500 transition p-2 rounded-lg hover:bg-red-50" title="Delete">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

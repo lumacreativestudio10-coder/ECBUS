@@ -29,6 +29,11 @@ class AdminRouteController extends Controller
         ]);
         $data = $request->all();
         $data['status'] = $request->status === 'active';
+        $data['created_by'] = auth()->id();
+        
+        if (auth()->user()->company_id) {
+            $data['company_id'] = auth()->user()->company_id;
+        }
 
         $route = Route::create($data);
 
@@ -48,6 +53,9 @@ class AdminRouteController extends Controller
 
     public function update(Request $request, Route $route)
     {
+        if (!auth()->user()->isSuperAdmin() && $route->created_by !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'from_location_id' => 'required|exists:locations,id|different:to_location_id',
@@ -81,6 +89,9 @@ class AdminRouteController extends Controller
 
     public function destroy(Route $route)
     {
+        if (!auth()->user()->isSuperAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
         $route->delete(); // Soft delete
         return redirect()->back()->with('success', 'Route deleted successfully!');
     }

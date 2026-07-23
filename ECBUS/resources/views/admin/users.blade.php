@@ -59,7 +59,9 @@
                 <select name="role_id" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-gold">
                     <option value="">All Roles</option>
                     <option value="2" {{ request('role_id') == 2 ? 'selected' : '' }}>Company Admin</option>
-                    <option value="3" {{ request('role_id') == 3 ? 'selected' : '' }}>Staff</option>
+                    <option value="3" {{ request('role_id') == 3 ? 'selected' : '' }}>Company Staff</option>
+                    <option value="4" {{ request('role_id') == 4 ? 'selected' : '' }}>Driver</option>
+                    <option value="5" {{ request('role_id') == 5 ? 'selected' : '' }}>Conductor</option>
                     @if(auth()->user()->isSuperAdmin())
                         <option value="1" {{ request('role_id') == 1 ? 'selected' : '' }}>Super Admin</option>
                     @endif
@@ -224,19 +226,28 @@
                                     </select>
                                     @error('company_id') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
-                                
+                            @endif
+
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">Role *</label>
                                     <select name="role_id" x-model="form.role_id" required class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-gold @error('role_id') border-red-500 @enderror">
                                         <option value="">Select Role</option>
-                                        <option value="2">Company Admin</option>
-                                        <option value="3">Staff</option>
+                                        @if(auth()->user()->isSuperAdmin())
+                                            <option value="2">Company Admin</option>
+                                            <option value="3">Company Staff</option>
+                                            <option value="4">Driver</option>
+                                            <option value="5">Conductor</option>
+                                        @elseif(auth()->user()->isCompanyAdmin())
+                                            <option value="3">Company Staff</option>
+                                            <option value="4">Driver</option>
+                                            <option value="5">Conductor</option>
+                                        @elseif(auth()->user()->isStaff())
+                                            <option value="4">Driver</option>
+                                            <option value="5">Conductor</option>
+                                        @endif
                                     </select>
                                     @error('role_id') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
-                            @else
-                                <input type="hidden" name="role_id" value="3"> <!-- Company Admin creates Staff -->
-                            @endif
                         </div>
                     </form>
 
@@ -294,7 +305,7 @@
                     this.isModalOpen = true;
                     this.isEdit = {{ old('_method') == 'PUT' ? 'true' : 'false' }};
                     this.formAction = this.isEdit && '{{ old('id') }}' 
-                        ? `/admin/users/{{ old('id') }}` 
+                        ? `/{{ auth()->user()->getRolePrefix() }}/users/{{ old('id') }}` 
                         : '{{ route(auth()->user()->getRolePrefix().'.users.store') }}';
                     
                     this.form.id = '{{ old('id') }}';
@@ -308,7 +319,7 @@
             openModal(user = null) {
                 if (user) {
                     this.isEdit = true;
-                    this.formAction = `/admin/users/${user.id}`;
+                    this.formAction = `/{{ auth()->user()->getRolePrefix() }}/users/${user.id}`;
                     this.form.id = user.id;
                     this.form.name = user.name;
                     this.form.email = user.email;

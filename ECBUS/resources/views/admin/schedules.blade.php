@@ -30,7 +30,7 @@
     <!-- Schedules List -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr class="bg-gray-50 text-gray-500 text-xs uppercase font-bold border-b border-gray-100">
                         <th class="px-6 py-4">Bus</th>
@@ -107,7 +107,8 @@
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                 <h3 class="text-lg leading-6 font-extrabold text-gray-900" id="modal-title">Add New Schedule</h3>
                                 <div class="mt-4 space-y-4 text-left">
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @if(auth()->user()->isSuperAdmin())
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
                                             <select x-model="selectedCompanyId" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
@@ -117,9 +118,10 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                        @endif
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus</label>
-                                            <select name="bus_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
+                                            <select name="bus_id" x-model="addBusId" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                                 <option value="">Select Bus...</option>
                                                 <template x-for="bus in filteredBuses" :key="bus.id">
                                                     <option :value="bus.id" x-text="bus.name + ' (' + (bus.bus_type?.name || 'Unknown Type') + ')'"></option>
@@ -140,27 +142,27 @@
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Date</label>
                                         <input type="date" name="date" min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Driver</label>
                                             <select name="driver_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                                 <option value="">Select Driver...</option>
-                                                @foreach($drivers as $driver)
-                                                    <option value="{{ $driver->id }}">{{ $driver->name }}</option>
-                                                @endforeach
+                                                <template x-for="driver in addFilteredDrivers" :key="driver.id">
+                                                    <option :value="driver.id" x-text="driver.name"></option>
+                                                </template>
                                             </select>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Conductor</label>
                                             <select name="conductor_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                                 <option value="">Select Conductor...</option>
-                                                @foreach($conductors as $conductor)
-                                                    <option value="{{ $conductor->id }}">{{ $conductor->name }}</option>
-                                                @endforeach
+                                                <template x-for="conductor in addFilteredConductors" :key="conductor.id">
+                                                    <option :value="conductor.id" x-text="conductor.name"></option>
+                                                </template>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Departure Time</label>
                                             <input type="time" name="departure_time" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -170,7 +172,7 @@
                                             <input type="time" name="arrival_time" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Ticket Price (LKR)</label>
                                             <input type="number" name="price" step="0.01" min="0" placeholder="e.g. 2500" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -218,7 +220,8 @@
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                                 <h3 class="text-lg leading-6 font-extrabold text-gray-900" id="modal-title">Edit Schedule</h3>
                                 <div class="mt-4 space-y-4 text-left">
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @if(auth()->user()->isSuperAdmin())
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
                                             <select x-model="editSelectedCompanyId" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
@@ -228,6 +231,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                        @endif
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Bus</label>
                                             <select name="bus_id" x-model="editData.bus_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -251,27 +255,27 @@
                                         <label class="block text-xs font-bold text-gray-700 mb-1">Date</label>
                                         <input type="date" name="date" x-model="editData.date_formatted" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Driver</label>
                                             <select name="driver_id" x-model="editData.driver_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                                 <option value="">Select Driver...</option>
-                                                @foreach($drivers as $driver)
-                                                    <option value="{{ $driver->id }}">{{ $driver->name }}</option>
-                                                @endforeach
+                                                <template x-for="driver in editFilteredDrivers" :key="driver.id">
+                                                    <option :value="driver.id" x-text="driver.name"></option>
+                                                </template>
                                             </select>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Conductor</label>
                                             <select name="conductor_id" x-model="editData.conductor_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition">
                                                 <option value="">Select Conductor...</option>
-                                                @foreach($conductors as $conductor)
-                                                    <option value="{{ $conductor->id }}">{{ $conductor->name }}</option>
-                                                @endforeach
+                                                <template x-for="conductor in editFilteredConductors" :key="conductor.id">
+                                                    <option :value="conductor.id" x-text="conductor.name"></option>
+                                                </template>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Departure Time</label>
                                             <input type="time" name="departure_time" x-model="editData.departure_time" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -281,7 +285,7 @@
                                             <input type="time" name="arrival_time" x-model="editData.arrival_time" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-700 mb-1">Ticket Price (LKR)</label>
                                             <input type="number" name="price" x-model="editData.price" step="0.01" min="0" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-primary-maroon focus:ring-primary-maroon outline-none transition" required>
@@ -323,8 +327,11 @@ document.addEventListener('alpine:init', () => {
         editData: {}, 
         searchQuery: '',
         buses: @json($buses),
+        drivers: @json($drivers),
+        conductors: @json($conductors),
         selectedCompanyId: '',
         editSelectedCompanyId: '',
+        addBusId: '',
         
         matchesSearch(company, bus, route) {
             if(this.searchQuery.trim() === '') return true;
@@ -342,6 +349,34 @@ document.addEventListener('alpine:init', () => {
         get editFilteredBuses() {
             if (!this.editSelectedCompanyId) return this.buses;
             return this.buses.filter(b => b.bus_company_id == this.editSelectedCompanyId);
+        },
+        
+        get addFilteredDrivers() {
+            if (!this.addBusId) return this.drivers;
+            let bus = this.buses.find(b => b.id == this.addBusId);
+            if (!bus || !bus.bus_company_id) return this.drivers;
+            return this.drivers.filter(d => d.company_id == bus.bus_company_id);
+        },
+
+        get addFilteredConductors() {
+            if (!this.addBusId) return this.conductors;
+            let bus = this.buses.find(b => b.id == this.addBusId);
+            if (!bus || !bus.bus_company_id) return this.conductors;
+            return this.conductors.filter(c => c.company_id == bus.bus_company_id);
+        },
+        
+        get editFilteredDrivers() {
+            if (!this.editData.bus_id) return this.drivers;
+            let bus = this.buses.find(b => b.id == this.editData.bus_id);
+            if (!bus || !bus.bus_company_id) return this.drivers;
+            return this.drivers.filter(d => d.company_id == bus.bus_company_id);
+        },
+
+        get editFilteredConductors() {
+            if (!this.editData.bus_id) return this.conductors;
+            let bus = this.buses.find(b => b.id == this.editData.bus_id);
+            if (!bus || !bus.bus_company_id) return this.conductors;
+            return this.conductors.filter(c => c.company_id == bus.bus_company_id);
         },
         
         openEdit(schedule) { 
